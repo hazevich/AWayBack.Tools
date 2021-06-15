@@ -1,3 +1,19 @@
+*.sln
+*.vcxproj
+*.filters
+*.user
+bin/
+obj/
+.vs/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
 # Prerequisites
 *.d
 
@@ -30,3 +46,5 @@
 *.exe
 *.out
 *.app
+!premake5.exe
+
