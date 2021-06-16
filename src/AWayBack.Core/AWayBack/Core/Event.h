@@ -26,8 +26,7 @@ namespace AWayBack
 	private:
 		std::vector<std::function<void(const T&)>> _subscribers;
 	};
-
-	
+		
 	template<>
 	class Event<void>
 	{
