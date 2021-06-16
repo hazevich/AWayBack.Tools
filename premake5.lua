@@ -3,12 +3,15 @@ workspace "AWayBack.Tools"
     startproject "AWayBack.Tools"
     architecture "x64"
 
+targetdirPath = "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+objdirPath = "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.system}-%{cfg.architecture}/%{prj.name}"
+
 group "src"
     project "AWayBack.Core"
         kind "StaticLib"
         language "C++"
-        targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
-        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        targetdir (targetdirPath)
+        objdir (objdirPath)
         location "src/AWayBack.Core"
 
         files { "src/AWayBack.Core/**.h", "src/AWayBack.Core/**.cpp" }
@@ -42,8 +45,8 @@ group "src"
     project "AWayBack.Tools"
         kind "ConsoleApp"
         language "C++"
-        targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
-        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        targetdir (targetdirPath)
+        objdir (objdirPath)
         location "src/AWayBack.Tools"
 
         files { "src/AWayBack.Tools/**.h", "src/AWayBack.Tools/**.cpp" } 
@@ -66,8 +69,8 @@ group "dependencies"
     project "glfw"
         kind "StaticLib"
         language "C"
-        targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{cfg.platform}/%{prj.name}"
-        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        targetdir (targetdirPath)
+        objdir (objdirPath)
         location "dependencies/glfw"
 
         files
@@ -112,8 +115,8 @@ group "dependencies"
     project "glad"
         kind "StaticLib"
         language "C"
-        targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{cfg.platform}/%{prj.name}"
-        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        targetdir (targetdirPath)
+        objdir (objdirPath)
         location "dependencies/glad"
 
         files 
