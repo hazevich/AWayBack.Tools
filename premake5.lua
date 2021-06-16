@@ -8,6 +8,7 @@ group "src"
         kind "StaticLib"
         language "C++"
         targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
         location "src/AWayBack.Core"
 
         files { "src/AWayBack.Core/**.h", "src/AWayBack.Core/**.cpp" }
@@ -21,7 +22,8 @@ group "src"
         includedirs 
         { 
             "dependencies/glfw/include",
-            "dependencies/glad/include" 
+            "dependencies/glad/include",
+            "src/AWayBack.Core"
         }
 
         filter "configurations:Debug"
@@ -34,10 +36,14 @@ group "src"
             runtime "Release"
             optimize "On"
 
+        filter "system:windows"
+            defines { "WINDOWS" }
+
     project "AWayBack.Tools"
         kind "ConsoleApp"
         language "C++"
         targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
+        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
         location "src/AWayBack.Tools"
 
         files { "src/AWayBack.Tools/**.h", "src/AWayBack.Tools/**.cpp" } 
@@ -61,6 +67,7 @@ group "dependencies"
         kind "StaticLib"
         language "C"
         targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{cfg.platform}/%{prj.name}"
+        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
         location "dependencies/glfw"
 
         files
@@ -77,7 +84,12 @@ group "dependencies"
         }
 
         filter "system:windows"
-            defines { "_GLFW_WIN32" }
+            defines 
+            { 
+                "_GLFW_WIN32",
+                "_CRT_SECURE_NO_WARNINGS"
+            }
+
             files
             {
 
@@ -101,6 +113,7 @@ group "dependencies"
         kind "StaticLib"
         language "C"
         targetdir "%{wks.location}/bin/%{cfg.buildcfg}/%{cfg.architecture}/%{cfg.platform}/%{prj.name}"
+        objdir "%{wks.location}/obj/%{cfg.buildcfg}/%{cfg.architecture}/%{prj.name}"
         location "dependencies/glad"
 
         files 

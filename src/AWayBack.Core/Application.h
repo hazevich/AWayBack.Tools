@@ -6,5 +6,9 @@ namespace AWayBack
 	{
 	public:
 		void Run();
+	private:
+		void OnClose();
+	private:
+		bool _isRunning = true;
 	};
 }

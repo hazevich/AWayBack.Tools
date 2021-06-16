@@ -3,39 +3,27 @@
 #include "Application.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "AWayBack/Core/Window.h"
+#include <functional>
 
 namespace AWayBack
 {
 	void Application::Run()
 	{
-		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		
-		GLFWwindow* window = glfwCreateWindow(800, 600, "A Way Back Tools", NULL, NULL);
-		
-		if (window == NULL)
+		Window* window = Window::Create("A Way Back Tools", 800, 600);
+
+		window->Closed += std::bind(&Application::OnClose, this);
+
+		while(_isRunning)
 		{
-			std::cout << "Failed to create GLFW window" << std::endl;
-			glfwTerminate();
-			return;
+			window->Update();
 		}
 
-		glfwMakeContextCurrent(window);
+		delete window;
+	}
 
-		if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-		{
-			std::cout << "Failed to initialize GLAD" << std::endl;
-			return;
-		}
-
-		glViewport(0, 0, 800, 600);
-
-		while(!glfwWindowShouldClose(window))
-		{
-			glfwSwapBuffers(window);
-			glfwPollEvents();
-		}
+	void Application::OnClose()
+	{
+		_isRunning = false;
 	}
 }
