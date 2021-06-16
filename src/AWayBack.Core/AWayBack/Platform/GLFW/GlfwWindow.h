@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AWayBack/Core/Window.h"
+#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
 namespace AWayBack 
@@ -14,7 +15,7 @@ namespace AWayBack
 		uint16_t GetWidth() override { return _data.Width; }
 		uint16_t GetHeight() override { return _data.Height; }
 
-		void Update() override;
+		void Present() override;
 	
 	private:
 		GLFWwindow* _window;
