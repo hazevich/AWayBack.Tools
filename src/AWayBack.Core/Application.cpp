@@ -20,6 +20,8 @@ namespace AWayBack
 		while(_isRunning)
 		{
 			window->PollEvents();
+
+			_graphicsDevice->Clear(Color(242, 208, 107));
 			_graphicsDevice->SwapBuffers();
 		}
 

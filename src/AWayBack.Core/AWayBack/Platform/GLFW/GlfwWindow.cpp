@@ -15,6 +15,7 @@ namespace AWayBack
 		_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 		
 		_graphicsContext = new OpenGLGraphicsContext(*_window);
+		_graphicsContext->Initialize();
 
 		glfwSwapInterval(1);
 

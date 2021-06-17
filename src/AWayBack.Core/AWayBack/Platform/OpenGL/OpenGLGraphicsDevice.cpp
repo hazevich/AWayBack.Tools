@@ -9,6 +9,12 @@ namespace AWayBack
 	{
 	}
 	
+	void OpenGLGraphicsDevice::Clear(Color color)
+	{
+		glClearColor(color.R, color.G, color.B, color.A);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
 	void OpenGLGraphicsDevice::SwapBuffers()
 	{
 		_graphicsContext.SwapBuffers();
