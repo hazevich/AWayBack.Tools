@@ -4,8 +4,8 @@ using namespace AWayBack;
 
 int main()
 {
-	Application* app = new Application();
-	app->Run();
-	
-	delete app;
+    Application* app = new Application();
+    app->Run();
+
+    delete app;
 }

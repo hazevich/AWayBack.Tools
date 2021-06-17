@@ -5,16 +5,16 @@
 
 namespace AWayBack
 {
-	class OpenGLGraphicsDevice : public GraphicsDevice
-	{
-	public:
-		OpenGLGraphicsDevice(GraphicsContext& graphicsContext);
+    class OpenGLGraphicsDevice : public GraphicsDevice
+    {
+    public:
+        OpenGLGraphicsDevice(GraphicsContext& graphicsContext);
 
-		void Clear(Color color) override;
-		void SwapBuffers() override;
-		void SetViewport(uint16_t width, uint16_t height) override;
+        void Clear(Color color) override;
+        void SwapBuffers() override;
+        void SetViewport(uint16_t width, uint16_t height) override;
 
-	private:
-		GraphicsContext& _graphicsContext;
-	};
+    private:
+        GraphicsContext& _graphicsContext;
+    };
 }

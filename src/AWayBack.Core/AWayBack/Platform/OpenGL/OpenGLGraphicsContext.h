@@ -6,16 +6,16 @@
 
 namespace AWayBack
 {
-	class OpenGLGraphicsContext : public GraphicsContext
-	{
-	public:
-		OpenGLGraphicsContext(GLFWwindow& window);
+    class OpenGLGraphicsContext : public GraphicsContext
+    {
+    public:
+        OpenGLGraphicsContext(GLFWwindow& window);
 
-		bool Initialize();
+        bool Initialize();
 
-		void SwapBuffers() override;
+        void SwapBuffers() override;
 
-	private:
-		GLFWwindow& _window;
-	};
+    private:
+        GLFWwindow& _window;
+    };
 }

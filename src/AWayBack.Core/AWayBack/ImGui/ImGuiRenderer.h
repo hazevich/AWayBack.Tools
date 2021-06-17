@@ -4,17 +4,17 @@
 
 namespace AWayBack
 {
-	class ImGuiRenderer
-	{
-	public:
-		ImGuiRenderer(void* window);
-		~ImGuiRenderer();
+    class ImGuiRenderer
+    {
+    public:
+        ImGuiRenderer(void* window);
+        ~ImGuiRenderer();
 
-		void Initialize();
-		void NewFrame();
-		void Render();
+        void Initialize();
+        void NewFrame();
+        void Render();
 
-	private:
-		ImGuiPlatformBackend* _imGuiPlatformBackend;
-	};
+    private:
+        ImGuiPlatformBackend* _imGuiPlatformBackend;
+    };
 }

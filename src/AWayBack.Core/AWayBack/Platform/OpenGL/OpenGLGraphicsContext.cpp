@@ -5,21 +5,21 @@
 
 namespace AWayBack
 {
-	OpenGLGraphicsContext::OpenGLGraphicsContext(GLFWwindow& window)
-		: _window(window)
-	{
-		
-	}
+    OpenGLGraphicsContext::OpenGLGraphicsContext(GLFWwindow& window)
+        : _window(window)
+    {
 
-	bool OpenGLGraphicsContext::Initialize()
-	{
-		glfwMakeContextCurrent(&_window);
+    }
 
-		return gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-	}
+    bool OpenGLGraphicsContext::Initialize()
+    {
+        glfwMakeContextCurrent(&_window);
 
-	void OpenGLGraphicsContext::SwapBuffers()
-	{
-		glfwSwapBuffers(&_window);
-	}
+        return gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    }
+
+    void OpenGLGraphicsContext::SwapBuffers()
+    {
+        glfwSwapBuffers(&_window);
+    }
 }

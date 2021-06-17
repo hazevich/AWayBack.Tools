@@ -5,16 +5,16 @@
 
 namespace AWayBack
 {
-	class ImGuiOpenGLBackend : public ImGuiPlatformBackend
-	{
-	public:
-		ImGuiOpenGLBackend(GLFWwindow* window);
+    class ImGuiOpenGLBackend : public ImGuiPlatformBackend
+    {
+    public:
+        ImGuiOpenGLBackend(GLFWwindow* window);
 
-		void Initialize() override;
-		void NewFrame() override;
-		void RenderDrawData() override;
+        void Initialize() override;
+        void NewFrame() override;
+        void RenderDrawData() override;
 
-	private:
-		GLFWwindow* _window;
-	};
+    private:
+        GLFWwindow* _window;
+    };
 }

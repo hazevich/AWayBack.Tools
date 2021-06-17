@@ -5,47 +5,47 @@
 
 namespace AWayBack
 {
-	template<typename T>
-	class Event
-	{
-	public:
-		Event& operator+=(std::function<void(const T&)> subscriber)
-		{
-			_subscribers.push_back(subscriber);
+    template<typename T>
+    class Event
+    {
+    public:
+        Event& operator+=(std::function<void(const T&)> subscriber)
+        {
+            _subscribers.push_back(subscriber);
 
-			return *this;
-		}
+            return *this;
+        }
 
-		void Invoke(const T& event)
-		{
-			for (auto &subscriber : _subscribers)
-			{
-				subscriber(event);
-			}
-		}
-	private:
-		std::vector<std::function<void(const T&)>> _subscribers;
-	};
-		
-	template<>
-	class Event<void>
-	{
-	public:
-		Event& operator+=(std::function<void()> subscriber)
-		{
-			_subscribers.push_back(subscriber);
+        void Invoke(const T& event)
+        {
+            for (auto& subscriber : _subscribers)
+            {
+                subscriber(event);
+            }
+        }
+    private:
+        std::vector<std::function<void(const T&)>> _subscribers;
+    };
 
-			return *this;
-		}
+    template<>
+    class Event<void>
+    {
+    public:
+        Event& operator+=(std::function<void()> subscriber)
+        {
+            _subscribers.push_back(subscriber);
 
-		void Invoke()
-		{
-			for (auto &subscriber : _subscribers)
-			{
-				subscriber();
-			}
-		}
-	private:
-		std::vector<std::function<void()>> _subscribers;
-	};
+            return *this;
+        }
+
+        void Invoke()
+        {
+            for (auto& subscriber : _subscribers)
+            {
+                subscriber();
+            }
+        }
+    private:
+        std::vector<std::function<void()>> _subscribers;
+    };
 }

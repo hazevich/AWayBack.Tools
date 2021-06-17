@@ -2,65 +2,65 @@
 
 namespace AWayBack
 {
-	GlfwWindow::GlfwWindow(const std::string& title, uint16_t width, uint16_t height)
-	{
-		_data.Width = width;
-		_data.Height = height;
+    GlfwWindow::GlfwWindow(const std::string& title, uint16_t width, uint16_t height)
+    {
+        _data.Width = width;
+        _data.Height = height;
 
-		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
-		
-		_graphicsContext = new OpenGLGraphicsContext(*_window);
-		_graphicsContext->Initialize();
+        _window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 
-		glfwSwapInterval(1);
-		
-		glfwSetWindowUserPointer(_window, this);
+        _graphicsContext = new OpenGLGraphicsContext(*_window);
+        _graphicsContext->Initialize();
 
-		glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height)
-			{
-				WindowResizedData windowResizedData{(uint16_t) width, (uint16_t) height};
+        glfwSwapInterval(1);
 
-				auto thisWindow = (GlfwWindow*) glfwGetWindowUserPointer(window);
-				thisWindow->Resized.Invoke(windowResizedData);
+        glfwSetWindowUserPointer(_window, this);
 
-				thisWindow->_data.Width = width;
-				thisWindow->_data.Height = height;
-			}
-		);
+        glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height)
+            {
+                WindowResizedData windowResizedData{ (uint16_t) width, (uint16_t) height };
 
-		glfwSetWindowCloseCallback(_window, [](GLFWwindow* window)
-			{
-				auto thisWindow = (GlfwWindow*) glfwGetWindowUserPointer(window);
-				thisWindow->Closed.Invoke();
-			}
-		);
-	}
+                auto thisWindow = (GlfwWindow*) glfwGetWindowUserPointer(window);
+                thisWindow->Resized.Invoke(windowResizedData);
 
-	GlfwWindow::~GlfwWindow()
-	{
-		delete _graphicsContext;
+                thisWindow->_data.Width = width;
+                thisWindow->_data.Height = height;
+            }
+        );
 
-		glfwDestroyWindow(_window);
-		glfwTerminate();
-	}
+        glfwSetWindowCloseCallback(_window, [](GLFWwindow* window)
+            {
+                auto thisWindow = (GlfwWindow*) glfwGetWindowUserPointer(window);
+                thisWindow->Closed.Invoke();
+            }
+        );
+    }
 
-	GraphicsContext& GlfwWindow::GetGraphicsContext()
-	{
-		return *_graphicsContext;
-	}
+    GlfwWindow::~GlfwWindow()
+    {
+        delete _graphicsContext;
 
-	void GlfwWindow::PollEvents()
-	{
-		glfwPollEvents();
-	}
+        glfwDestroyWindow(_window);
+        glfwTerminate();
+    }
 
-	void* GlfwWindow::GetNativeWindow()
-	{
-		return (void*) _window;
-	}
+    GraphicsContext& GlfwWindow::GetGraphicsContext()
+    {
+        return *_graphicsContext;
+    }
+
+    void GlfwWindow::PollEvents()
+    {
+        glfwPollEvents();
+    }
+
+    void* GlfwWindow::GetNativeWindow()
+    {
+        return (void*) _window;
+    }
 }

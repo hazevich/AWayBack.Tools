@@ -5,15 +5,15 @@
 
 namespace AWayBack
 {
-	class Application
-	{
-	public:
-		void Run();
-	private:
-		void OnClose();
-		void OnWindowResized(const WindowResizedData& data);
-	private:
-		bool _isRunning = true;
-		GraphicsDevice* _graphicsDevice;
-	};
+    class Application
+    {
+    public:
+        void Run();
+    private:
+        void OnClose();
+        void OnWindowResized(const WindowResizedData& data);
+    private:
+        bool _isRunning = true;
+        GraphicsDevice* _graphicsDevice;
+    };
 }

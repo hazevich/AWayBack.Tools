@@ -2,9 +2,9 @@
 
 namespace AWayBack
 {
-	class GraphicsContext
-	{
-	public:
-		virtual void SwapBuffers() = 0;
-	};
+    class GraphicsContext
+    {
+    public:
+        virtual void SwapBuffers() = 0;
+    };
 }

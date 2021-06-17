@@ -11,44 +11,44 @@
 
 namespace AWayBack
 {
-	void Application::Run()
-	{
-		Window* window = Window::Create("A Way Back Tools", 800, 600);
-		_graphicsDevice = GraphicsDevice::Create(window->GetGraphicsContext());
+    void Application::Run()
+    {
+        Window* window = Window::Create("A Way Back Tools", 800, 600);
+        _graphicsDevice = GraphicsDevice::Create(window->GetGraphicsContext());
 
-		window->Resized += std::bind(&Application::OnWindowResized, this, std::placeholders::_1);
-		window->Closed += std::bind(&Application::OnClose, this);
+        window->Resized += std::bind(&Application::OnWindowResized, this, std::placeholders::_1);
+        window->Closed += std::bind(&Application::OnClose, this);
 
-		ImGuiRenderer* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
-		imGuiRenderer->Initialize();		
+        ImGuiRenderer* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
+        imGuiRenderer->Initialize();
 
-		bool show_demo_window = true;
+        bool show_demo_window = true;
 
-		while(_isRunning)
-		{
-			window->PollEvents();
-			imGuiRenderer->NewFrame();
+        while (_isRunning)
+        {
+            window->PollEvents();
+            imGuiRenderer->NewFrame();
 
-			ImGui::ShowDemoWindow();
+            ImGui::ShowDemoWindow();
 
-			_graphicsDevice->Clear(Color(242, 208, 107));
-			imGuiRenderer->Render();
+            _graphicsDevice->Clear(Color(242, 208, 107));
+            imGuiRenderer->Render();
 
-			_graphicsDevice->SwapBuffers();
-		}
+            _graphicsDevice->SwapBuffers();
+        }
 
-		delete imGuiRenderer;
-		delete _graphicsDevice;
-		delete window;
-	}
+        delete imGuiRenderer;
+        delete _graphicsDevice;
+        delete window;
+    }
 
-	void Application::OnClose()
-	{
-		_isRunning = false;
-	}
+    void Application::OnClose()
+    {
+        _isRunning = false;
+    }
 
-	void Application::OnWindowResized(const WindowResizedData& data)
-	{
-		_graphicsDevice->SetViewport(data.Width, data.Height);
-	}
+    void Application::OnWindowResized(const WindowResizedData& data)
+    {
+        _graphicsDevice->SetViewport(data.Width, data.Height);
+    }
 }

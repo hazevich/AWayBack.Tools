@@ -5,25 +5,25 @@
 
 namespace AWayBack
 {
-	ImGuiOpenGLBackend::ImGuiOpenGLBackend(GLFWwindow* window)
-		: _window(window)
-	{
-	}
+    ImGuiOpenGLBackend::ImGuiOpenGLBackend(GLFWwindow* window)
+        : _window(window)
+    {
+    }
 
-	void ImGuiOpenGLBackend::Initialize()
-	{
-		ImGui_ImplGlfw_InitForOpenGL(_window, false);
-		ImGui_ImplOpenGL3_Init("#version 330");
-	}
+    void ImGuiOpenGLBackend::Initialize()
+    {
+        ImGui_ImplGlfw_InitForOpenGL(_window, false);
+        ImGui_ImplOpenGL3_Init("#version 330");
+    }
 
-	void ImGuiOpenGLBackend::NewFrame()
-	{
-		ImGui_ImplOpenGL3_NewFrame();
+    void ImGuiOpenGLBackend::NewFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-	}
+    }
 
-	void ImGuiOpenGLBackend::RenderDrawData()
-	{
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
+    void ImGuiOpenGLBackend::RenderDrawData()
+    {
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
 }
