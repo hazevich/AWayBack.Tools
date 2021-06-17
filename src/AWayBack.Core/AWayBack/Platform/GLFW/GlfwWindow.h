@@ -19,6 +19,8 @@ namespace AWayBack
 		void PollEvents() override;
 
 		GraphicsContext& GetGraphicsContext() override;
+
+		void* GetNativeWindow() override;
 	
 	private:
 		GLFWwindow* _window;

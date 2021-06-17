@@ -18,7 +18,7 @@ namespace AWayBack
 		_graphicsContext->Initialize();
 
 		glfwSwapInterval(1);
-
+		
 		glfwSetWindowUserPointer(_window, this);
 
 		glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* window, int width, int height)
@@ -43,6 +43,8 @@ namespace AWayBack
 
 	GlfwWindow::~GlfwWindow()
 	{
+		delete _graphicsContext;
+
 		glfwDestroyWindow(_window);
 		glfwTerminate();
 	}
@@ -55,5 +57,10 @@ namespace AWayBack
 	void GlfwWindow::PollEvents()
 	{
 		glfwPollEvents();
+	}
+
+	void* GlfwWindow::GetNativeWindow()
+	{
+		return (void*) _window;
 	}
 }
