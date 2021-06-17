@@ -14,9 +14,7 @@ namespace AWayBack
 
 		_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 		
-		glfwMakeContextCurrent(_window);
-
-		gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+		_graphicsContext = new OpenGLGraphicsContext(*_window);
 
 		glfwSwapInterval(1);
 
@@ -48,10 +46,13 @@ namespace AWayBack
 		glfwTerminate();
 	}
 
-	void GlfwWindow::Present()
+	GraphicsContext& GlfwWindow::GetGraphicsContext()
+	{
+		return *_graphicsContext;
+	}
+
+	void GlfwWindow::PollEvents()
 	{
 		glfwPollEvents();
-
-		glfwSwapBuffers(_window);
 	}
 }

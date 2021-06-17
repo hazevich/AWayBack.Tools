@@ -4,6 +4,16 @@
 
 namespace AWayBack
 {
+	OpenGLGraphicsDevice::OpenGLGraphicsDevice(GraphicsContext& graphicsContext)
+		: _graphicsContext(graphicsContext)
+	{
+	}
+	
+	void OpenGLGraphicsDevice::SwapBuffers()
+	{
+		_graphicsContext.SwapBuffers();
+	}
+
 	void OpenGLGraphicsDevice::SetViewport(uint16_t width, uint16_t height)
 	{
 		glViewport(0, 0, width, height);

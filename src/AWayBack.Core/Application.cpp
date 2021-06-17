@@ -12,14 +12,15 @@ namespace AWayBack
 	void Application::Run()
 	{
 		Window* window = Window::Create("A Way Back Tools", 800, 600);
-		_graphicsDevice = GraphicsDevice::Create();
+		_graphicsDevice = GraphicsDevice::Create(window->GetGraphicsContext());
 
 		window->Closed += std::bind(&Application::OnClose, this);
 		window->Resized += std::bind(&Application::OnWindowResized, this, std::placeholders::_1);
 
 		while(_isRunning)
 		{
-			window->Present();
+			window->PollEvents();
+			_graphicsDevice->SwapBuffers();
 		}
 
 		delete window;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AWayBack/Core/Window.h"
+#include "AWayBack/Platform/OpenGL/OpenGLGraphicsContext.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
@@ -15,10 +16,13 @@ namespace AWayBack
 		uint16_t GetWidth() override { return _data.Width; }
 		uint16_t GetHeight() override { return _data.Height; }
 
-		void Present() override;
+		void PollEvents() override;
+
+		GraphicsContext& GetGraphicsContext() override;
 	
 	private:
 		GLFWwindow* _window;
+		OpenGLGraphicsContext* _graphicsContext;
 		
 		struct WindowData
 		{
