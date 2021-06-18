@@ -4,3 +4,6 @@
 [submodule "dependencies/imgui"]
 	path = dependencies/imgui
 	url = https://github.com/hazevich/imgui
+[submodule "dependencies/stb"]
+	path = dependencies/stb
+	url = https://github.com/hazevich/stb
