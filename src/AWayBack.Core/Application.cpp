@@ -8,6 +8,8 @@
 #include "AWayBack/ImGui/ImGuiRenderer.h"
 #include <functional>
 #include "imgui.h"
+#include "AWayBack/Graphics/Texture.h"
+#include "filesystem"
 
 namespace AWayBack
 {
@@ -21,8 +23,8 @@ namespace AWayBack
 
         ImGuiRenderer* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
         imGuiRenderer->Initialize();
-
-        bool show_demo_window = true;
+        
+        Texture2D* fatKitty = Texture2D::FromFile("fatcat.png");
 
         while (_isRunning)
         {
@@ -31,12 +33,20 @@ namespace AWayBack
 
             ImGui::ShowDemoWindow();
 
+            if (ImGui::Begin("Test window"))
+            {
+                ImGui::Image((void*) (intptr_t) fatKitty->GetTextureId(), ImVec2(fatKitty->GetWidth(), fatKitty->GetHeight()));
+
+                ImGui::End();
+            }
+
             _graphicsDevice->Clear(Color(242, 208, 107));
             imGuiRenderer->Render();
 
             _graphicsDevice->SwapBuffers();
         }
 
+        delete fatKitty;
         delete imGuiRenderer;
         delete _graphicsDevice;
         delete window;

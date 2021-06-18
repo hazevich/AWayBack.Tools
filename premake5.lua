@@ -182,10 +182,6 @@ group "dependencies"
 
     files
     {
-        "dependencies/stb/stb_image.h"
-    }
-
-    defines
-    {
-        "STB_IMAGE_IMPLEMENTATION"
+        "dependencies/stb/stb_image.h",
+        "dependencies/stb/stb_image.c"
     }
