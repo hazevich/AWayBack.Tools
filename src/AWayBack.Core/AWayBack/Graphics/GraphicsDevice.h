@@ -8,6 +8,8 @@ namespace AWayBack
     class GraphicsDevice
     {
     public:
+        virtual ~GraphicsDevice() = default;
+
         virtual void Clear(Color color) = 0;
         virtual void SetViewport(uint16_t width, uint16_t height) = 0;
         virtual void SwapBuffers() = 0;

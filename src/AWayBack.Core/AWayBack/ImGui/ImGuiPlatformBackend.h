@@ -5,6 +5,8 @@ namespace AWayBack
     class ImGuiPlatformBackend
     {
     public:
+        virtual ~ImGuiPlatformBackend() = default;
+
         virtual void Initialize() = 0;
         virtual void NewFrame() = 0;
         virtual void RenderDrawData() = 0;

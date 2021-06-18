@@ -8,7 +8,7 @@ namespace AWayBack
     class OpenGLGraphicsDevice : public GraphicsDevice
     {
     public:
-        OpenGLGraphicsDevice(GraphicsContext& graphicsContext);
+        explicit OpenGLGraphicsDevice(GraphicsContext& graphicsContext);
 
         void Clear(Color color) override;
         void SwapBuffers() override;
