@@ -20,7 +20,8 @@ group "src"
         { 
             "glfw",
             "glad",
-            "imgui"
+            "imgui",
+            "stb"
         }
 
         includedirs 
@@ -28,6 +29,7 @@ group "src"
             "dependencies/glfw/include",
             "dependencies/glad/include",
             "dependencies/imgui",
+            "dependencies/stb",
             "src/AWayBack.Core"
         }
 
@@ -170,3 +172,20 @@ group "dependencies"
         }
 
         defines	{ "IMGUI_IMPL_OPENGL_LOADER_GLAD" }
+    
+    project "stb"
+        kind "StaticLib"
+        language "C"
+        targetdir (targetdirPath)
+        objdir (objdirPath)
+        location "dependencies/stb"
+
+    files
+    {
+        "dependencies/stb/stb_image.h"
+    }
+
+    defines
+    {
+        "STB_IMAGE_IMPLEMENTATION"
+    }
