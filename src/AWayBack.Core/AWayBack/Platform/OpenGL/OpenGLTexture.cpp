@@ -31,6 +31,4 @@ namespace AWayBack
     {
         glDeleteTextures(1, &_textureId);
     }
-
-
 }
