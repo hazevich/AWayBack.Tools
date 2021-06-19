@@ -8,6 +8,7 @@ namespace AWayBack
     {
     public:
         OpenGLTexture2D(const std::string& file);
+        ~OpenGLTexture2D() override;
 
         uint32_t GetTextureId() override { return _textureId; }
         uint32_t GetWidth() override { return _width; }

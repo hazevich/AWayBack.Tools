@@ -27,4 +27,10 @@ namespace AWayBack
         stbi_image_free(data);
     }
 
+    OpenGLTexture2D::~OpenGLTexture2D()
+    {
+        glDeleteTextures(1, &_textureId);
+    }
+
+
 }
