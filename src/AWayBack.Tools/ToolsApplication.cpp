@@ -1,11 +1,26 @@
-#include "Application.h"
+#include "ToolsApplication.h"
+#include "imgui.h"
 
-using namespace AWayBack;
-
-int main()
+namespace AWayBack
 {
-    Application* app = new Application();
-    app->Run();
+    ToolsApplication::~ToolsApplication()
+    {
+        delete _fatCatTexture;
+    }
 
-    delete app;
+    void ToolsApplication::Initialize()
+    {
+        _fatCatTexture = Texture2D::FromFile("fatcat.png");
+    }
+
+    void ToolsApplication::Render()
+    {
+        if (ImGui::Begin("Test window"))
+        {
+            ImGui::Image((void*) (intptr_t) _fatCatTexture->GetTextureId(), ImVec2(_fatCatTexture->GetWidth(), _fatCatTexture->GetHeight()));
+        }
+
+        ImGui::End();    
+    }
+
 }

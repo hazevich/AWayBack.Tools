@@ -49,13 +49,18 @@ group "src"
     project "AWayBack.Tools"
         kind "ConsoleApp"
         language "C++"
+        cppdialect "C++17"
         targetdir (targetdirPath)
         objdir (objdirPath)
         location "src/AWayBack.Tools"
 
         files { "src/AWayBack.Tools/**.h", "src/AWayBack.Tools/**.cpp" } 
 
-        includedirs { "%{wks.location}/src/AWayBack.Core" }
+        includedirs 
+        { 
+            "%{wks.location}/src/AWayBack.Core",
+            "dependencies/imgui"
+        }
 
         links { "AWayBack.Core" }
         

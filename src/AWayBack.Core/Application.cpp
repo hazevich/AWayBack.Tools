@@ -23,6 +23,8 @@ namespace AWayBack
 
         ImGuiRenderer* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
         imGuiRenderer->Initialize();
+
+        Initialize();
         
         Texture2D* fatKitty = Texture2D::FromFile("fatcat.png");
 
@@ -30,15 +32,8 @@ namespace AWayBack
         {
             window->PollEvents();
             imGuiRenderer->NewFrame();
-
-            ImGui::ShowDemoWindow();
-
-            if (ImGui::Begin("Test window"))
-            {
-                ImGui::Image((void*) (intptr_t) fatKitty->GetTextureId(), ImVec2(fatKitty->GetWidth(), fatKitty->GetHeight()));
-
-                ImGui::End();
-            }
+            
+            Render();
 
             _graphicsDevice->Clear(Color(242, 208, 107));
             imGuiRenderer->Render();
