@@ -20,7 +20,7 @@ namespace AWayBack
         UpdateTextures();
         RenderDockSpace();
         RenderMainMenuBar();
-        RenderCanvas();
+        RenderSpriteEditor();
         RenderOpenSpriteAtlasPopup();
     }
 
@@ -31,6 +31,8 @@ namespace AWayBack
             delete _texture;
             _texture = _newTexture;
             _newTexture = nullptr;
+
+            _spriteEditor.SetTexture(_texture);
         }
     }
 
@@ -78,14 +80,9 @@ namespace AWayBack
         ImGui::EndMainMenuBar();
     }
 
-    void ToolsApplication::RenderCanvas()
+    void ToolsApplication::RenderSpriteEditor()
     {
-        if (!ImGui::Begin("Canvas")) return;
-
-        if (_texture)
-            ImGui::Image(*_texture);
-
-        ImGui::End();
+        _spriteEditor.Render();
     }
 
     void ToolsApplication::RenderOpenSpriteAtlasPopup()

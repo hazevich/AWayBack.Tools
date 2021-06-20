@@ -2,11 +2,15 @@
 
 #include "stb_image.h"
 #include "glad/glad.h"
+#include "filesystem"
 
 namespace AWayBack
 {
     OpenGLTexture2D::OpenGLTexture2D(const std::string& file)
     {
+        std::filesystem::path filePath(file);
+        _name = filePath.filename().string();
+
         int32_t width, height;
         uint8_t* data = stbi_load(file.c_str(), &width, &height, nullptr, 4);
        

@@ -10,10 +10,12 @@ namespace AWayBack
         OpenGLTexture2D(const std::string& file);
         ~OpenGLTexture2D() override;
 
+        std::string GetName() override { return _name; }
         uint32_t GetTextureId() override { return _textureId; }
         uint32_t GetWidth() override { return _width; }
         uint32_t GetHeight() override { return _height; }
     private:
+        std::string _name;
         uint32_t _textureId;
         uint32_t _width, _height;
     };

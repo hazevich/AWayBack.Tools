@@ -10,6 +10,7 @@ group "src"
     project "AWayBack.Core"
         kind "StaticLib"
         language "C++"
+        cppdialect "C++17"
         targetdir (targetdirPath)
         objdir (objdirPath)
         location "src/AWayBack.Core"
