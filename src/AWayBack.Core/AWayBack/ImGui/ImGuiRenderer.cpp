@@ -1,18 +1,23 @@
 #include "imgui.h"
 #include "ImGuiRenderer.h"
-
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 #include "GLFW/glfw3.h"
 
 namespace AWayBack
 {
     ImGuiRenderer::ImGuiRenderer(void* window)
-        : _imGuiPlatformBackend(ImGuiPlatformBackend::Create(window))
+        : _window(static_cast<GLFWwindow*>(window))
     {
     }
 
     ImGuiRenderer::~ImGuiRenderer()
     {
-        delete _imGuiPlatformBackend;
+    #ifdef WINDOWS
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+    #endif // WINDOWS
+
         ImGui::DestroyContext();
     }
 
@@ -27,21 +32,30 @@ namespace AWayBack
         io.ConfigWindowsMoveFromTitleBarOnly = true;
 
         ImGui::StyleColorsDark();
-
-        _imGuiPlatformBackend->Initialize();
+        
+    #ifdef WINDOWS
+        ImGui_ImplGlfw_InitForOpenGL(_window, false);
+        ImGui_ImplOpenGL3_Init("#version 330");
+    #endif //WINDOWS
     }
 
     void ImGuiRenderer::NewFrame()
     {
-        _imGuiPlatformBackend->NewFrame();
+    #ifdef WINDOWS
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+    #endif // WINDOWS
+
         ImGui::NewFrame();
     }
 
     void ImGuiRenderer::Render()
     {
-        _imGuiPlatformBackend->RenderDrawData();
+    #ifdef WINDOWS
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         ImGuiIO& io = ImGui::GetIO();
+
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow* currentContextBackup = glfwGetCurrentContext();
@@ -49,5 +63,6 @@ namespace AWayBack
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(currentContextBackup);
         }
+    #endif // WINDOWS
     }
 }

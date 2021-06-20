@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImGuiPlatformBackend.h"
+#include "AWayBack/Platform/GLFW/GlfwWindow.h"
 
 namespace AWayBack
 {
@@ -15,6 +15,6 @@ namespace AWayBack
         void Render();
 
     private:
-        ImGuiPlatformBackend* _imGuiPlatformBackend;
+        GLFWwindow* _window;
     };
 }
