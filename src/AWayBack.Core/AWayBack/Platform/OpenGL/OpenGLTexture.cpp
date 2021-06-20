@@ -8,7 +8,7 @@ namespace AWayBack
     OpenGLTexture2D::OpenGLTexture2D(const std::string& file)
     {
         int32_t width, height;
-        uint8_t* data = stbi_load(file.c_str(), &width, &height, nullptr, 0);
+        uint8_t* data = stbi_load(file.c_str(), &width, &height, nullptr, 4);
        
         _width = width;
         _height = height;

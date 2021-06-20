@@ -35,6 +35,7 @@ namespace AWayBack
             
             Render();
 
+            ImGui::Render();
             _graphicsDevice->Clear(Color(242, 208, 107));
             imGuiRenderer->Render();
 

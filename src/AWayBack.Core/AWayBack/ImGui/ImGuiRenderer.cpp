@@ -36,7 +36,6 @@ namespace AWayBack
 
     void ImGuiRenderer::Render()
     {
-        ImGui::Render();
         _imGuiPlatformBackend->RenderDrawData();
     }
 }

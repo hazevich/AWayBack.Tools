@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Application.h"
+#include "OpenSpriteAtlasModal.h"
 #include "AWayBack/Graphics/Texture.h";
 
 namespace AWayBack
@@ -14,6 +15,14 @@ namespace AWayBack
         void Initialize() override;
 
     private:
-        Texture2D* _fatCatTexture;
+        void UpdateTextures();
+        void RenderDockSpace();
+        void RenderMainMenuBar();
+        void RenderCanvas();
+        void RenderOpenSpriteAtlasPopup();
+
+        Texture2D* _texture = nullptr;
+        Texture2D* _newTexture = nullptr;
+        OpenSpriteAtlasModal _openSpriteAtlasModal{};
     };
 }
