@@ -1,6 +1,8 @@
 #include "imgui.h"
 #include "ImGuiRenderer.h"
 
+#include "GLFW/glfw3.h"
+
 namespace AWayBack
 {
     ImGuiRenderer::ImGuiRenderer(void* window)
@@ -21,6 +23,7 @@ namespace AWayBack
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         io.ConfigWindowsMoveFromTitleBarOnly = true;
 
         ImGui::StyleColorsDark();
@@ -37,5 +40,14 @@ namespace AWayBack
     void ImGuiRenderer::Render()
     {
         _imGuiPlatformBackend->RenderDrawData();
+
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* currentContextBackup = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(currentContextBackup);
+        }
     }
 }
