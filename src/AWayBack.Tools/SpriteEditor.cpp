@@ -45,6 +45,8 @@ namespace AWayBack
 
             ImGui::SetCursorPos(newCursorPos);
 
+            ImGui::CheckerBoard(ImGui::GetCursorScreenPos(), ImGui::ImVec2i(32, 32), ImGui::ImVec2i(_texture->GetWidth(), _texture->GetHeight()));
+
             ImGui::Image(*_texture);
         }
 

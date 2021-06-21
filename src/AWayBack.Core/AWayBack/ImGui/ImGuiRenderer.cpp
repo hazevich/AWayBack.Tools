@@ -33,7 +33,7 @@ namespace AWayBack
         ImGui::StyleColorsDark();
         
     #ifdef WINDOWS
-        ImGui_ImplGlfw_InitForOpenGL(_window, false);
+        ImGui_ImplGlfw_InitForOpenGL(_window, true);
         ImGui_ImplOpenGL3_Init("#version 330");
     #endif //WINDOWS
     }
@@ -50,6 +50,7 @@ namespace AWayBack
 
     void ImGuiRenderer::Render()
     {
+        ImGui::Render();
     #ifdef WINDOWS
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     #endif // WINDOWS
