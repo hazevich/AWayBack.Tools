@@ -44,7 +44,7 @@ namespace ImGui
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         auto isColorChange = false;
 
-        auto gridMax = ImVec2(position.x + (float) gridSize.X, position.y + gridSize.Y);
+        auto gridMax = ImVec2(position.x + gridSize.X, position.y + gridSize.Y);
 
         for (int16_t y = 0; y < gridSize.Y; y += cellSize.Y)
         {
