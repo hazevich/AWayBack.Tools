@@ -7,12 +7,19 @@ namespace AWayBack
 {
     struct Vector2
     {
+        Vector2() = default;
+        Vector2(float x, float y)
+            : X(x), Y(y)
+        {
+            
+        }
+
         float X, Y;
     };
 
     struct Sprite
     {
-        char* Name;
+        std::string Name;
         Vector2 Min;
         Vector2 Max;
         Vector2 Origin;
@@ -20,8 +27,8 @@ namespace AWayBack
 
     struct SpriteAtlas
     {
-        std::string Name = "";
-        std::string TextureName = "";
+        std::string Name;
+        std::string TextureName;
         std::vector<Sprite> Sprites;
     };
 
@@ -34,8 +41,19 @@ namespace AWayBack
         SpriteAtlas _spriteAtlas{};
         Texture2D* _texture = nullptr;
 
+        int32_t _sliceStart = 0, _sliceEnd = 1;
+        int32_t _gridWidth = 0, _gridHeight = 0;
+        int32_t _cellWidth = 32, _cellHeight = 32;
+
         void RenderCanvas();
+
         void RenderControls();
+
         void RenderSpriteAtlasHeader();
+
+        void RenderSlicingControls();
+        void RenderGridSequenceSlicingControls();
+
+        void RenderSprites();
     };
 }
