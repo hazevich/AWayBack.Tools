@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 
+#include "ImGuiExt.h"
 #include "AWayBack/Graphics/Texture.h"
 
 namespace AWayBack
@@ -43,7 +44,9 @@ namespace AWayBack
 
         int32_t _sliceStart = 0, _sliceEnd = 1;
         int32_t _gridWidth = 0, _gridHeight = 0;
-        int32_t _cellWidth = 32, _cellHeight = 32;
+
+        bool _isUniformCellSizeControl;
+        ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
 
         void RenderCanvas();
 
@@ -55,5 +58,7 @@ namespace AWayBack
         void RenderGridSequenceSlicingControls();
 
         void RenderSprites();
+
+        void CalculateGridSize();
     };
 }

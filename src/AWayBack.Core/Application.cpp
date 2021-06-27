@@ -7,8 +7,6 @@
 #include "AWayBack/Graphics/GraphicsDevice.h"
 #include "AWayBack/ImGui/ImGuiRenderer.h"
 #include <functional>
-#include "imgui.h"
-#include "AWayBack/Graphics/Texture.h"
 #include "filesystem"
 
 namespace AWayBack
@@ -26,8 +24,6 @@ namespace AWayBack
 
         Initialize();
         
-        Texture2D* fatKitty = Texture2D::FromFile("fatcat.png");
-
         while (_isRunning)
         {
             window->PollEvents();
@@ -41,7 +37,6 @@ namespace AWayBack
             _graphicsDevice->SwapBuffers();
         }
 
-        delete fatKitty;
         delete imGuiRenderer;
         delete _graphicsDevice;
         delete window;

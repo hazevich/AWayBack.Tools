@@ -12,8 +12,7 @@ namespace AWayBack
     {
         _texture = texture;
         _spriteAtlas = {_texture->GetName(), _texture->GetName(), std::vector<Sprite>()};
-        _gridWidth = _texture->GetWidth() / _cellWidth;
-        _gridHeight = _texture->GetHeight() / _cellHeight;
+        CalculateGridSize();
     }
 
     void SpriteEditor::Render()
@@ -25,7 +24,11 @@ namespace AWayBack
 
     void SpriteEditor::RenderCanvas()
     {
-        if (!ImGui::Begin("Canvas")) return;
+        if (!ImGui::Begin("Canvas"))
+        {
+            ImGui::End();
+            return;
+        }
 
         ImGui::BeginChild("CanvasFrame",
                           ImVec2(0, ImGui::GetContentRegionAvail().y),
@@ -54,7 +57,7 @@ namespace AWayBack
 
             ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
 
-            auto cellSize = ImGui::ImVec2i(_cellWidth, _cellHeight),
+            auto cellSize = _cellSize,
                  gridSize = ImGui::ImVec2i(_texture->GetWidth(), _texture->GetHeight());
 
             ImGui::CheckerBoard(cellSize, gridSize);
@@ -67,10 +70,10 @@ namespace AWayBack
 
             for (int32_t i = _sliceStart; i < _sliceEnd; i++)
             {
-                int32_t x = i % _gridWidth * _cellWidth + cursorScreenPos.x;
-                int32_t y = i / _gridWidth * _cellHeight + cursorScreenPos.y;
+                int32_t x = i % _gridWidth * _cellSize.X + cursorScreenPos.x;
+                int32_t y = i / _gridWidth * _cellSize.Y + cursorScreenPos.y;
 
-                drawList->AddRect(ImVec2(x, y), ImVec2(x + _cellWidth, y + _cellHeight), ImGui::GetColorU32(ImVec4(1.0f, 0.0f, 0.0f, 1.0f)));
+                drawList->AddRect(ImVec2(x, y), ImVec2(x + _cellSize.X, y + _cellSize.Y), ImGui::GetColorU32(ImVec4(1.0f, 0.0f, 0.0f, 1.0f)));
             }
         }
 
@@ -81,7 +84,11 @@ namespace AWayBack
 
     void SpriteEditor::RenderControls()
     {
-        if (!ImGui::Begin("Controls")) return;
+        if (!ImGui::Begin("Controls"))
+        {
+            ImGui::End();
+            return;
+        }
 
         RenderSpriteAtlasHeader();
         RenderSlicingControls();
@@ -110,17 +117,38 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
+        if (_isUniformCellSizeControl)
+        {
+            if (ImGui::DragInt("##Cell size", &_cellSize.X, 1, 1, INT32_MAX))
+            {
+                _cellSize.Y = _cellSize.X;
+
+                CalculateGridSize();
+            }
+        }
+        else if (ImGui::DragInt2("##Cell size", _cellSize.Components, 1, 1, INT32_MAX))
+        {
+            CalculateGridSize();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cell size"))
+        {
+            _isUniformCellSizeControl = !_isUniformCellSizeControl;
+        }
+
         RenderGridSequenceSlicingControls();
 
         if (ImGui::Button("Slice"))
         {
             for (int32_t i = _sliceStart; i < _sliceEnd; i++)
             {
-                int32_t x = i % _gridWidth * _cellWidth;
-                int32_t y = i / _gridWidth * _cellHeight;
+                int32_t x = i % _gridWidth * _cellSize.X;
+                int32_t y = i / _gridWidth * _cellSize.Y;
 
                 auto min = Vector2(x, y);
-                auto max = Vector2(x + _cellWidth, y + _cellHeight);
+                auto max = Vector2(x + _cellSize.X, y + _cellSize.Y);
                 auto name = _spriteAtlas.Name + std::to_string(_spriteAtlas.Sprites.size());
                 Sprite sprite = { name, min, max, Vector2() };
                 _spriteAtlas.Sprites.push_back(sprite);
@@ -132,14 +160,18 @@ namespace AWayBack
     {
         ImGui::DragInt("Slice start", &_sliceStart, 1, 0, _sliceEnd - 1, "%d",
                        _sliceEnd == 1 ? ImGuiSliderFlags_ReadOnly : ImGuiSliderFlags_None);
-        ImGui::DragInt("Slice end", &_sliceEnd, 1, _sliceStart + 1, _gridWidth * _gridHeight);
+        ImGui::DragInt("Slice end", &_sliceEnd, 1, _sliceStart, _gridWidth * _gridHeight);
     }
 
     void SpriteEditor::RenderSprites()
     {
         const int32_t itemSize = 70;
 
-        if (!ImGui::Begin("Sprites")) return;
+        if (!ImGui::Begin("Sprites"))
+        {
+            ImGui::End();
+            return;
+        }
 
         char childTitleBuffer[300] = {0};
         
@@ -184,6 +216,13 @@ namespace AWayBack
         }
 
         ImGui::End();
+    }
+
+    void SpriteEditor::CalculateGridSize()
+    {
+        _gridWidth = _texture->GetWidth() / _cellSize.X;
+        _gridHeight = _texture->GetHeight() / _cellSize.Y;
+        _sliceStart = _sliceEnd = 0;
     }
 
 }

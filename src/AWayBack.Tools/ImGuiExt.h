@@ -26,22 +26,28 @@ namespace ImGui
 
     static void Image(AWayBack::Texture2D& texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1)
     {
-        ImGui::Image((void*) (intptr_t) texture.GetTextureId(), size, uv0, uv1);;
+        ImGui::Image((void*) (intptr_t) texture.GetTextureId(), size, uv0, uv1);
     }
 
-    struct ImVec2i
+    union ImVec2i
     {
-        ImVec2i() { X = Y = 0; }
+        ImVec2i() = default;
+
         ImVec2i(int32_t x, int32_t y)
             : X(x), Y(y)
         {
-            
+        
         }
 
-        int32_t X, Y;
+        struct
+        {
+            int32_t X, Y;
+        };
+
+        int Components[2];
     };
 
-    static void CheckerBoard(ImVec2i cellSize, ImVec2i gridSize)
+    static void CheckerBoard(const ImVec2i& cellSize, const ImVec2i& gridSize)
     {
         const ImVec4 whiteCell = { 0.3f, 0.3f, 0.3f, 1.0f };
         const ImVec4 blackCell = { 0.4f, 0.4f, 0.4f, 1.0f };
@@ -74,7 +80,7 @@ namespace ImGui
         }
     }
 
-    static void Grid(ImVec2 position, ImVec2i cellSize, ImVec2i gridSize)
+    static void Grid(const ImVec2& position, const ImVec2i& cellSize, const ImVec2i& gridSize)
     {
         const ImVec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
