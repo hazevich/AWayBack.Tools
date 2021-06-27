@@ -60,10 +60,19 @@ group "src"
         includedirs 
         { 
             "%{wks.location}/src/AWayBack.Core",
-            "dependencies/imgui"
+            "dependencies/imgui",
+            "dependencies/rapidjson/include"
         }
 
-        links { "AWayBack.Core" }
+        links 
+        { 
+            "AWayBack.Core"
+        }
+
+        defines
+        {
+            "RAPIDJSON_HAS_STDSTRING"
+        }
         
         filter "configurations:Debug"
             defines { "DEBUG" }

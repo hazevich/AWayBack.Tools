@@ -3,6 +3,8 @@
 #include "imgui_internal.h"
 #include "ImGuiExt.h"
 #include "algorithm"
+#include "SpriteAtlasSerializer.h"
+#include "fstream"
 
 namespace AWayBack
 {
@@ -94,6 +96,14 @@ namespace AWayBack
         ImGui::LabelText("Sprite Atlas Name", _spriteAtlas.Name.c_str());
         ImGui::NewLine();
         ImGui::LabelText("Texture name", _spriteAtlas.TextureName.c_str());
+
+        if (ImGui::Button("Save"))
+        {
+            std::ofstream file;
+            file.open(_spriteAtlas.Name + ".atlas");
+            SpriteAtlasSerializer::SerializeToFile(file, _spriteAtlas);
+            file.close();
+        }
     }
 
     void SpriteEditor::RenderSlicingControls()
