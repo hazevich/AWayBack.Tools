@@ -44,7 +44,7 @@ namespace ImGui
             int32_t X, Y;
         };
 
-        int Components[2];
+        int32_t Components[2];
     };
 
     static void CheckerBoard(const ImVec2i& cellSize, const ImVec2i& gridSize)
