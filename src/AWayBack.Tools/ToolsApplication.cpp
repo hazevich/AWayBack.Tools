@@ -2,6 +2,8 @@
 #include "imgui.h"
 #include "ImGuiExt.h"
 
+#include "AWayBack/Utils/FileDialog.h"
+
 namespace AWayBack
 {
     ToolsApplication::~ToolsApplication()
@@ -69,7 +71,18 @@ namespace AWayBack
 
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Open"))
+            if (ImGui::MenuItem("Open..."))
+            {
+                std::optional<std::string> texturePath = FileDialog::OpenFile("A Way Back Sprite Atlas (*.atlas)\0*.png\0");
+
+                if (texturePath)
+                {
+                    delete _newTexture;
+                    _newTexture = Texture2D::FromFile(texturePath.value());
+                }
+            }
+
+            if (ImGui::MenuItem("New"))
             {
                 _openSpriteAtlasModal.IsOpenRequested = true;
             }

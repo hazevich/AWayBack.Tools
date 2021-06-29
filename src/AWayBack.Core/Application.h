@@ -12,7 +12,10 @@ namespace AWayBack
 
         void Run();
 
-        GraphicsDevice& GetGraphicsDevice() { return *_graphicsDevice; }        
+        GraphicsDevice& GetGraphicsDevice() { return *_graphicsDevice; }
+        Window& GetWindow() { return *_window; }
+
+        static Application& GetCurrent() { return *_current; }
     protected:
         virtual void Render() {}
         virtual void Initialize() {}
@@ -22,7 +25,10 @@ namespace AWayBack
         void OnWindowResized(const WindowResizedData& data);
 
     private:
+        static Application* _current;
+
         bool _isRunning = true;
-        GraphicsDevice* _graphicsDevice;
+        GraphicsDevice* _graphicsDevice = nullptr;
+        Window* _window = nullptr;
     };
 }

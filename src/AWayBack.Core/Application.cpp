@@ -11,6 +11,8 @@
 
 namespace AWayBack
 {
+    Application* Application::_current = nullptr;
+
     void Application::Run()
     {
         Window* window = Window::Create("A Way Back Tools", 800, 600);
@@ -19,11 +21,14 @@ namespace AWayBack
         window->Resized += std::bind(&Application::OnWindowResized, this, std::placeholders::_1);
         window->Closed += std::bind(&Application::OnClose, this);
 
-        ImGuiRenderer* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
+        auto* imGuiRenderer = new ImGuiRenderer(window->GetNativeWindow());
         imGuiRenderer->Initialize();
 
         Initialize();
-        
+
+        _window = window;
+        _current = this;
+
         while (_isRunning)
         {
             window->PollEvents();

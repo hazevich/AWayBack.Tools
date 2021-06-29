@@ -15,9 +15,8 @@ namespace AWayBack
             IsOpenRequested = false;
             IsOpen = true;
         }
-        else IsOpen = false;
 
-        if (!ImGui::BeginCenteredModal(Name))
+        if (!ImGui::BeginCenteredModal(Name, &IsOpen))
         {
             return false;
         }
@@ -30,10 +29,10 @@ namespace AWayBack
         {
             if (entry.path().extension() == ".png")
             {
-                fs::path p = entry.path();
-                if (ImGui::Selectable(p.filename().string().c_str(), p == _selectedFile))
+                fs::path path = entry.path();
+                if (ImGui::Selectable(path.filename().string().c_str(), path == _selectedFile))
                 {
-                    _selectedFile = p.string();
+                    _selectedFile = path.string();
                 }
             }
         }
@@ -44,6 +43,7 @@ namespace AWayBack
         {
             ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
+            IsOpen = false;
             return true;
         }
 
