@@ -1,17 +1,12 @@
 #include "ToolsApplication.h"
+
 #include "imgui.h"
-#include "ImGuiExt.h"
 
 #include "AWayBack/Utils/FileDialog.h"
+#include "SpriteAtlasSerializer.h"
 
 namespace AWayBack
 {
-    ToolsApplication::~ToolsApplication()
-    {
-        delete _texture;
-        delete _newTexture;
-    }
-
     void ToolsApplication::Initialize()
     {
         _openSpriteAtlasModal.IsOpenRequested = true;
@@ -19,23 +14,10 @@ namespace AWayBack
 
     void ToolsApplication::Render()
     {
-        UpdateTextures();
         RenderDockSpace();
         RenderMainMenuBar();
         RenderSpriteEditor();
         RenderOpenSpriteAtlasPopup();
-    }
-
-    void ToolsApplication::UpdateTextures()
-    {
-        if (_newTexture)
-        {
-            delete _texture;
-            _texture = _newTexture;
-            _newTexture = nullptr;
-
-            _spriteEditor.SetTexture(_texture);
-        }
     }
 
     void ToolsApplication::RenderDockSpace()
@@ -73,12 +55,11 @@ namespace AWayBack
         {
             if (ImGui::MenuItem("Open..."))
             {
-                std::optional<std::string> texturePath = FileDialog::OpenFile("A Way Back Sprite Atlas (*.atlas)\0*.png\0");
+                std::optional<std::string> atlasPath = FileDialog::OpenFile("A Way Back Sprite Atlas (*.atlas)\0*.atlas\0");
 
-                if (texturePath)
+                if (atlasPath)
                 {
-                    delete _newTexture;
-                    _newTexture = Texture2D::FromFile(texturePath.value());
+                    _spriteEditor.LoadSpriteAtlas(atlasPath.value());
                 }
             }
 
@@ -102,7 +83,7 @@ namespace AWayBack
     {
         if (_openSpriteAtlasModal.Render())
         {
-            _newTexture = Texture2D::FromFile(_openSpriteAtlasModal.GetSelectedFile());
+            _spriteEditor.LoadTexture(_openSpriteAtlasModal.GetSelectedFile());
         }
     }
 }

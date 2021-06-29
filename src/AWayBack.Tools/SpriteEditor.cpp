@@ -8,15 +8,40 @@
 
 namespace AWayBack
 {
-    void SpriteEditor::SetTexture(Texture2D* texture)
+    SpriteEditor::~SpriteEditor()
     {
-        _texture = texture;
-        _spriteAtlas = {_texture->GetName(), _texture->GetName(), std::vector<Sprite>()};
-        CalculateGridSize();
+        delete _newTexture;
+        delete _texture;
+        delete _spriteAtlas;
+    }
+
+    void SpriteEditor::LoadTexture(const std::string& texturePath)
+    {
+        delete _newTexture;
+        _newTexture = Texture2D::FromFile(texturePath);
+
+        delete _spriteAtlas;
+        _spriteAtlas = new SpriteAtlas { _newTexture->GetName(), _newTexture->GetName(), std::vector<Sprite>() };
+    }
+
+    void SpriteEditor::LoadSpriteAtlas(const std::string& spriteAtlasPath)
+    {
+        std::ifstream fileStream;
+        fileStream.open(spriteAtlasPath);
+        std::optional<SpriteAtlas*> spriteAtlas = SpriteAtlasSerializer::DeserializeFromFile(fileStream);
+        if (spriteAtlas)
+        {
+            delete _spriteAtlas;
+            _spriteAtlas = spriteAtlas.value();
+            delete _newTexture;
+            _newTexture = Texture2D::FromFile(_spriteAtlas->TextureName);
+        }
     }
 
     void SpriteEditor::Render()
     {
+        SyncData();
+
         RenderCanvas();
         RenderControls();
         RenderSprites();
@@ -100,15 +125,15 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Sprite atlas", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
-        ImGui::LabelText("Sprite Atlas Name", _spriteAtlas.Name.c_str());
+        ImGui::LabelText("Sprite Atlas Name", _spriteAtlas->Name.c_str());
         ImGui::NewLine();
-        ImGui::LabelText("Texture name", _spriteAtlas.TextureName.c_str());
+        ImGui::LabelText("Texture name", _spriteAtlas->TextureName.c_str());
 
         if (ImGui::Button("Save"))
         {
             std::ofstream file;
-            file.open(_spriteAtlas.Name + ".atlas");
-            SpriteAtlasSerializer::SerializeToFile(file, _spriteAtlas);
+            file.open(_spriteAtlas->Name + ".atlas");
+            SpriteAtlasSerializer::SerializeToFile(file, *_spriteAtlas);
             file.close();
         }
     }
@@ -149,9 +174,9 @@ namespace AWayBack
 
                 auto min = Vector2(x, y);
                 auto max = Vector2(x + _cellSize.X, y + _cellSize.Y);
-                auto name = _spriteAtlas.Name + std::to_string(_spriteAtlas.Sprites.size());
+                auto name = _spriteAtlas->Name + std::to_string(_spriteAtlas->Sprites.size());
                 Sprite sprite = { name, min, max, Vector2() };
-                _spriteAtlas.Sprites.push_back(sprite);
+                _spriteAtlas->Sprites.push_back(sprite);
             }
         }
     }
@@ -175,7 +200,7 @@ namespace AWayBack
 
         char childTitleBuffer[300] = {0};
         
-        for (Sprite& sprite : _spriteAtlas.Sprites)
+        for (Sprite& sprite : _spriteAtlas->Sprites)
         {
 
             snprintf(childTitleBuffer, sizeof childTitleBuffer, "Tile %s", sprite.Name.c_str());
@@ -223,6 +248,21 @@ namespace AWayBack
         _gridWidth = _texture->GetWidth() / _cellSize.X;
         _gridHeight = _texture->GetHeight() / _cellSize.Y;
         _sliceStart = _sliceEnd = 0;
+    }
+
+    void SpriteEditor::SyncData()
+    {
+        if (_newTexture)
+        {
+            delete _texture;
+            _texture = _newTexture;
+            _newTexture = nullptr;
+
+            _sliceStart = 0;
+            _sliceEnd = 0;
+
+            CalculateGridSize();
+        }
     }
 
 }

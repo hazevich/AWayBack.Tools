@@ -36,16 +36,22 @@ namespace AWayBack
     class SpriteEditor
     {
     public:
-        void SetTexture(Texture2D* texture);
+        ~SpriteEditor();
+
+        void LoadTexture(const std::string& texturePath);
+        void LoadSpriteAtlas(const std::string& spriteAtlasPath);
         void Render();
     private:
-        SpriteAtlas _spriteAtlas{};
+        SpriteAtlas* _spriteAtlas = new SpriteAtlas();
+
+        Texture2D* _newTexture = nullptr;
         Texture2D* _texture = nullptr;
 
         int32_t _sliceStart = 0, _sliceEnd = 1;
         int32_t _gridWidth = 0, _gridHeight = 0;
 
-        bool _isUniformCellSizeControl;
+        bool _isUniformCellSizeControl = true;
+
         ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
 
         void RenderCanvas();
@@ -60,5 +66,7 @@ namespace AWayBack
         void RenderSprites();
 
         void CalculateGridSize();
+
+        void SyncData();
     };
 }

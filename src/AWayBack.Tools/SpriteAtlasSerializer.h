@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include <fstream>
+#include <optional>
 
 #include "SpriteEditor.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/ostreamwrapper.h"
+#include "rapidjson/document.h"
 
 namespace AWayBack::SpriteAtlasSerializer
 {
@@ -24,5 +26,20 @@ namespace AWayBack::SpriteAtlasSerializer
         jsonWriter.EndObject();
     }
 
+    inline Vector2 ReadVector2(rapidjson::Value& document, const char* name)
+    {
+        if (!document.HasMember(name) || !document.IsObject()) return Vector2();
+
+        rapidjson::Value& vectorValue = document[name];
+
+        if (!vectorValue.HasMember("X") || !vectorValue["X"].IsFloat()) return Vector2();
+        if (!vectorValue.HasMember("Y") || !vectorValue["Y"].IsFloat()) return Vector2();
+
+        auto vector = Vector2(vectorValue["X"].GetFloat(), vectorValue["Y"].GetFloat());
+
+        return vector;
+    }
+
     void SerializeToFile(std::ofstream& file, SpriteAtlas& spriteAtlas);
+    std::optional<SpriteAtlas*> DeserializeFromFile(std::ifstream& file);
 }
