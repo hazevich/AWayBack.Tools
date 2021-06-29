@@ -63,6 +63,12 @@ namespace AWayBack
                 }
             }
 
+            if (ImGui::MenuItem("Browse"))
+            {
+                std::optional<std::string> folder = FileDialog::OpenFolder();
+                printf(folder.value_or("none").c_str());
+            }
+
             if (ImGui::MenuItem("New"))
             {
                 _openSpriteAtlasModal.IsOpenRequested = true;
