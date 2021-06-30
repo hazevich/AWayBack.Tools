@@ -3,36 +3,10 @@
 
 #include "ImGuiExt.h"
 #include "AWayBack/Graphics/Texture.h"
+#include "SpriteAtlas.h"
 
 namespace AWayBack
 {
-    struct Vector2
-    {
-        Vector2() = default;
-        Vector2(float x, float y)
-            : X(x), Y(y)
-        {
-            
-        }
-
-        float X, Y;
-    };
-
-    struct Sprite
-    {
-        std::string Name;
-        Vector2 Min;
-        Vector2 Max;
-        Vector2 Origin;
-    };
-
-    struct SpriteAtlas
-    {
-        std::string Name;
-        std::string TextureName;
-        std::vector<Sprite> Sprites;
-    };
-
     class SpriteEditor
     {
     public:
@@ -40,9 +14,11 @@ namespace AWayBack
 
         void LoadTexture(const std::string& texturePath);
         void LoadSpriteAtlas(const std::string& spriteAtlasPath);
+        void CreateNewSpriteAtlas();
         void Render();
     private:
         SpriteAtlas* _spriteAtlas = new SpriteAtlas();
+        SpriteAtlas* _newSpriteAtlas = new SpriteAtlas();
 
         Texture2D* _newTexture = nullptr;
         Texture2D* _texture = nullptr;
@@ -51,6 +27,7 @@ namespace AWayBack
         int32_t _gridWidth = 0, _gridHeight = 0;
 
         bool _isUniformCellSizeControl = true;
+        bool _isNewSpriteAtlasRequested = false;
 
         ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
 
@@ -64,6 +41,8 @@ namespace AWayBack
         void RenderGridSequenceSlicingControls();
 
         void RenderSprites();
+
+        void RenderNewSpriteAtlasModal();
 
         void CalculateGridSize();
 

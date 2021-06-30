@@ -15,7 +15,7 @@ namespace AWayBack::FileDialog
     std::optional<std::string> OpenFile(const char* filter)
     {
         OPENFILENAMEA openFileName;
-        CHAR fileNameBuffer[260] = { 0 };
+        CHAR fileNameBuffer[MAX_PATH] = { 0 };
         ZeroMemory(&openFileName, sizeof OPENFILENAMEA);
         openFileName.lStructSize = sizeof OPENFILENAMEA;
         openFileName.hwndOwner = glfwGetWin32Window((GLFWwindow*) Application::GetCurrent().GetWindow().GetNativeWindow());

@@ -2,6 +2,10 @@
 
 #include "imgui.h"
 #include "AWayBack/Graphics/Texture.h"
+#include "SpriteAtlas.h"
+#include "AWayBack/Utils/FileDialog.h"
+
+#include "filesystem"
 
 namespace ImGui
 {
@@ -96,5 +100,74 @@ namespace ImGui
 
             drawList->AddLine(start, end, ImGui::GetColorU32(color));
         }
+    }
+
+    static bool NewSpriteSheetAtlas(AWayBack::SpriteAtlas& spriteAtlas, bool& isOpen)
+    {
+        if (!ImGui::BeginCenteredModal("New spritesheet", &isOpen))
+        {
+            
+            return false;
+        }
+
+        char stringBuffer[_MAX_PATH] = { 0 };
+        strncpy_s(stringBuffer, spriteAtlas.Name.c_str(), sizeof stringBuffer);
+        if (ImGui::InputText("Name", stringBuffer, sizeof stringBuffer))
+        {
+            spriteAtlas.Name = std::string(stringBuffer);
+        }
+
+        memset(stringBuffer, 0, sizeof stringBuffer);
+        strncpy_s(stringBuffer, spriteAtlas.Path.c_str(), sizeof stringBuffer);
+        if (ImGui::InputText("Folder", stringBuffer, sizeof stringBuffer))
+        {
+            spriteAtlas.Path = std::string(stringBuffer);
+        }
+
+        if (ImGui::Button("..."))
+        {
+            std::optional<std::string> folderPath = AWayBack::FileDialog::OpenFolder();
+
+            if (folderPath)
+            {
+                spriteAtlas.Path = folderPath.value();
+            }
+        }
+
+        memset(stringBuffer, 0, sizeof stringBuffer);
+        strncpy_s(stringBuffer, spriteAtlas.TextureName.c_str(), sizeof stringBuffer);
+        if (ImGui::InputText("Texture", stringBuffer, sizeof stringBuffer))
+        {
+            spriteAtlas.TextureName = std::string(stringBuffer);
+        }
+
+        if (ImGui::Button("OK"))
+        {
+            std::filesystem::path textureName = std::filesystem::path(spriteAtlas.TextureName).filename();
+            std::filesystem::path destinationTexturePath = spriteAtlas.Path / textureName;
+            try 
+            {
+                std::filesystem::copy(spriteAtlas.TextureName, destinationTexturePath.string(), std::filesystem::copy_options::overwrite_existing);
+            }
+            catch (const std::filesystem::filesystem_error& e)
+            {
+                printf(e.what());
+                printf("\n");
+                ImGui::EndPopup();
+                return false;
+            }
+
+
+            spriteAtlas.TextureName = textureName.string();
+            
+            ImGui::CloseCurrentPopup();
+            ImGui::EndPopup();
+
+            return true;
+        }
+
+        ImGui::EndPopup();
+
+        return false;
     }
 }

@@ -71,7 +71,7 @@ namespace AWayBack
 
             if (ImGui::MenuItem("New"))
             {
-                _openSpriteAtlasModal.IsOpenRequested = true;
+                _spriteEditor.CreateNewSpriteAtlas();
             }
 
             ImGui::EndMenu();

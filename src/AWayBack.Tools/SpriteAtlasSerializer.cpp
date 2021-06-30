@@ -13,7 +13,7 @@ namespace AWayBack::SpriteAtlasSerializer
         jsonWriter.StartObject();
 
         jsonWriter.String("TextureName");
-        jsonWriter.String(spriteAtlas.Name);
+        jsonWriter.String(spriteAtlas.TextureName);
 
         jsonWriter.String("Sprites");
         jsonWriter.StartArray();

@@ -21,7 +21,13 @@ namespace AWayBack
         _newTexture = Texture2D::FromFile(texturePath);
 
         delete _spriteAtlas;
-        _spriteAtlas = new SpriteAtlas { _newTexture->GetName(), _newTexture->GetName(), std::vector<Sprite>() };
+        _spriteAtlas = new SpriteAtlas { "", _newTexture->GetName(), _newTexture->GetName(), std::vector<Sprite>() };
+    }
+
+    void SpriteEditor::CreateNewSpriteAtlas()
+    {
+        _isNewSpriteAtlasRequested = true;
+        _newSpriteAtlas = new SpriteAtlas();
     }
 
     void SpriteEditor::LoadSpriteAtlas(const std::string& spriteAtlasPath)
@@ -33,6 +39,12 @@ namespace AWayBack
         {
             delete _spriteAtlas;
             _spriteAtlas = spriteAtlas.value();
+            std::filesystem::path path = spriteAtlasPath;
+            auto spriteAtlasName = path.filename().string();
+            auto folderPath = path.parent_path().string();
+            _spriteAtlas->Path = folderPath;
+            _spriteAtlas->Name = spriteAtlasName;
+
             delete _newTexture;
             _newTexture = Texture2D::FromFile(_spriteAtlas->TextureName);
         }
@@ -40,11 +52,18 @@ namespace AWayBack
 
     void SpriteEditor::Render()
     {
+        if (_isNewSpriteAtlasRequested)
+        {
+            ImGui::OpenPopup("New spritesheet");
+            _isNewSpriteAtlasRequested = false;
+        }
+
         SyncData();
 
         RenderCanvas();
         RenderControls();
         RenderSprites();
+        RenderNewSpriteAtlasModal();
     }
 
     void SpriteEditor::RenderCanvas()
@@ -241,6 +260,20 @@ namespace AWayBack
         }
 
         ImGui::End();
+    }
+
+    void SpriteEditor::RenderNewSpriteAtlasModal()
+    {
+        bool isOpen = true;
+        if (ImGui::NewSpriteSheetAtlas(*_newSpriteAtlas, isOpen))
+        {
+            _spriteAtlas = _newSpriteAtlas;
+
+            std::filesystem::path texturePath = std::filesystem::path(_spriteAtlas->Path) / std::filesystem::path(_spriteAtlas->TextureName);
+
+            _newTexture = Texture2D::FromFile(texturePath.string());
+            _newSpriteAtlas = nullptr;
+        }
     }
 
     void SpriteEditor::CalculateGridSize()
