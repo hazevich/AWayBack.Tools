@@ -102,6 +102,12 @@ namespace ImGui
         }
     }
 
+    static void Border(const ImVec2& cursorScreenPos, const ImVec2& size, ImU32 color)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+        drawList->AddRect(cursorScreenPos, ImVec2(cursorScreenPos.x + size.x, cursorScreenPos.y + size.y), color);
+    }
+
     static bool NewSpriteAtlas(AWayBack::SpriteAtlas& spriteAtlas, bool& isOpen)
     {
         namespace fs = std::filesystem;

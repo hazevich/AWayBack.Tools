@@ -65,6 +65,7 @@ namespace AWayBack
         RenderCanvas();
         RenderControls();
         RenderSprites();
+        RenderSelectedSprite();
         RenderNewSpriteAtlasModal();
     }
 
@@ -120,6 +121,21 @@ namespace AWayBack
                 int32_t y = i / _gridWidth * _cellSize.Y + cursorScreenPos.y;
 
                 drawList->AddRect(ImVec2(x, y), ImVec2(x + _cellSize.X, y + _cellSize.Y), ImGui::GetColorU32(ImVec4(1.0f, 0.0f, 0.0f, 1.0f)));
+            }
+
+            if (_selectedSpriteId)
+            {
+                int32_t value = _selectedSpriteId.value();
+                if (_spriteAtlas->Sprites.size() > value)
+                {
+                    Sprite& sprite = _spriteAtlas->Sprites[value];
+
+                    drawList->AddRectFilled(
+                        ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y), 
+                        ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y), 
+                        ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
+                    );
+                }
             }
         }
 
@@ -222,10 +238,10 @@ namespace AWayBack
         }
 
         char childTitleBuffer[300] = {0};
-        
-        for (Sprite& sprite : _spriteAtlas->Sprites)
-        {
 
+        for (int32_t i = 0; i < _spriteAtlas->Sprites.size(); i++)
+        {
+            Sprite& sprite = _spriteAtlas->Sprites[i];
             snprintf(childTitleBuffer, sizeof childTitleBuffer, "Tile %s", sprite.Name.c_str());
             ImGui::BeginChild(childTitleBuffer, ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
             
@@ -260,6 +276,12 @@ namespace AWayBack
             
             ImGui::Text(sprite.Name.c_str());
 
+            if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows))
+            {
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                    _selectedSpriteId = i;
+            }
+
             ImGui::EndChild();
         }
 
@@ -278,6 +300,41 @@ namespace AWayBack
             _newTexture = Texture2D::FromFile(texturePath.string());
             _newSpriteAtlas = nullptr;
         }
+    }
+
+    void SpriteEditor::RenderSelectedSprite()
+    {
+        if (!ImGui::Begin("Selection"))
+        {
+            ImGui::End();
+            return;
+        }
+
+        ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
+        
+        if (_selectedSpriteId)
+        {
+            Sprite& sprite = _spriteAtlas->Sprites[_selectedSpriteId.value()];
+            Vector2 spriteSize =  sprite.Max - sprite.Min;
+            auto spritePosition = ImVec2((contentRegionAvail.x - spriteSize.X) * 0.5f, (contentRegionAvail.y - spriteSize.Y) * 0.5f);
+            ImGui::SetCursorPos(spritePosition);
+
+            ImGui::CheckerBoard(_cellSize, ImGui::ImVec2i(spriteSize.X, spriteSize.Y));
+
+            auto spriteuv0 = ImVec2(sprite.Min.X / _texture->GetWidth(), sprite.Min.Y / _texture->GetHeight());
+            auto spriteuv1 = ImVec2(sprite.Max.X / _texture->GetWidth(), sprite.Max.Y / _texture->GetHeight());
+            ImVec2 imageScreenPos = ImGui::GetCursorScreenPos();
+            ImGui::Image(*_texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
+
+            const float borderOffset = 5;
+            ImGui::Border(ImVec2(imageScreenPos.x - borderOffset, imageScreenPos.y - borderOffset), ImVec2(spriteSize.X + borderOffset * 2, spriteSize.Y + borderOffset * 2), ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
+        }
+        else
+        {
+            ImGui::CheckerBoard(_cellSize, ImGui::ImVec2i(contentRegionAvail.x, contentRegionAvail.y));            
+        }
+        
+        ImGui::End();
     }
 
     void SpriteEditor::CalculateGridSize()

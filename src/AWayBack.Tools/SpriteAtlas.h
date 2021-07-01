@@ -14,6 +14,16 @@ namespace AWayBack
         }
 
         float X, Y;
+
+        Vector2 operator+(Vector2 other)
+        {
+            return Vector2(X + other.X, Y + other.Y);
+        }
+
+        Vector2 operator-(Vector2 other)
+        {
+            return Vector2(X - other.X, Y - other.Y);
+        }
     };
 
     struct Sprite

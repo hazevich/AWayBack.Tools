@@ -18,7 +18,7 @@ namespace AWayBack
         void Render();
     private:
         SpriteAtlas* _spriteAtlas = new SpriteAtlas();
-        SpriteAtlas* _newSpriteAtlas = new SpriteAtlas();
+        SpriteAtlas* _newSpriteAtlas = nullptr;
 
         Texture2D* _newTexture = nullptr;
         Texture2D* _texture = nullptr;
@@ -28,6 +28,8 @@ namespace AWayBack
 
         bool _isUniformCellSizeControl = true;
         bool _isNewSpriteAtlasRequested = false;
+
+        std::optional<int32_t> _selectedSpriteId = std::nullopt;
 
         ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
 
@@ -43,6 +45,8 @@ namespace AWayBack
         void RenderSprites();
 
         void RenderNewSpriteAtlasModal();
+
+        void RenderSelectedSprite();
 
         void CalculateGridSize();
 
