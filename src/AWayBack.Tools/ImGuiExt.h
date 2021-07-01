@@ -145,7 +145,7 @@ namespace ImGui
             spriteAtlas.TextureName = std::string(stringBuffer);
         }
 
-        ImGui::PushID("TextureSelect");
+        ImGui::PushID("BrowseTexture");
 
         if (ImGui::Button("..."))
         {
