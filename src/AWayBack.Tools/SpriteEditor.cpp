@@ -6,6 +6,8 @@
 #include "SpriteAtlasSerializer.h"
 #include "fstream"
 
+namespace fs = std::filesystem;
+
 namespace AWayBack
 {
     SpriteEditor::~SpriteEditor()
@@ -39,7 +41,7 @@ namespace AWayBack
         {
             delete _spriteAtlas;
             _spriteAtlas = spriteAtlas.value();
-            std::filesystem::path path = spriteAtlasPath;
+            fs::path path = spriteAtlasPath;
             auto spriteAtlasName = path.filename().string();
             auto folderPath = path.parent_path().string();
             _spriteAtlas->Path = folderPath;
@@ -150,8 +152,10 @@ namespace AWayBack
 
         if (ImGui::Button("Save"))
         {
+            auto spriteAtlasPath = fs::path(_spriteAtlas->Path) / fs::path(_spriteAtlas->Name);
+
             std::ofstream file;
-            file.open(_spriteAtlas->Name + ".atlas");
+            file.open(spriteAtlasPath);
             SpriteAtlasSerializer::SerializeToFile(file, *_spriteAtlas);
             file.close();
         }
@@ -265,11 +269,11 @@ namespace AWayBack
     void SpriteEditor::RenderNewSpriteAtlasModal()
     {
         bool isOpen = true;
-        if (ImGui::NewSpriteSheetAtlas(*_newSpriteAtlas, isOpen))
+        if (ImGui::NewSpriteAtlas(*_newSpriteAtlas, isOpen))
         {
             _spriteAtlas = _newSpriteAtlas;
 
-            std::filesystem::path texturePath = std::filesystem::path(_spriteAtlas->Path) / std::filesystem::path(_spriteAtlas->TextureName);
+            auto texturePath = fs::path(_spriteAtlas->Path) / fs::path(_spriteAtlas->TextureName);
 
             _newTexture = Texture2D::FromFile(texturePath.string());
             _newSpriteAtlas = nullptr;
