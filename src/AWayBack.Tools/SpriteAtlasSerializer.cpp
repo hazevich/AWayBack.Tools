@@ -37,15 +37,15 @@ namespace AWayBack::SpriteAtlasSerializer
         jsonWriter.EndObject();
     }
 
-    std::optional<SpriteAtlas*> DeserializeFromFile(std::ifstream& file)
+    SpriteAtlas* DeserializeFromFile(std::ifstream& file)
     {
         rapidjson::IStreamWrapper fileStream(file);
         rapidjson::Document document;
         document.ParseStream(fileStream);
 
-        if (!document.IsObject()) return std::nullopt;
-        if (!document.HasMember("TextureName")) return std::nullopt;
-        if (!document.HasMember("Sprites")) return std::nullopt;
+        if (!document.IsObject()) return nullptr;
+        if (!document.HasMember("TextureName")) return nullptr;
+        if (!document.HasMember("Sprites")) return nullptr;
 
         auto* spriteAtlas = new SpriteAtlas();
 
@@ -53,7 +53,7 @@ namespace AWayBack::SpriteAtlasSerializer
 
         rapidjson::Value& spritesArray = document["Sprites"];
 
-        if (!spritesArray.IsArray()) return std::nullopt;
+        if (!spritesArray.IsArray()) return nullptr;
         
         spriteAtlas->Sprites = std::vector<Sprite>();
         

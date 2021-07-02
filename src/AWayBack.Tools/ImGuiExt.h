@@ -108,7 +108,7 @@ namespace ImGui
         drawList->AddRect(cursorScreenPos, ImVec2(cursorScreenPos.x + size.x, cursorScreenPos.y + size.y), color);
     }
 
-    static bool NewSpriteAtlas(AWayBack::SpriteAtlas& spriteAtlas, bool& isOpen)
+    static bool NewSpriteAtlas(AWayBack::SpriteAtlasData& spriteAtlas, bool& isOpen)
     {
         namespace fs = std::filesystem;
 
@@ -126,10 +126,10 @@ namespace ImGui
         }
 
         memset(stringBuffer, 0, sizeof stringBuffer);
-        strncpy_s(stringBuffer, spriteAtlas.Path.c_str(), sizeof stringBuffer);
+        strncpy_s(stringBuffer, spriteAtlas.Folder.c_str(), sizeof stringBuffer);
         if (ImGui::InputText("Folder", stringBuffer, sizeof stringBuffer))
         {
-            spriteAtlas.Path = std::string(stringBuffer);
+            spriteAtlas.Folder = std::string(stringBuffer);
         }
 
         if (ImGui::Button("..."))
@@ -138,17 +138,17 @@ namespace ImGui
 
             if (folderPath)
             {
-                spriteAtlas.Path = folderPath.value();
+                spriteAtlas.Folder = folderPath.value();
             }
         }
 
         ImGui::NewLine();
 
         memset(stringBuffer, 0, sizeof stringBuffer);
-        strncpy_s(stringBuffer, spriteAtlas.TextureName.c_str(), sizeof stringBuffer);
+        strncpy_s(stringBuffer, spriteAtlas.TexturePath.c_str(), sizeof stringBuffer);
         if (ImGui::InputText("Texture", stringBuffer, sizeof stringBuffer))
         {
-            spriteAtlas.TextureName = std::string(stringBuffer);
+            spriteAtlas.TexturePath = std::string(stringBuffer);
         }
 
         ImGui::PushID("BrowseTexture");
@@ -159,7 +159,7 @@ namespace ImGui
 
             if (texturePath)
             {
-                spriteAtlas.TextureName = texturePath.value();
+                spriteAtlas.TexturePath = texturePath.value();
             }
         }
 
@@ -167,27 +167,6 @@ namespace ImGui
 
         if (ImGui::Button("OK"))
         {
-            auto textureName = fs::path(spriteAtlas.TextureName).filename();
-            fs::path destinationTexturePath = spriteAtlas.Path / textureName;
-
-            if (destinationTexturePath != spriteAtlas.TextureName)
-            {
-                try 
-                {
-                    fs::copy(spriteAtlas.TextureName, destinationTexturePath.string(), fs::copy_options::overwrite_existing);
-                }
-                catch (const std::filesystem::filesystem_error& e)
-                {
-                    printf(e.what());
-                    printf("\n");
-                    ImGui::EndPopup();
-                    return false;
-                }
-            }
-
-            spriteAtlas.TextureName = textureName.string();
-            spriteAtlas.Name += ".atlas";
-            
             ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
 

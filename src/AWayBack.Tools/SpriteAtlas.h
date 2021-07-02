@@ -36,9 +36,16 @@ namespace AWayBack
 
     struct SpriteAtlas
     {
-        std::string Path;
+        std::string Folder;
         std::string Name;
         std::string TextureName;
         std::vector<Sprite> Sprites;
+    };
+
+    struct SpriteAtlasData
+    {
+        std::string Name;
+        std::string Folder;
+        std::string TexturePath;
     };
 }

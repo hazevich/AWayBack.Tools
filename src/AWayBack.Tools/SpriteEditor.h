@@ -4,6 +4,7 @@
 #include "ImGuiExt.h"
 #include "AWayBack/Graphics/Texture.h"
 #include "SpriteAtlas.h"
+#include "SpriteEditorController.h"
 
 namespace AWayBack
 {
@@ -17,21 +18,12 @@ namespace AWayBack
         void CreateNewSpriteAtlas();
         void Render();
     private:
-        SpriteAtlas* _spriteAtlas = new SpriteAtlas();
-        SpriteAtlas* _newSpriteAtlas = nullptr;
+        SpriteEditorController _controller;
 
-        Texture2D* _newTexture = nullptr;
-        Texture2D* _texture = nullptr;
-
-        int32_t _sliceStart = 0, _sliceEnd = 1;
-        int32_t _gridWidth = 0, _gridHeight = 0;
+        bool _isNewSpriteAtlasRequested;
+        SpriteAtlasData _spriteAtlasData;
 
         bool _isUniformCellSizeControl = true;
-        bool _isNewSpriteAtlasRequested = false;
-
-        std::optional<int32_t> _selectedSpriteId = std::nullopt;
-
-        ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
 
         void RenderCanvas();
 
@@ -47,9 +39,5 @@ namespace AWayBack
         void RenderNewSpriteAtlasModal();
 
         void RenderSelectedSprite();
-
-        void CalculateGridSize();
-
-        void SyncData();
     };
 }

@@ -41,5 +41,5 @@ namespace AWayBack::SpriteAtlasSerializer
     }
 
     void SerializeToFile(std::ofstream& file, SpriteAtlas& spriteAtlas);
-    std::optional<SpriteAtlas*> DeserializeFromFile(std::ifstream& file);
+    SpriteAtlas* DeserializeFromFile(std::ifstream& file);
 }
