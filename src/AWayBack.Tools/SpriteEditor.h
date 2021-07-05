@@ -26,6 +26,10 @@ namespace AWayBack
         bool _isUniformCellSizeControl = true;
 
         void RenderCanvas();
+        void RenderSelectedRegions(ImVec2 cursorScreenPos);
+        void RenderGridSequence(ImVec2 cursorScreenPos);
+        void RenderGridSelection(ImVec2 cursosScreenPos);
+        void RenderSelectedSpriteRegion(ImVec2 cursorScreenPos);
 
         void RenderControls();
 

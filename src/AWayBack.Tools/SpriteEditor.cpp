@@ -4,9 +4,6 @@
 #include "ImGuiExt.h"
 #include "algorithm"
 #include "SpriteAtlasSerializer.h"
-#include "fstream"
-
-namespace fs = std::filesystem;
 
 namespace AWayBack
 {
@@ -83,45 +80,103 @@ namespace AWayBack
             ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
 
             ImGui::ImVec2i cellSize = _controller.GetCellSize();
-            ImGui::ImVec2i gridSize = ImGui::ImVec2i(texture->GetWidth(), texture->GetHeight());
+            ImGui::ImVec2i textureSize = ImGui::ImVec2i(texture->GetWidth(), texture->GetHeight());
 
-            ImGui::CheckerBoard(cellSize, gridSize);
+            ImGui::CheckerBoard(cellSize, textureSize);
 
             ImGui::Image(*texture);
 
-            ImGui::Grid(cursorScreenPos, cellSize, gridSize);
-
-            ImDrawList* drawList = ImGui::GetWindowDrawList();
-
-            for (int32_t i = _controller.SliceStart; i < _controller.SliceEnd; i++)
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
             {
-                int32_t x = i % _controller.GridWidth * cellSize.X + cursorScreenPos.x;
-                int32_t y = i / _controller.GridWidth * cellSize.Y + cursorScreenPos.y;
+                ImVec2 mousePosition = ImGui::GetMousePos() - cursorScreenPos;
+                int32_t cell = GetCellFromPosition(mousePosition, cellSize, _controller.GridWidth);
 
-                drawList->AddRect(ImVec2(x, y), ImVec2(x + cellSize.X, y + cellSize.Y),
-                                  ImGui::GetColorU32(ImVec4(1.0f, 0.0f, 0.0f, 1.0f)));
-            }
-
-            if (_controller.SelectedSpriteId)
-            {
-                int32_t value = _controller.SelectedSpriteId.value();
-                SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
-                if (spriteAtlas.Sprites.size() > value)
+                if (std::find(_controller.SelectedCells.begin(), _controller.SelectedCells.end(), cell) == _controller.SelectedCells.end())
                 {
-                    Sprite& sprite = spriteAtlas.Sprites[value];
-
-                    drawList->AddRectFilled(
-                        ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y),
-                        ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y),
-                        ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
-                    );
+                    _controller.SelectedCells.push_back(cell);
                 }
             }
+
+            ImGui::Grid(cursorScreenPos, cellSize, textureSize);
+
+            RenderSelectedRegions(cursorScreenPos);
+            RenderSelectedSpriteRegion(cursorScreenPos);
         }
 
         ImGui::EndChild();
 
         ImGui::End();
+    }
+
+    void SpriteEditor::RenderSelectedRegions(ImVec2 cursorScreenPos)
+    {
+        switch (_controller.SlicingType)
+        {
+            case SlicingType::GridSequence:
+            {
+                RenderGridSequence(cursorScreenPos);
+                break;
+            }
+            case SlicingType::GridSelection:
+            {
+                RenderGridSelection(cursorScreenPos);
+                break;
+            }
+        }
+    }
+
+    void SpriteEditor::RenderSelectedSpriteRegion(ImVec2 cursorScreenPos)
+    {
+        if (_controller.SelectedSpriteId)
+        {
+            int32_t value = _controller.SelectedSpriteId.value();
+            SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
+            if (spriteAtlas.Sprites.size() > value)
+            {
+                Sprite& sprite = spriteAtlas.Sprites[value];
+
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                drawList->AddRectFilled(
+                    ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y),
+                    ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y),
+                    ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
+                );
+            }
+        }
+    }
+
+    void RenderSelectedCell(ImDrawList* drawList, int32_t cellIndex, int32_t gridWidth, ImGui::ImVec2i cellSize, ImVec2 cursorPosition)
+    {
+        ImVec2 relativePosition = GetPositonFromCell(cellIndex, cellSize, gridWidth);
+        float x = relativePosition.x + cursorPosition.x;
+        float y = relativePosition.y + cursorPosition.y;
+
+        drawList->AddRect(ImVec2(x, y), ImVec2(x + cellSize.X, y + cellSize.Y),ImGui::GetColorU32({1.0f, 0.0f, 0.0f, 1.0f}));
+    }
+
+    void SpriteEditor::RenderGridSequence(ImVec2 cursorScreenPos)
+    {
+        ImGui::ImVec2i cellSize = _controller.GetCellSize();
+        
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        for (int32_t i = _controller.SliceStart; i < _controller.SliceEnd; i++)
+        {
+            RenderSelectedCell(drawList, i, _controller.GridWidth, cellSize, cursorScreenPos);
+        }
+    }
+
+    void SpriteEditor::RenderGridSelection(ImVec2 cursosScreenPos)
+    {
+        ImGui::ImVec2i cellSize = _controller.GetCellSize();
+        
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        for (int32_t &cell : _controller.SelectedCells)
+        {
+            RenderSelectedCell(drawList, cell, _controller.GridWidth, cellSize, cursosScreenPos);
+        }
     }
 
     void SpriteEditor::RenderControls()
@@ -158,6 +213,12 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
+        auto slicingTypeInt = (int32_t) _controller.SlicingType;
+        if (ImGui::Combo("Slicing type", &slicingTypeInt, "Grid sequence\0Grid selection\0Freehand"))
+        {
+            _controller.SlicingType = (SlicingType) slicingTypeInt;
+        }
+
         ImGui::ImVec2i cellSize = _controller.GetCellSize();
 
         if (_isUniformCellSizeControl)
@@ -181,7 +242,8 @@ namespace AWayBack
             _isUniformCellSizeControl = !_isUniformCellSizeControl;
         }
 
-        RenderGridSequenceSlicingControls();
+        if (_controller.SlicingType == SlicingType::GridSequence)
+            RenderGridSequenceSlicingControls();
 
         if (ImGui::Button("Slice"))
         {

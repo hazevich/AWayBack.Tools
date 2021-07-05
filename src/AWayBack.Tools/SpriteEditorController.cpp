@@ -29,6 +29,8 @@ namespace AWayBack
 
             delete _texture;
             _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
+
+            CalculateGridSize();
         }
     }
 
@@ -61,21 +63,66 @@ namespace AWayBack
 
         delete _texture;
         _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
+
+        CalculateGridSize();
     }
 
     void SpriteEditorController::Slice()
     {
+        switch(SlicingType)
+        {
+            case SlicingType::GridSequence:
+            {
+                SliceGridSequence();
+                break;
+            }
+            case SlicingType::GridSelection:
+            {
+                SliceGridSelection();
+                break;
+            }
+            case SlicingType::Freehand:
+            {
+                SliceFreehand();
+                break;
+            }
+        }
+    }
+
+    void SliceSprite(SpriteAtlas& spriteAtlas, int32_t cell, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    {
+        ImVec2 position = GetPositonFromCell(cell, cellSize, gridWidth);
+
+        auto min = Vector2(position.x, position.y);
+        auto max = Vector2(position.x + cellSize.X, position.y + cellSize.Y);
+        auto name = spriteAtlas.Name + std::to_string(spriteAtlas.Sprites.size());
+        Sprite sprite = {name, min, max, Vector2()};
+        spriteAtlas.Sprites.push_back(sprite);
+    }
+
+    void SpriteEditorController::SliceGridSequence()
+    {
         for (int32_t i = SliceStart; i < SliceEnd; i++)
         {
-            int32_t x = i % GridWidth * _cellSize.X;
-            int32_t y = i / GridWidth * _cellSize.Y;
-
-            auto min = Vector2(x, y);
-            auto max = Vector2(x + _cellSize.X, y + _cellSize.Y);
-            auto name = _spriteAtlas->Name + std::to_string(_spriteAtlas->Sprites.size());
-            Sprite sprite = {name, min, max, Vector2()};
-            _spriteAtlas->Sprites.push_back(sprite);
+            SliceSprite(*_spriteAtlas, i, _cellSize, GridWidth);
         }
+
+        SliceStart = SliceEnd = 0;
+    }
+
+    void SpriteEditorController::SliceGridSelection()
+    {
+        for (int32_t i : SelectedCells)
+        {
+            SliceSprite(*_spriteAtlas, i, _cellSize, GridWidth);
+        }
+
+        SelectedCells.clear();
+    }
+
+    void SpriteEditorController::SliceFreehand()
+    {
+        
     }
 
     void SpriteEditorController::Save()
@@ -102,4 +149,19 @@ namespace AWayBack
         GridHeight = _texture->GetHeight() / _cellSize.Y;
     }
 
+    int32_t GetCellFromPosition(ImVec2 position, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    {
+        int32_t cellX = (int32_t) position.x / cellSize.X;
+        int32_t cellY = (int32_t) position.y / cellSize.Y;
+
+        return cellY * gridWidth + cellX;   
+    }
+
+    ImVec2 GetPositonFromCell(int32_t cell, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    {
+        int32_t x = cell % gridWidth * cellSize.X;
+        int32_t y = cell / gridWidth * cellSize.Y;
+
+        return ImVec2(x, y);
+    }
 }

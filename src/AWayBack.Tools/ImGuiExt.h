@@ -7,6 +7,11 @@
 
 #include "filesystem"
 
+inline ImVec2 operator-(const ImVec2& left, const ImVec2& right)
+{
+    return ImVec2(left.x - right.x, left.y - right.y);
+}
+
 namespace ImGui
 {
     static bool BeginCenteredModal(const char* name, bool* isOpen, ImGuiWindowFlags flags = ImGuiBackendFlags_None)
@@ -44,7 +49,7 @@ namespace ImGui
         int32_t Components[2];
     };
 
-    static void CheckerBoard(const ImVec2i& cellSize, const ImVec2i& gridSize)
+    static void CheckerBoard(const ImVec2i& cellSize, const ImVec2i& size)
     {
         const ImVec4 whiteCell = { 0.3f, 0.3f, 0.3f, 1.0f };
         const ImVec4 blackCell = { 0.4f, 0.4f, 0.4f, 1.0f };
@@ -54,11 +59,11 @@ namespace ImGui
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         auto isColorChange = false;
 
-        auto gridMax = ImVec2(position.x + gridSize.X, position.y + gridSize.Y);
+        auto gridMax = ImVec2(position.x + size.X, position.y + size.Y);
 
-        for (int32_t y = 0; y < gridSize.Y; y += cellSize.Y)
+        for (int32_t y = 0; y < size.Y; y += cellSize.Y)
         {
-            for (int32_t x = 0; x < gridSize.X; x += cellSize.X)
+            for (int32_t x = 0; x < size.X; x += cellSize.X)
             {
                 auto cellMin = ImVec2(x + position.x, y + position.y);
                 auto cellMax = ImVec2(cellMin.x + cellSize.X, cellMin.y + cellSize.Y);
@@ -77,15 +82,15 @@ namespace ImGui
         }
     }
 
-    static void Grid(const ImVec2& position, const ImVec2i& cellSize, const ImVec2i& gridSize)
+    static void Grid(const ImVec2& position, const ImVec2i& cellSize, const ImVec2i& size)
     {
         const ImVec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-        auto gridMax = ImVec2(position.x + gridSize.X, position.y + gridSize.Y);
+        auto gridMax = ImVec2(position.x + size.X, position.y + size.Y);
 
-        for (int32_t y = 0; y < gridSize.Y; y += cellSize.Y)
+        for (int32_t y = 0; y < size.Y; y += cellSize.Y)
         {
             ImVec2 start = ImVec2(position.x, position.y + y);
             ImVec2 end = ImVec2(gridMax.x, position.y + y);
@@ -93,7 +98,7 @@ namespace ImGui
             drawList->AddLine(start, end, ImGui::GetColorU32(color));
         }
 
-        for (int32_t x = 0; x < gridSize.X; x += cellSize.X)
+        for (int32_t x = 0; x < size.X; x += cellSize.X)
         {
             ImVec2 start = ImVec2(position.x + x, position.y);
             ImVec2 end = ImVec2(position.x + x, gridMax.y);
