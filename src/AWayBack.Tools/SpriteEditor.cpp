@@ -96,6 +96,18 @@ namespace AWayBack
                     _controller.SelectedCells.push_back(cell);
                 }
             }
+            else if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+            {
+                ImVec2 mousePosition = ImGui::GetMousePos() - cursorScreenPos;
+                int32_t cell = GetCellFromPosition(mousePosition, cellSize, _controller.GridWidth);
+
+                auto iterator = std::find(_controller.SelectedCells.begin(), _controller.SelectedCells.end(), cell);
+
+                if (iterator != _controller.SelectedCells.end())
+                {
+                    _controller.SelectedCells.erase(iterator);
+                }
+            }
 
             ImGui::Grid(cursorScreenPos, cellSize, textureSize);
 
