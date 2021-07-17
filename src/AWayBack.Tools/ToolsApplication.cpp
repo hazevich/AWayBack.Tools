@@ -28,7 +28,6 @@ namespace AWayBack
         _controls.Render();
         _sprites.Render();
         _selectedSprite.Render();
-
     }
 
     void ToolsApplication::RenderDockSpace()

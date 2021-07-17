@@ -21,6 +21,12 @@ namespace AWayBack
         {
             Sprite& sprite = spriteAtlas.Sprites[i];
             snprintf(childTitleBuffer, sizeof childTitleBuffer, "Tile %s", sprite.Name.c_str());
+
+            if (i == _controller.SelectedSpriteId)
+            {
+                ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(46, 111, 230, 255));
+            }
+
             ImGui::BeginChild(childTitleBuffer, ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
@@ -55,6 +61,11 @@ namespace AWayBack
 
             ImGui::Text(sprite.Name.c_str());
 
+            if (i == _controller.SelectedSpriteId)
+            {
+                ImGui::PopStyleColor();
+            }
+
             if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows))
             {
                 if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
@@ -62,6 +73,7 @@ namespace AWayBack
             }
 
             ImGui::EndChild();
+
         }
 
         ImGui::End();
