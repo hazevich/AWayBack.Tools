@@ -59,7 +59,8 @@ group "src"
 
         includedirs 
         { 
-            "%{wks.location}/src/AWayBack.Core",
+            "src/AWayBack.Tools",
+            "src/AWayBack.Core",
             "dependencies/imgui",
             "dependencies/rapidjson/include"
         }

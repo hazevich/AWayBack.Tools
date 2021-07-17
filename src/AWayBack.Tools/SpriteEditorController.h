@@ -15,6 +15,11 @@ namespace AWayBack
         Freehand = 2
     };
 
+    struct SelectedRegion
+    {
+        ImVec2 Min, Max;
+    };
+
     class SpriteEditorController
     {
     public:
@@ -28,6 +33,8 @@ namespace AWayBack
         SlicingType SlicingType;
 
         std::vector<int32_t> SelectedCells = std::vector<int32_t>();
+
+        SelectedRegion SelectedRegion;
 
         ImGui::ImVec2i GetCellSize() { return _cellSize; }
 

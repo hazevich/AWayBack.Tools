@@ -3,7 +3,7 @@
 #include <fstream>
 #include <optional>
 
-#include "SpriteEditor.h"
+#include "SpriteAtlas.h"
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/ostreamwrapper.h"
 #include "rapidjson/document.h"

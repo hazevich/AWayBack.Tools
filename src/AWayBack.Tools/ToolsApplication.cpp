@@ -7,17 +7,28 @@
 
 namespace AWayBack
 {
-    void ToolsApplication::Initialize()
+    ToolsApplication::ToolsApplication()
+        : _canvas(_spriteEditorController),
+          _controls(_spriteEditorController),
+          _sprites(_spriteEditorController),
+          _selectedSprite(_spriteEditorController),
+          _newSpriteAtlasModal(_spriteEditorController)
     {
-        _openSpriteAtlasModal.IsOpenRequested = true;
+        
     }
 
     void ToolsApplication::Render()
     {
         RenderDockSpace();
         RenderMainMenuBar();
-        RenderSpriteEditor();
-        RenderOpenSpriteAtlasPopup();
+        
+        _newSpriteAtlasModal.Render();
+
+        _canvas.Render();
+        _controls.Render();
+        _sprites.Render();
+        _selectedSprite.Render();
+
     }
 
     void ToolsApplication::RenderDockSpace()
@@ -59,37 +70,18 @@ namespace AWayBack
 
                 if (atlasPath)
                 {
-                    _spriteEditor.LoadSpriteAtlas(atlasPath.value());
+                    _spriteEditorController.LoadSpriteAtlas(atlasPath.value());
                 }
             }
-
-            if (ImGui::MenuItem("Browse"))
+            
+            if (ImGui::MenuItem("New..."))
             {
-                std::optional<std::string> folder = FileDialog::OpenFolder();
-                printf(folder.value_or("none").c_str());
-            }
-
-            if (ImGui::MenuItem("New"))
-            {
-                _spriteEditor.CreateNewSpriteAtlas();
+                _newSpriteAtlasModal.Open();
             }
 
             ImGui::EndMenu();
         }
 
         ImGui::EndMainMenuBar();
-    }
-
-    void ToolsApplication::RenderSpriteEditor()
-    {
-        _spriteEditor.Render();
-    }
-
-    void ToolsApplication::RenderOpenSpriteAtlasPopup()
-    {
-        if (_openSpriteAtlasModal.Render())
-        {
-            _spriteEditor.LoadTexture(_openSpriteAtlasModal.GetSelectedFile());
-        }
     }
 }

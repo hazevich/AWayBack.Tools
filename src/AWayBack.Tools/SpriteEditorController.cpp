@@ -122,7 +122,11 @@ namespace AWayBack
 
     void SpriteEditorController::SliceFreehand()
     {
-        
+        auto min = Vector2(SelectedRegion.Min.x, SelectedRegion.Min.y);
+        auto max = Vector2(SelectedRegion.Max.x, SelectedRegion.Max.y);
+        auto name = _spriteAtlas->Name + std::to_string(_spriteAtlas->Sprites.size());
+        Sprite sprite = {name, min, max, Vector2()};
+        _spriteAtlas->Sprites.push_back(sprite);
     }
 
     void SpriteEditorController::Save()

@@ -1,0 +1,208 @@
+﻿#include "CanvasWindow.h"
+
+#include "algorithm"
+#include "imgui.h"
+#include "ImGuiExt.h"
+
+namespace AWayBack
+{
+    void RenderSelectedCell(ImDrawList* drawList, int32_t cellIndex, SpriteEditorController& controller,
+                            ImVec2 cursorPosition)
+    {
+        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        int32_t gridWidth = controller.GridWidth;
+        ImVec2 relativePosition = GetPositonFromCell(cellIndex, cellSize, gridWidth);
+        float x = relativePosition.x + cursorPosition.x;
+        float y = relativePosition.y + cursorPosition.y;
+
+        drawList->AddRect(ImVec2(x, y), ImVec2(x + cellSize.X, y + cellSize.Y),
+                          ImGui::GetColorU32({1.0f, 0.0f, 0.0f, 1.0f}));
+    }
+
+    void RenderGridSequence(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        for (int32_t i = controller.SliceStart; i < controller.SliceEnd; i++)
+        {
+            RenderSelectedCell(drawList, i, controller, cursorScreenPos);
+        }
+    }
+
+    void RenderGridSelection(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        for (int32_t& cell : controller.SelectedCells)
+        {
+            RenderSelectedCell(drawList, cell, controller, cursorScreenPos);
+        }
+    }
+
+    void RenderFreehand(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        drawList->AddRect(
+            ImVec2(controller.SelectedRegion.Min.x + cursorScreenPos.x,
+                   controller.SelectedRegion.Min.y + cursorScreenPos.y),
+            ImVec2(controller.SelectedRegion.Max.x + cursorScreenPos.x,
+                   controller.SelectedRegion.Max.y + cursorScreenPos.y),
+            ImGui::GetColorU32({1.0f, 0.0f, 0.0f, 1.0f})
+        );
+    }
+
+    void RenderSelectedRegions(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    {
+        switch (controller.SlicingType)
+        {
+        case SlicingType::GridSequence:
+            {
+                RenderGridSequence(controller, cursorScreenPos);
+                break;
+            }
+        case SlicingType::GridSelection:
+            {
+                RenderGridSelection(controller, cursorScreenPos);
+                break;
+            }
+        case SlicingType::Freehand:
+            {
+                RenderFreehand(controller, cursorScreenPos);
+                break;
+            }
+        }
+    }
+
+    void RenderSelectedSpriteRegion(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    {
+        if (controller.SelectedSpriteId)
+        {
+            int32_t value = controller.SelectedSpriteId.value();
+            SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+            if (spriteAtlas.Sprites.size() > value)
+            {
+                Sprite& sprite = spriteAtlas.Sprites[value];
+
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+                drawList->AddRectFilled(
+                    ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y),
+                    ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y),
+                    ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
+                );
+            }
+        }
+    }
+
+    void SetCursorPos(Texture2D& texture)
+    {
+        ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
+        ImVec2 cursorPos = ImGui::GetCursorPos();
+        auto textureWidth = (float)texture.GetWidth();
+        auto textureHeight = (float)texture.GetHeight();
+
+        auto newCursorPos = ImVec2(
+            contentRegionAvail.x > textureWidth
+                ? (contentRegionAvail.x - textureWidth) * 0.5f
+                : cursorPos.x,
+            contentRegionAvail.y > textureHeight
+                ? (contentRegionAvail.y - textureHeight) * 0.5f
+                : cursorPos.y
+        );
+
+        ImGui::SetCursorPos(newCursorPos);
+    }
+
+    void OnMouseLeftButtonClicked(SpriteEditorController& controller, ImVec2 mousePosition)
+    {
+        if (controller.SlicingType != SlicingType::GridSelection) return;
+
+        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        int32_t cell = GetCellFromPosition(mousePosition, cellSize, controller.GridWidth);
+
+        if (std::find(controller.SelectedCells.begin(), controller.SelectedCells.end(), cell) == controller.
+            SelectedCells.end())
+        {
+            controller.SelectedCells.push_back(cell);
+        }
+    }
+
+    void OnMouseRightButtonClicked(SpriteEditorController& controller, ImVec2 mousePosition)
+    {
+        if (controller.SlicingType != SlicingType::GridSelection) return;
+
+        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        int32_t cell = GetCellFromPosition(mousePosition, cellSize, controller.GridWidth);
+
+        auto iterator = std::find(controller.SelectedCells.begin(), controller.SelectedCells.end(), cell);
+
+        if (iterator != controller.SelectedCells.end())
+        {
+            controller.SelectedCells.erase(iterator);
+        }
+    }
+
+    void OnMouseDragging(SpriteEditorController& controller, ImVec2 startPosition, ImVec2 endPosition)
+    {
+        if (controller.SlicingType != SlicingType::Freehand) return;
+
+        float minx = std::min(startPosition.x, endPosition.x);
+        float miny = std::min(startPosition.y, endPosition.y);
+
+        float maxx = std::max(startPosition.x, endPosition.x);
+        float maxy = std::max(startPosition.y, endPosition.y);
+
+        controller.SelectedRegion = {ImVec2(minx, miny), ImVec2(maxx, maxy)};
+    }
+
+    void CanvasWindow::Render()
+    {
+        if (!ImGui::Begin("Canvas"))
+        {
+            ImGui::End();
+            return;
+        }
+
+        Texture2D* texture = _controller.GetTexture();
+
+        if (texture)
+        {
+            SetCursorPos(*texture);
+            ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
+
+            ImGui::ImVec2i cellSize = _controller.GetCellSize();
+            ImGui::ImVec2i textureSize = ImGui::ImVec2i(texture->GetWidth(), texture->GetHeight());
+
+            ImGui::CheckerBoard(cellSize, textureSize);
+
+            ImGui::Image(*texture);
+
+            ImVec2 mousePosition = ImGui::GetMousePos() - cursorScreenPos;
+
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+            {
+                OnMouseLeftButtonClicked(_controller, mousePosition);
+            }
+
+            if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+            {
+                OnMouseRightButtonClicked(_controller, mousePosition);
+            }
+
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+            {
+                ImGuiIO& io = ImGui::GetIO();
+                ImVec2 startPosition = io.MouseClickedPos[ImGuiMouseButton_Left] - cursorScreenPos;
+                OnMouseDragging(_controller, startPosition, mousePosition);
+            }
+
+            ImGui::Grid(cursorScreenPos, cellSize, textureSize);
+
+            RenderSelectedRegions(_controller, cursorScreenPos);
+            RenderSelectedSpriteRegion(_controller, cursorScreenPos);
+        }
+
+        ImGui::End();
+    }
+}
