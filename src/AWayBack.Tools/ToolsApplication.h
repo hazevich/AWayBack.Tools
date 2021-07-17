@@ -5,7 +5,7 @@
 #include "UI/NewSpriteAtlasModal.h"
 #include "UI/CanvasWindow.h"
 #include "UI/SelectedSpriteWindow.h"
-#include "UI/SpriteEditorControlsWindow.h"
+#include "UI/ToolbarWindow.h"
 #include "UI/SpritesWindow.h"
 
 namespace AWayBack
@@ -22,7 +22,7 @@ namespace AWayBack
         SpriteEditorController _spriteEditorController{};
 
         CanvasWindow _canvas;
-        SpriteEditorControlsWindow _controls;
+        ToolbarWindow _controls;
         SpritesWindow _sprites;
         SelectedSpriteWindow _selectedSprite;
         NewSpriteAtlasModal _newSpriteAtlasModal;

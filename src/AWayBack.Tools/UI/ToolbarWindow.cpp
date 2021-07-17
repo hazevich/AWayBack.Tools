@@ -1,4 +1,4 @@
-﻿#include "SpriteEditorControlsWindow.h"
+﻿#include "ToolbarWindow.h"
 
 #include "imgui_internal.h"
 
@@ -82,9 +82,9 @@ namespace AWayBack
         }
     }
 
-    void SpriteEditorControlsWindow::Render()
+    void ToolbarWindow::Render()
     {
-        if (!ImGui::Begin("Controls"))
+        if (!ImGui::Begin("Toolbar"))
         {
             ImGui::End();
             return;

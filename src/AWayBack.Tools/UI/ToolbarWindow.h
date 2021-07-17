@@ -3,9 +3,9 @@
 
 namespace AWayBack
 {
-    struct SpriteEditorControlsWindow
+    struct ToolbarWindow
     {
-        SpriteEditorControlsWindow(SpriteEditorController& controller)
+        ToolbarWindow(SpriteEditorController& controller)
             : _controller(controller)
         {
         }
