@@ -6,17 +6,41 @@
 
 namespace AWayBack
 {
-    void RenderSelectedCell(ImDrawList* drawList, int32_t cellIndex, SpriteEditorController& controller,
-                            ImVec2 cursorPosition)
+    void DrawSelectedCellSequenceNumber(ImDrawList* drawList, ImVec2 position, ImGui::ImVec2i cellSize, int32_t sequenceNumber)
+    {
+        const float backgroundCircleRadius = 16;
+
+        std::string sequenceNumberString = std::to_string(sequenceNumber);
+
+        ImVec2 centerPosition = ImVec2(position.x + cellSize.X * 0.5f, position.y + cellSize.Y * 0.5f);
+        ImVec2 textSize = ImGui::CalcTextSize(sequenceNumberString.c_str());
+
+        drawList->AddCircleFilled(centerPosition, backgroundCircleRadius, IM_COL32(0, 0, 0, 75.0f));
+
+        ImVec2 textPosition = ImVec2(centerPosition.x - textSize.x * 0.5f, centerPosition.y - textSize.y * 0.5f);
+        ImGui::SetCursorScreenPos(textPosition);
+        ImGui::Text(sequenceNumberString.c_str());
+    }
+
+    void RenderSelectedCell(
+        ImDrawList* drawList, 
+        int32_t cellIndex, 
+        SpriteEditorController& controller,
+        ImVec2 cursorPosition,
+        int32_t sequenceNumber
+    )
     {
         ImGui::ImVec2i cellSize = controller.GetCellSize();
         int32_t gridWidth = controller.GridWidth;
         ImVec2 relativePosition = GetPositonFromCell(cellIndex, cellSize, gridWidth);
         float x = relativePosition.x + cursorPosition.x;
         float y = relativePosition.y + cursorPosition.y;
+        auto position = ImVec2(x, y);
 
-        drawList->AddRect(ImVec2(x, y), ImVec2(x + cellSize.X, y + cellSize.Y),
+        drawList->AddRect(position, ImVec2(x + cellSize.X, y + cellSize.Y),
                           ImGui::GetColorU32({1.0f, 0.0f, 0.0f, 1.0f}));
+
+        DrawSelectedCellSequenceNumber(drawList, position, cellSize, sequenceNumber);
     }
 
     void RenderGridSequence(SpriteEditorController& controller, ImVec2 cursorScreenPos)
@@ -25,7 +49,7 @@ namespace AWayBack
 
         for (int32_t i = controller.SliceStart; i < controller.SliceEnd; i++)
         {
-            RenderSelectedCell(drawList, i, controller, cursorScreenPos);
+            RenderSelectedCell(drawList, i, controller, cursorScreenPos, i + 1);
         }
     }
 
@@ -33,9 +57,11 @@ namespace AWayBack
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
+        int32_t sequenceNumber = 1;
         for (int32_t& cell : controller.SelectedCells)
         {
-            RenderSelectedCell(drawList, cell, controller, cursorScreenPos);
+            RenderSelectedCell(drawList, cell, controller, cursorScreenPos, sequenceNumber);
+            sequenceNumber++;
         }
     }
 
@@ -155,7 +181,7 @@ namespace AWayBack
 
         controller.SelectedRegion = {ImVec2(minx, miny), ImVec2(maxx, maxy)};
     }
-
+    
     void CanvasWindow::Render()
     {
         if (!ImGui::Begin("Canvas"))
