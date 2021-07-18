@@ -5,6 +5,7 @@
 bin/
 obj/
 .vs/
+enc_temp_folder/
 
 # Build results
 [Dd]ebug/
