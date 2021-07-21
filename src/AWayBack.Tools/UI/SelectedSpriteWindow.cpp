@@ -1,5 +1,6 @@
 ﻿#include "SelectedSpriteWindow.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "ImGuiExt.h"
 
 namespace AWayBack
@@ -10,21 +11,17 @@ namespace AWayBack
         
     }
 
-    void SelectedSpriteWindow::Render()
+    void RenderSelectionImage(SpriteEditorController& controller)
     {
-        if (!ImGui::Begin("Selection"))
-        {
-            ImGui::End();
-            return;
-        }
+        ImGui::BeginChild("SelectionFrame", ImVec2(0, 0), true);
 
         ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
-        ImGui::ImVec2i cellSize = _controller.GetCellSize();
+        ImGui::ImVec2i cellSize = controller.GetCellSize();
 
-        if (_controller.SelectedSpriteId)
+        if (controller.SelectedSpriteId)
         {
-            SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
-            Sprite& sprite = spriteAtlas.Sprites[_controller.SelectedSpriteId.value()];
+            SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+            Sprite& sprite = spriteAtlas.Sprites[controller.SelectedSpriteId.value()];
             Vector2 spriteSize = sprite.Max - sprite.Min;
             auto spritePosition = ImVec2((contentRegionAvail.x - spriteSize.X) * 0.5f,
                                          (contentRegionAvail.y - spriteSize.Y) * 0.5f);
@@ -32,7 +29,7 @@ namespace AWayBack
 
             ImGui::CheckerBoard(cellSize, ImGui::ImVec2i(spriteSize.X, spriteSize.Y));
 
-            Texture2D* texture = _controller.GetTexture();
+            Texture2D* texture = controller.GetTexture();
 
             auto spriteuv0 = ImVec2(sprite.Min.X / texture->GetWidth(), sprite.Min.Y / texture->GetHeight());
             auto spriteuv1 = ImVec2(sprite.Max.X / texture->GetWidth(), sprite.Max.Y / texture->GetHeight());
@@ -49,7 +46,78 @@ namespace AWayBack
             ImGui::CheckerBoard(cellSize, ImGui::ImVec2i(contentRegionAvail.x, contentRegionAvail.y));
         }
 
-        ImGui::End();
+        ImGui::EndChild();
+    }
+    
+    void RenderControls(SpriteEditorController& controller)
+    {
+        const int32_t spriteNameMaxSize = 1024;
+
+        SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+
+        auto emptySprite = Sprite();
+
+        Sprite& sprite = controller.SelectedSpriteId
+                        ? spriteAtlas.Sprites[controller.SelectedSpriteId.value()]
+                        : emptySprite;
+
+        char nameBuffer[spriteNameMaxSize] = { 0 };
+        strncpy_s(nameBuffer, sprite.Name.c_str(), sizeof nameBuffer);
+
+        if (ImGui::InputText("Name", nameBuffer, sizeof nameBuffer))
+        {
+            sprite.Name = std::string(nameBuffer);
+        }
+
+        Texture2D* texture = controller.GetTexture();
+
+        Vector2 spriteSize = sprite.Max - sprite.Min;
+
+        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+
+        ImGui::DragFloat("X", &sprite.Min.X, 1, 0, texture ? texture->GetWidth() - spriteSize.X : 0);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+
+        ImGui::DragFloat("Y", &sprite.Min.Y, 1, 0, texture ? texture->GetHeight() - spriteSize.Y : 0);
+        ImGui::PopItemWidth();
+
+        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+        
+        if (ImGui::DragFloat("W", &spriteSize.X, 1, 1, texture ? texture->GetWidth() - sprite.Min.X : 0))
+        {
+            sprite.Max.X = sprite.Min.X + spriteSize.X;
+        }
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        
+        if (ImGui::DragFloat("H", &spriteSize.Y, 1, 1, texture ? texture->GetHeight() - sprite.Min.Y : 0))
+        {
+            sprite.Max.Y = sprite.Min.Y + spriteSize.Y;
+        }
+        ImGui::PopItemWidth();
+
+         ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+
+        ImGui::DragFloat("OX", &sprite.Min.X, 1, 0, spriteSize.X);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+
+        ImGui::DragFloat("OY", &sprite.Min.Y, 1, 0, spriteSize.Y);;
+        ImGui::PopItemWidth();
     }
 
+    void SelectedSpriteWindow::Render()
+    {
+        if (!ImGui::Begin("Selection"))
+        {
+            ImGui::End();
+            return;
+        }
+
+        RenderControls(_controller);
+        RenderSelectionImage(_controller);
+
+        ImGui::End();
+    }
 }
