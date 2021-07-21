@@ -184,7 +184,7 @@ namespace AWayBack
     
     void CanvasWindow::Render()
     {
-        if (!ImGui::Begin("Canvas"))
+        if (!ImGui::Begin("Canvas", 0, ImGuiWindowFlags_HorizontalScrollbar))
         {
             ImGui::End();
             return;
