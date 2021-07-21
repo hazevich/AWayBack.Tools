@@ -2,30 +2,38 @@
 
 namespace AWayBack
 {
-    void SpritesWindow::Render()
+    void RenderListOfSprites(SpriteEditorController& controller)
     {
         const int32_t itemSize = 70;
 
-        if (!ImGui::Begin("Sprites"))
-        {
-            ImGui::End();
-            return;
-        }
-
-        SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
-        Texture2D* texture = _controller.GetTexture();
+        SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+        Texture2D* texture = controller.GetTexture();
 
         char childTitleBuffer[300] = {0};
+
+        ImGui::BeginChild("ListOfSprites", ImVec2(0, 0), true);
 
         for (int32_t i = 0; i < spriteAtlas.Sprites.size(); i++)
         {
             Sprite& sprite = spriteAtlas.Sprites[i];
             snprintf(childTitleBuffer, sizeof childTitleBuffer, "Tile %s", sprite.Name.c_str());
 
-            if (i == _controller.SelectedSpriteId)
+            if (i == controller.SelectedSpriteId)
             {
                 ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(46, 111, 230, 255));
             }
+
+            ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 84, 70, 255));
+            ImGui::PushID(i);
+            if (ImGui::Button("X", ImVec2(20, itemSize)))
+            {
+                spriteAtlas.Sprites.erase(spriteAtlas.Sprites.begin() + i);
+                i--;
+            }
+            ImGui::PopID();
+            ImGui::PopStyleColor();
+
+            ImGui::SameLine();
 
             ImGui::BeginChild(childTitleBuffer, ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
@@ -61,7 +69,7 @@ namespace AWayBack
 
             ImGui::Text(sprite.Name.c_str());
 
-            if (i == _controller.SelectedSpriteId)
+            if (i == controller.SelectedSpriteId)
             {
                 ImGui::PopStyleColor();
             }
@@ -69,11 +77,68 @@ namespace AWayBack
             if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows))
             {
                 if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-                    _controller.SelectedSpriteId = i;
+                    controller.SelectedSpriteId = i;
             }
 
             ImGui::EndChild();
+        }
 
+        ImGui::EndChild();
+    }
+
+    bool ConfirmClearPopup()
+    {
+        auto result = false;
+        
+        if (ImGui::BeginCenteredModal("Clear sprites", nullptr, ImGuiWindowFlags_NoResize))
+        {
+            ImGui::Text("Are you sure?\nThis will remove all the sprites from the sprite atlas.");
+
+            ImGui::NewLine();
+            if (ImGui::Button("Cancel"))
+            {
+                ImGui::CloseCurrentPopup();
+
+                result = false;
+            }
+
+            ImGui::SameLine();
+
+            ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 219, 111, 255));
+
+            if (ImGui::Button("OK"))
+            {
+                ImGui::CloseCurrentPopup();
+
+                result = true;
+            }
+
+            ImGui::PopStyleColor();
+
+            ImGui::EndPopup();
+        }
+
+        return result;
+    }
+
+    void SpritesWindow::Render()
+    {
+        if (!ImGui::Begin("Sprites"))
+        {
+            ImGui::End();
+            return;
+        }
+
+        if (ImGui::Button("Clear"))
+        {
+            ImGui::OpenPopup("Clear sprites");
+        }
+
+        RenderListOfSprites(_controller);
+
+        if (ConfirmClearPopup())
+        {
+            _controller.GetSpriteAtlas().Sprites.clear();
         }
 
         ImGui::End();
