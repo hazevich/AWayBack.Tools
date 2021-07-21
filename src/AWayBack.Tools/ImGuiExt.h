@@ -58,6 +58,7 @@ namespace ImGui
 
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         auto isColorChange = false;
+        auto isLineChange = false;
 
         auto gridMax = ImVec2(position.x + size.X, position.y + size.Y);
 
@@ -78,7 +79,8 @@ namespace ImGui
                 isColorChange = !isColorChange;
             }
 
-            isColorChange = !isColorChange;
+            isLineChange = !isLineChange;
+            isColorChange = isLineChange;
         }
     }
 
