@@ -16,7 +16,7 @@ namespace AWayBack
         ImGui::BeginChild("SelectionFrame", ImVec2(0, 0), true);
 
         ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
-        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        ImVec2i cellSize = controller.GetCellSize();
 
         if (controller.SelectedSpriteId)
         {
@@ -27,7 +27,7 @@ namespace AWayBack
                                          (contentRegionAvail.y - spriteSize.Y) * 0.5f);
             ImGui::SetCursorPos(spritePosition);
 
-            ImGui::CheckerBoard(cellSize, ImGui::ImVec2i(spriteSize.X, spriteSize.Y));
+            ImGui::CheckerBoard(cellSize, ImVec2i(spriteSize.X, spriteSize.Y));
 
             Texture2D* texture = controller.GetTexture();
 
@@ -43,7 +43,7 @@ namespace AWayBack
         }
         else
         {
-            ImGui::CheckerBoard(cellSize, ImGui::ImVec2i(contentRegionAvail.x, contentRegionAvail.y));
+            ImGui::CheckerBoard(cellSize, ImVec2i(contentRegionAvail.x, contentRegionAvail.y));
         }
 
         ImGui::EndChild();

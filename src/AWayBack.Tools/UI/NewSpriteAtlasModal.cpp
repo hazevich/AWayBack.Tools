@@ -1,6 +1,9 @@
 ﻿#include "NewSpriteAtlasModal.h"
 #include "imgui.h"
 #include "ImGuiExt.h"
+#include "AWayBack/Utils/FileDialog.h"
+
+#include <filesystem>
 
 namespace AWayBack
 {
@@ -35,7 +38,7 @@ namespace AWayBack
 
         if (ImGui::Button("..."))
         {
-            std::optional<std::string> folderPath = AWayBack::FileDialog::OpenFolder();
+            std::optional<std::string> folderPath = FileDialog::OpenFolder();
 
             if (folderPath)
             {
@@ -56,7 +59,7 @@ namespace AWayBack
 
         if (ImGui::Button("..."))
         {
-            std::optional<std::string> texturePath = AWayBack::FileDialog::OpenFile("Textures (*.png)\0*.png\0");
+            std::optional<std::string> texturePath = FileDialog::OpenFile("Textures (*.png)\0*.png\0");
 
             if (texturePath)
             {

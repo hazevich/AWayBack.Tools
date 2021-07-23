@@ -61,7 +61,7 @@ namespace AWayBack
             controller.SlicingType = (SlicingType) slicingTypeInt;
         }
 
-        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        ImVec2i cellSize = controller.GetCellSize();
 
         if (isUniformCellSizeControl)
         {

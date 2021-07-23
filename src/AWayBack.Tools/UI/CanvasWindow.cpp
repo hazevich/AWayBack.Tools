@@ -6,7 +6,7 @@
 
 namespace AWayBack
 {
-    void DrawSelectedCellSequenceNumber(ImDrawList* drawList, ImVec2 position, ImGui::ImVec2i cellSize, int32_t sequenceNumber)
+    void DrawSelectedCellSequenceNumber(ImDrawList* drawList, ImVec2 position, ImVec2i cellSize, int32_t sequenceNumber)
     {
         const float backgroundCircleRadius = 16;
 
@@ -30,7 +30,7 @@ namespace AWayBack
         int32_t sequenceNumber
     )
     {
-        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        ImVec2i cellSize = controller.GetCellSize();
         int32_t gridWidth = controller.GridWidth;
         ImVec2 relativePosition = GetPositonFromCell(cellIndex, cellSize, gridWidth);
         float x = relativePosition.x + cursorPosition.x;
@@ -144,7 +144,7 @@ namespace AWayBack
     {
         if (controller.SlicingType != SlicingType::GridSelection) return;
 
-        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        ImVec2i cellSize = controller.GetCellSize();
         int32_t cell = GetCellFromPosition(mousePosition, cellSize, controller.GridWidth);
 
         if (std::find(controller.SelectedCells.begin(), controller.SelectedCells.end(), cell) == controller.
@@ -158,7 +158,7 @@ namespace AWayBack
     {
         if (controller.SlicingType != SlicingType::GridSelection) return;
 
-        ImGui::ImVec2i cellSize = controller.GetCellSize();
+        ImVec2i cellSize = controller.GetCellSize();
         int32_t cell = GetCellFromPosition(mousePosition, cellSize, controller.GridWidth);
 
         auto iterator = std::find(controller.SelectedCells.begin(), controller.SelectedCells.end(), cell);
@@ -197,8 +197,8 @@ namespace AWayBack
             SetCursorPos(*texture);
             ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
 
-            ImGui::ImVec2i cellSize = _controller.GetCellSize();
-            ImGui::ImVec2i textureSize = ImGui::ImVec2i(texture->GetWidth(), texture->GetHeight());
+            ImVec2i cellSize = _controller.GetCellSize();
+            ImVec2i textureSize = ImVec2i(texture->GetWidth(), texture->GetHeight());
 
             ImGui::CheckerBoard(cellSize, textureSize);
 

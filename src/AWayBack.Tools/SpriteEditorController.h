@@ -36,7 +36,7 @@ namespace AWayBack
 
         SelectedRegion SelectedRegion;
 
-        ImGui::ImVec2i GetCellSize() { return _cellSize; }
+        ImVec2i GetCellSize() { return _cellSize; }
 
         SpriteAtlas& GetSpriteAtlas() { return *_spriteAtlas; }
 
@@ -47,7 +47,7 @@ namespace AWayBack
         void Slice();
         void Save();
 
-        void SetCellSize(const ImGui::ImVec2i& cellSize);
+        void SetCellSize(const ImVec2i& cellSize);
         void RemoveSprite(int32_t spriteIndex);
         void ClearSprites();
 
@@ -56,7 +56,7 @@ namespace AWayBack
 
         Texture2D* _texture = nullptr;
 
-        ImGui::ImVec2i _cellSize = ImGui::ImVec2i(32, 32);
+        ImVec2i _cellSize = ImVec2i(32, 32);
 
         void CalculateGridSize();
 
@@ -65,6 +65,6 @@ namespace AWayBack
         void SliceFreehand();
     };
 
-    int32_t GetCellFromPosition(ImVec2 position, ImGui::ImVec2i cellSize, int32_t gridWidth);
-    ImVec2 GetPositonFromCell(int32_t cell, ImGui::ImVec2i cellSize, int32_t gridWidth);
+    int32_t GetCellFromPosition(ImVec2 position, ImVec2i cellSize, int32_t gridWidth);
+    ImVec2 GetPositonFromCell(int32_t cell, ImVec2i cellSize, int32_t gridWidth);
 }

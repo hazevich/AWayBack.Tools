@@ -1,6 +1,7 @@
 ﻿#include "SpriteEditorController.h"
-
 #include "SpriteAtlasSerializer.h"
+
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
@@ -99,7 +100,7 @@ namespace AWayBack
         }
     }
 
-    void SliceSprite(SpriteAtlas& spriteAtlas, int32_t cell, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    void SliceSprite(SpriteAtlas& spriteAtlas, int32_t cell, ImVec2i cellSize, int32_t gridWidth)
     {
         ImVec2 position = GetPositonFromCell(cell, cellSize, gridWidth);
 
@@ -149,7 +150,7 @@ namespace AWayBack
         file.close();
     }
 
-    void SpriteEditorController::SetCellSize(const ImGui::ImVec2i& cellSize)
+    void SpriteEditorController::SetCellSize(const ImVec2i& cellSize)
     {
         _cellSize = cellSize;
         CalculateGridSize();
@@ -180,7 +181,7 @@ namespace AWayBack
         GridHeight = _texture->GetHeight() / _cellSize.Y;
     }
 
-    int32_t GetCellFromPosition(ImVec2 position, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    int32_t GetCellFromPosition(ImVec2 position, ImVec2i cellSize, int32_t gridWidth)
     {
         int32_t cellX = (int32_t) position.x / cellSize.X;
         int32_t cellY = (int32_t) position.y / cellSize.Y;
@@ -188,7 +189,7 @@ namespace AWayBack
         return cellY * gridWidth + cellX;   
     }
 
-    ImVec2 GetPositonFromCell(int32_t cell, ImGui::ImVec2i cellSize, int32_t gridWidth)
+    ImVec2 GetPositonFromCell(int32_t cell, ImVec2i cellSize, int32_t gridWidth)
     {
         int32_t x = cell % gridWidth * cellSize.X;
         int32_t y = cell / gridWidth * cellSize.Y;
