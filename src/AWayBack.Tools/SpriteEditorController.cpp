@@ -6,6 +6,14 @@ namespace fs = std::filesystem;
 
 namespace AWayBack
 {
+    void ClearSelections(SpriteEditorController& controller) 
+    {
+        controller.SelectedCells.clear();
+        controller.SelectedRegion = SelectedRegion();
+        controller.SelectedSpriteId = std::nullopt;
+        controller.SliceStart = controller.SliceEnd = 0;
+    }
+
     SpriteEditorController::~SpriteEditorController()
     {
         delete _spriteAtlas;
@@ -31,6 +39,7 @@ namespace AWayBack
             _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
 
             CalculateGridSize();
+            ClearSelections(*this);
         }
     }
 
@@ -65,6 +74,7 @@ namespace AWayBack
         _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
 
         CalculateGridSize();
+        ClearSelections(*this);
     }
 
     void SpriteEditorController::Slice()
@@ -143,6 +153,23 @@ namespace AWayBack
     {
         _cellSize = cellSize;
         CalculateGridSize();
+        SliceStart = SliceEnd = 0;
+        SelectedCells.clear();
+    }
+
+    void SpriteEditorController::RemoveSprite(int32_t spriteIndex)
+    {
+        if (_spriteAtlas->Sprites.size() <= spriteIndex) return;
+
+        if (spriteIndex == SelectedSpriteId) SelectedSpriteId = std::nullopt;
+
+        _spriteAtlas->Sprites.erase(_spriteAtlas->Sprites.begin() + spriteIndex);
+    }
+
+    void SpriteEditorController::ClearSprites()
+    {
+        _spriteAtlas->Sprites.clear();
+        SelectedSpriteId = std::nullopt;
     }
 
     void SpriteEditorController::CalculateGridSize()

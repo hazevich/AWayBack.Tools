@@ -9,37 +9,39 @@ namespace AWayBack
         SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
         Texture2D* texture = controller.GetTexture();
 
-        char childTitleBuffer[300] = {0};
-
         ImGui::BeginChild("ListOfSprites", ImVec2(0, 0), true);
 
         for (int32_t i = 0; i < spriteAtlas.Sprites.size(); i++)
         {
-            Sprite& sprite = spriteAtlas.Sprites[i];
-            snprintf(childTitleBuffer, sizeof childTitleBuffer, "Tile %s", sprite.Name.c_str());
+            ImGui::PushID(i);
+
+            ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 84, 70, 255));
+            if (ImGui::Button("X", ImVec2(20, itemSize)))
+            {
+                controller.RemoveSprite(i);
+                i--;
+
+                ImGui::PopID();
+                ImGui::PopStyleColor();
+
+                continue;
+            }
+
+            ImGui::PopStyleColor();
+
+            ImGui::SameLine();
 
             if (i == controller.SelectedSpriteId)
             {
                 ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(46, 111, 230, 255));
             }
 
-            ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 84, 70, 255));
-            ImGui::PushID(i);
-            if (ImGui::Button("X", ImVec2(20, itemSize)))
-            {
-                spriteAtlas.Sprites.erase(spriteAtlas.Sprites.begin() + i);
-                i--;
-            }
-            ImGui::PopID();
-            ImGui::PopStyleColor();
-
-            ImGui::SameLine();
-
-            ImGui::BeginChild(childTitleBuffer, ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false,
+            ImGui::BeginChild("Tile", ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-            snprintf(childTitleBuffer, sizeof childTitleBuffer, "Thumbnail %s", sprite.Name.c_str());
-            ImGui::BeginChild(childTitleBuffer, ImVec2(itemSize, itemSize));
+            Sprite& sprite = spriteAtlas.Sprites[i];
+
+            ImGui::BeginChild("Thumbnail", ImVec2(itemSize, itemSize));
 
             float width = sprite.Max.X - sprite.Min.X;
             float height = sprite.Max.Y - sprite.Min.Y;
@@ -81,6 +83,8 @@ namespace AWayBack
             }
 
             ImGui::EndChild();
+
+            ImGui::PopID();            
         }
 
         ImGui::EndChild();
@@ -138,7 +142,7 @@ namespace AWayBack
 
         if (ConfirmClearPopup())
         {
-            _controller.GetSpriteAtlas().Sprites.clear();
+            _controller.ClearSprites();
         }
 
         ImGui::End();

@@ -48,6 +48,8 @@ namespace AWayBack
         void Save();
 
         void SetCellSize(const ImGui::ImVec2i& cellSize);
+        void RemoveSprite(int32_t spriteIndex);
+        void ClearSprites();
 
     private:
         SpriteAtlas* _spriteAtlas = new SpriteAtlas();
