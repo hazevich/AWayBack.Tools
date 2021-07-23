@@ -14,8 +14,6 @@ namespace AWayBack
 
     bool NewSpriteAtlas(const char* name, AWayBack::SpriteAtlasData& spriteAtlas, bool& isOpen)
     {
-        namespace fs = std::filesystem;
-
         if (!ImGui::BeginCenteredModal(name, &isOpen))
         {
             
