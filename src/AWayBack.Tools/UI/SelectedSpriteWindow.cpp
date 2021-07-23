@@ -20,6 +20,8 @@ namespace AWayBack
 
     void RenderSelectionImage(SpriteEditorController& controller)
     {
+        ImVec2 framePosition = ImGui::GetCursorScreenPos();
+
         ImGui::BeginChild("SelectionFrame", ImVec2(0, 0), true);
 
         ImVec2 contentRegionAvail = ImGui::GetContentRegionAvail();
@@ -40,7 +42,10 @@ namespace AWayBack
 
             auto spriteuv0 = ImVec2(sprite.Min.X / texture->GetWidth(), sprite.Min.Y / texture->GetHeight());
             auto spriteuv1 = ImVec2(sprite.Max.X / texture->GetWidth(), sprite.Max.Y / texture->GetHeight());
+
             ImVec2 imageScreenPos = ImGui::GetCursorScreenPos();
+            ImVec2 imageCursorPos = ImGui::GetCursorPos();
+
             ImGui::Image(*texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
 
             const float borderOffset = 5;
@@ -48,7 +53,16 @@ namespace AWayBack
                           ImVec2(spriteSize.X + borderOffset * 2, spriteSize.Y + borderOffset * 2),
                           ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
 
-            RenderOriginDot(ImVec2(imageScreenPos.x + sprite.Origin.X, imageScreenPos.y + sprite.Origin.Y));
+            auto originScreenPos = ImVec2(imageScreenPos.x + sprite.Origin.X, imageScreenPos.y + sprite.Origin.Y);
+
+            RenderOriginDot(originScreenPos);
+
+            auto originCursorPos = ImVec2(imageCursorPos.x + sprite.Origin.X, imageCursorPos.y + sprite.Origin.Y);
+            auto originPositionClamped = ImVec2((int32_t)(originCursorPos.x / cellSize.X) * cellSize.X, (int32_t)(originCursorPos.y / cellSize.Y) * cellSize.Y);
+            auto gridPositionOffset = ImVec2(originCursorPos.x - originPositionClamped.x, originCursorPos.y - originPositionClamped.y);
+            auto gridPosition = ImVec2(framePosition.x + gridPositionOffset.x - cellSize.X * 1.5f, framePosition.y + gridPositionOffset.y - cellSize.Y * 1.5f);
+
+            ImGui::Grid(gridPosition, ImVec2i(cellSize.X, cellSize.X), ImVec2i(contentRegionAvail.x + cellSize.X * 2.5f, contentRegionAvail.y + cellSize.Y * 2.5f));
         }
         else
         {
