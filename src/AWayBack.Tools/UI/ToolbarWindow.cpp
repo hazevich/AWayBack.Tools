@@ -22,8 +22,12 @@ namespace AWayBack
 
     void RenderGridSequenceSlicingControls(SpriteEditorController& controller)
     {
+        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+
+        ImGuiStyle& style = ImGui::GetStyle();
+        
         ImGui::DragInt(
-            "Slice start",
+            "##Slice start",
             &controller.SliceStart,
             1,
             0,
@@ -31,13 +35,20 @@ namespace AWayBack
             "%d",
             controller.SliceEnd == 1 ? ImGuiSliderFlags_ReadOnly : ImGuiSliderFlags_None
         );
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0, style.ItemInnerSpacing.x);
+        
         ImGui::DragInt(
-            "Slice end", 
+            "##Slice end", 
             &controller.SliceEnd, 
             1,
             controller.SliceStart, 
             controller.GridWidth * controller.GridHeight
         );
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0, style.ItemInnerSpacing.x);
+
+        ImGui::Text("Slice range");
     }
 
     void RenderSlicingControls(SpriteEditorController& controller, bool& isUniformCellSizeControl)

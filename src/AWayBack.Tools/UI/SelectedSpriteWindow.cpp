@@ -48,6 +48,25 @@ namespace AWayBack
 
         ImGui::EndChild();
     }
+
+    bool Vector2Control(const char* label, Vector2& vec2, Vector2 min, Vector2 max)
+    {
+        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+
+        ImGuiStyle& style = ImGui::GetStyle();
+
+        bool xResult = ImGui::DragFloat("##X", &vec2.X, 1, min.X, max.X, "%d", max.X == 0 ? ImGuiSliderFlags_ReadOnly : ImGuiSliderFlags_None);
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0, style.ItemInnerSpacing.x);
+
+        bool yResult = ImGui::DragFloat("##Y", &vec2.Y, 1, min.Y, max.Y);
+        ImGui::PopItemWidth();
+        ImGui::SameLine(0, style.ItemInnerSpacing.x);
+
+        ImGui::Text(label);
+
+        return xResult || yResult;
+    }
     
     void RenderControls(SpriteEditorController& controller)
     {
@@ -73,38 +92,24 @@ namespace AWayBack
 
         Vector2 spriteSize = sprite.Max - sprite.Min;
 
-        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
+        Vector2Control(
+            "Sprite region position", 
+            sprite.Min, 
+            Vector2(0, 0), 
+            texture ? Vector2(texture->GetWidth() - spriteSize.X, texture->GetHeight() - spriteSize.Y) : Vector2(0, 0)
+        );
 
-        ImGui::DragFloat("X", &sprite.Min.X, 1, 0, texture ? texture->GetWidth() - spriteSize.X : 0);
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-
-        ImGui::DragFloat("Y", &sprite.Min.Y, 1, 0, texture ? texture->GetHeight() - spriteSize.Y : 0);
-        ImGui::PopItemWidth();
-
-        ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
-        
-        if (ImGui::DragFloat("W", &spriteSize.X, 1, 1, texture ? texture->GetWidth() - sprite.Min.X : 0))
+        if (Vector2Control(
+            "Sprite region size", 
+            spriteSize, 
+            Vector2(1, 1), 
+            texture ? Vector2(texture->GetWidth() - sprite.Min.X, texture->GetHeight() - sprite.Min.Y) : Vector2(0, 0)
+        ))
         {
-            sprite.Max.X = sprite.Min.X + spriteSize.X;
+            sprite.Max = sprite.Min + spriteSize;
         }
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-        
-        if (ImGui::DragFloat("H", &spriteSize.Y, 1, 1, texture ? texture->GetHeight() - sprite.Min.Y : 0))
-        {
-            sprite.Max.Y = sprite.Min.Y + spriteSize.Y;
-        }
-        ImGui::PopItemWidth();
 
-         ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
-
-        ImGui::DragFloat("OX", &sprite.Min.X, 1, 0, spriteSize.X);
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-
-        ImGui::DragFloat("OY", &sprite.Min.Y, 1, 0, spriteSize.Y);;
-        ImGui::PopItemWidth();
+        Vector2Control("Origin", sprite.Origin, Vector2(0, 0), spriteSize);
     }
 
     void SelectedSpriteWindow::Render()

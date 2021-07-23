@@ -6,6 +6,7 @@
 #include "AWayBack/Utils/FileDialog.h"
 
 #include "filesystem"
+#include "imgui_internal.h"
 
 inline ImVec2 operator-(const ImVec2& left, const ImVec2& right)
 {
