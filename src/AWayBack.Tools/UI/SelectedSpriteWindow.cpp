@@ -11,6 +11,13 @@ namespace AWayBack
         
     }
 
+    void RenderOriginDot(ImVec2 cursorPosition)
+    {
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        drawList->AddCircleFilled(cursorPosition, 3, IM_COL32(51, 250, 137, 255));
+    }
+
     void RenderSelectionImage(SpriteEditorController& controller)
     {
         ImGui::BeginChild("SelectionFrame", ImVec2(0, 0), true);
@@ -40,6 +47,8 @@ namespace AWayBack
             ImGui::Border(ImVec2(imageScreenPos.x - borderOffset, imageScreenPos.y - borderOffset),
                           ImVec2(spriteSize.X + borderOffset * 2, spriteSize.Y + borderOffset * 2),
                           ImGui::GetColorU32(ImVec4(1, 1, 1, 1)));
+
+            RenderOriginDot(ImVec2(imageScreenPos.x + sprite.Origin.X, imageScreenPos.y + sprite.Origin.Y));
         }
         else
         {
@@ -55,13 +64,17 @@ namespace AWayBack
 
         ImGuiStyle& style = ImGui::GetStyle();
 
-        bool xResult = ImGui::DragFloat("##X", &vec2.X, 1, min.X, max.X, "%d", max.X == 0 ? ImGuiSliderFlags_ReadOnly : ImGuiSliderFlags_None);
+        ImGui::PushID(label);
+
+        bool xResult = ImGui::DragFloat("##X", &vec2.X, 1, min.X, max.X);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
         bool yResult = ImGui::DragFloat("##Y", &vec2.Y, 1, min.Y, max.Y);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
+
+        ImGui::PopID();
 
         ImGui::Text(label);
 
@@ -92,12 +105,15 @@ namespace AWayBack
 
         Vector2 spriteSize = sprite.Max - sprite.Min;
 
-        Vector2Control(
+        if (Vector2Control(
             "Sprite region position", 
             sprite.Min, 
             Vector2(0, 0), 
             texture ? Vector2(texture->GetWidth() - spriteSize.X, texture->GetHeight() - spriteSize.Y) : Vector2(0, 0)
-        );
+        ))
+        {
+            sprite.Max = sprite.Min + spriteSize;
+        }
 
         if (Vector2Control(
             "Sprite region size", 
@@ -110,6 +126,16 @@ namespace AWayBack
         }
 
         Vector2Control("Origin", sprite.Origin, Vector2(0, 0), spriteSize);
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Set for all sprites"))
+        {
+            for (Sprite& anotherSprite : spriteAtlas.Sprites)
+            {
+                anotherSprite.Origin = sprite.Origin;
+            }
+        }
     }
 
     void SelectedSpriteWindow::Render()
