@@ -84,4 +84,30 @@ namespace ImGui
         ImDrawList* drawList = ImGui::GetWindowDrawList();
         drawList->AddRect(cursorScreenPos, ImVec2(cursorScreenPos.x + size.x, cursorScreenPos.y + size.y), color);
     }
+
+    bool CellSizeControl(ImVec2i& cellSize, bool& isUniformCellSizeControl)
+    {
+        if (isUniformCellSizeControl)
+        {
+            if (ImGui::DragInt("##Cell size", &cellSize.X, 1, 1, INT32_MAX))
+            {
+                cellSize.Y = cellSize.X;
+
+                return true;
+            }
+        }
+        else if (ImGui::DragInt2("##Cell size", cellSize.Components, 1, 1, INT32_MAX))
+        {
+            return true;
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cell size"))
+        {
+            isUniformCellSizeControl = !isUniformCellSizeControl;
+        }
+
+        return false;
+    }
 }

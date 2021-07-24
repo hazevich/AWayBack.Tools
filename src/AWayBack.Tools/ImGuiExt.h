@@ -39,4 +39,6 @@ namespace ImGui
     void Grid(const ImVec2& position, const ImVec2i& cellSize, const ImVec2i& size);
     
     void Border(const ImVec2& cursorScreenPos, const ImVec2& size, ImU32 color);
+
+    bool CellSizeControl(ImVec2i& cellSize, bool& isUniformCellSizeControl);
 }

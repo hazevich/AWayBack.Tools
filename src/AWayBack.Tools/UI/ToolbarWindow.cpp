@@ -63,25 +63,9 @@ namespace AWayBack
 
         ImVec2i cellSize = controller.GetCellSize();
 
-        if (isUniformCellSizeControl)
-        {
-            if (ImGui::DragInt("##Cell size", &cellSize.X, 1, 1, INT32_MAX))
-            {
-                cellSize.Y = cellSize.X;
-
-                controller.SetCellSize(cellSize);
-            }
-        }
-        else if (ImGui::DragInt2("##Cell size", cellSize.Components, 1, 1, INT32_MAX))
+        if (ImGui::CellSizeControl(cellSize, isUniformCellSizeControl))
         {
             controller.SetCellSize(cellSize);
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cell size"))
-        {
-            isUniformCellSizeControl = !isUniformCellSizeControl;
         }
 
         if (controller.SlicingType == SlicingType::GridSequence)
