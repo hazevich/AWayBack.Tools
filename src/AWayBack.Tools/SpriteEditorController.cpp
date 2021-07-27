@@ -110,7 +110,7 @@ namespace AWayBack
         void Execute() override
         {
             _newSpritesBeginIndex = _spriteAtlas.Sprites.size();
-            _spritesCount = _sliceEnd - _sliceStart;
+            _newSpritesCount = _sliceEnd - _sliceStart;
 
             for (int32_t i = _sliceStart; i < _sliceEnd; i++)
             {
@@ -126,7 +126,7 @@ namespace AWayBack
         void Undo() override
         {
             auto first = _spriteAtlas.Sprites.begin() + _newSpritesBeginIndex;
-            auto last = first + _spritesCount;
+            auto last = first + _newSpritesCount;
             _spriteAtlas.Sprites.erase(first, last);
 
             _sliceStart = _previousSliceStart;
@@ -146,7 +146,54 @@ namespace AWayBack
         int32_t _previousSliceEnd;
 
         int32_t _newSpritesBeginIndex;
-        int32_t _spritesCount;
+        int32_t _newSpritesCount;
+    };
+
+    struct SliceGridSelectionCommand : UndoRedoCommand
+    {
+        SliceGridSelectionCommand(std::vector<int32_t>& selectedCells, SpriteAtlas& spriteAtlas, ImVec2i cellSize, int32_t gridWidth)
+            : _selectedCells(selectedCells),
+              _spriteAtlas(spriteAtlas),
+              _cellSize(cellSize),
+              _gridWidth(gridWidth)
+        {
+            
+        }
+
+        void Execute() override
+        {
+            _newSpritesBeginIndex = _spriteAtlas.Sprites.size();
+            _newSpritesCount = _selectedCells.size();
+
+            for (int32_t i : _selectedCells)
+            {
+                SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
+            }
+
+            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(), _selectedCells.end());
+            _selectedCells.clear();
+        }
+
+        void Undo() override
+        {
+            auto first = _spriteAtlas.Sprites.begin() + _newSpritesBeginIndex;
+            auto last = first + _newSpritesCount;
+            _spriteAtlas.Sprites.erase(first, last);
+
+            _selectedCells.clear();
+            _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(), _previouslySelectedCells.end());
+            _previouslySelectedCells.clear();
+        }
+
+    private:
+        std::vector<int32_t>& _selectedCells;
+        SpriteAtlas& _spriteAtlas;
+        ImVec2i _cellSize;
+        int32_t _gridWidth;
+
+        std::vector<int32_t> _previouslySelectedCells;
+        int32_t _newSpritesBeginIndex;
+        int32_t _newSpritesCount;
     };
 
     void ClearSelections(SpriteEditorController& controller) 
@@ -259,12 +306,7 @@ namespace AWayBack
 
     void SpriteEditorController::SliceGridSelection()
     {
-        for (int32_t i : SelectedCells)
-        {
-            SliceSprite(*_spriteAtlas, i, _cellSize, GridWidth);
-        }
-
-        SelectedCells.clear();
+        _undoRedoHistory.AddCommand(new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth));
     }
 
     void SpriteEditorController::SliceFreehand()
