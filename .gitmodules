@@ -7,6 +7,6 @@
 [submodule "dependencies/stb"]
 	path = dependencies/stb
 	url = https://github.com/hazevich/stb
-[submodule "dependencies\\rapidjson"]
-	path = dependencies\\rapidjson
+[submodule "dependencies/rapidjson"]
+	path = dependencies/rapidjson
 	url = https://github.com/hazevich/rapidjson
