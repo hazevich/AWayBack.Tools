@@ -196,6 +196,40 @@ namespace AWayBack
         int32_t _newSpritesCount;
     };
 
+    struct SliceFreehandCommand : UndoRedoCommand
+    {
+        SliceFreehandCommand(SelectedRegion& selectedRegion, SpriteAtlas& spriteAtlas)
+            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas)
+        {
+            
+        }
+
+        void Execute() override
+        {
+            auto min = Vector2(_selectedRegion.Min.x, _selectedRegion.Min.y);
+            auto max = Vector2(_selectedRegion.Max.x, _selectedRegion.Max.y);
+            auto name = _spriteAtlas.Name + std::to_string(_spriteAtlas.Sprites.size());
+            Sprite sprite = {name, min, max, Vector2()};
+            _spriteAtlas.Sprites.push_back(sprite);
+            
+            _previouslySelectedRegion = _selectedRegion;
+            _selectedRegion = SelectedRegion();
+        }
+
+        void Undo() override
+        {
+            _spriteAtlas.Sprites.pop_back();
+            _selectedRegion = _previouslySelectedRegion;
+            _previouslySelectedRegion = SelectedRegion();
+        }
+
+    private:
+        SelectedRegion& _selectedRegion;
+        SpriteAtlas& _spriteAtlas;
+
+        SelectedRegion _previouslySelectedRegion;
+    };
+
     void ClearSelections(SpriteEditorController& controller) 
     {
         controller.SelectedCells.clear();
@@ -311,11 +345,7 @@ namespace AWayBack
 
     void SpriteEditorController::SliceFreehand()
     {
-        auto min = Vector2(SelectedRegion.Min.x, SelectedRegion.Min.y);
-        auto max = Vector2(SelectedRegion.Max.x, SelectedRegion.Max.y);
-        auto name = _spriteAtlas->Name + std::to_string(_spriteAtlas->Sprites.size());
-        Sprite sprite = {name, min, max, Vector2()};
-        _spriteAtlas->Sprites.push_back(sprite);
+        _undoRedoHistory.AddCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas));
     }
 
     void SpriteEditorController::Save()
