@@ -43,4 +43,10 @@ namespace AWayBack
 
         latestCommand->Execute();
     }
+
+    void UndoRedoHistory::Reset()
+    {
+        Clear(_undoCommands);
+        Clear(_redoCommands);
+    }
 }

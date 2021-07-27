@@ -11,7 +11,7 @@ namespace AWayBack
         : _spriteEditorController(UndoRedoHistory),
           _canvas(_spriteEditorController),
           _controls(_spriteEditorController),
-          _sprites(_spriteEditorController, UndoRedoHistory),
+          _sprites(_spriteEditorController),
           _selectedSprite(_spriteEditorController),
           _newSpriteAtlasModal(_spriteEditorController)
     {

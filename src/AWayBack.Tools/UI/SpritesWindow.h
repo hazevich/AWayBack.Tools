@@ -6,8 +6,8 @@ namespace AWayBack
 {
     struct SpritesWindow
     {
-        SpritesWindow(SpriteEditorController& controller, UndoRedoHistory& undoRedoHistory)
-            : _controller(controller), _undoRedoHistory(undoRedoHistory)
+        SpritesWindow(SpriteEditorController& controller)
+            : _controller(controller)
         {
             
         }
@@ -16,6 +16,5 @@ namespace AWayBack
 
     private:
         SpriteEditorController& _controller;
-        UndoRedoHistory& _undoRedoHistory;
     };
 }

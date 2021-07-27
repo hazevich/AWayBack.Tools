@@ -18,6 +18,7 @@ namespace AWayBack
         void AddCommand(UndoRedoCommand* command);
         void Undo();
         void Redo();
+        void Reset();
 
     private:
         std::vector<UndoRedoCommand*> _undoCommands;

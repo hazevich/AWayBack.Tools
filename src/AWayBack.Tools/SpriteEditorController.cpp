@@ -84,6 +84,8 @@ namespace AWayBack
 
             CalculateGridSize();
             ClearSelections(*this);
+
+            _undoRedoHistory.Reset();
         }
     }
 
@@ -119,6 +121,8 @@ namespace AWayBack
 
         CalculateGridSize();
         ClearSelections(*this);
+
+        _undoRedoHistory.Reset();
     }
 
     void SpriteEditorController::Slice()
