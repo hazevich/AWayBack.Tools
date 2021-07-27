@@ -17,7 +17,6 @@ namespace AWayBack
               _selectedSpriteId(selectedSpriteId),
               _removedSprite(std::nullopt)
         {
-            
         }
 
         void Undo() override
@@ -30,7 +29,7 @@ namespace AWayBack
         void Execute() override
         {
             _removedSprite = _spriteAtlas.Sprites[_spriteIndex];
-            
+
             if (_spriteAtlas.Sprites.size() <= _spriteIndex) return;
             if (_spriteIndex == _selectedSpriteId) _selectedSpriteId = std::nullopt;
 
@@ -49,14 +48,13 @@ namespace AWayBack
         ClearSpritesCommand(SpriteAtlas& spriteAtlas, std::optional<int32_t>& selectedSpriteId)
             : _spriteAtlas(spriteAtlas), _selectedSpriteId(selectedSpriteId)
         {
-
         }
 
         void Execute() override
         {
             _clearedSprites.insert(_clearedSprites.begin(), _spriteAtlas.Sprites.begin(), _spriteAtlas.Sprites.end());
             _spriteAtlas.Sprites.clear();
-            
+
             _previousSpriteId = _selectedSpriteId;
             _selectedSpriteId = std::nullopt;
         }
@@ -92,19 +90,20 @@ namespace AWayBack
     struct SliceGridSequenceCommand : UndoRedoCommand
     {
         SliceGridSequenceCommand(
-            int32_t& sliceStart, 
-            int32_t& sliceEnd, 
-            SpriteAtlas& spriteAtlas, 
-            ImVec2i cellSize, 
-            int32_t gridWidth
+            int32_t& sliceStart,
+            int32_t& sliceEnd,
+            SpriteAtlas& spriteAtlas,
+            ImVec2i cellSize,
+            int32_t gridWidth,
+            SlicingType& slicingType
         )
             : _sliceStart(sliceStart),
               _sliceEnd(sliceEnd),
               _spriteAtlas(spriteAtlas),
               _cellSize(cellSize),
-              _gridWidth(gridWidth)              
+              _gridWidth(gridWidth),
+              _slicingType(slicingType)
         {
-            
         }
 
         void Execute() override
@@ -133,6 +132,8 @@ namespace AWayBack
             _sliceEnd = _previousSliceEnd;
             _previousSliceEnd = 0;
             _previousSliceStart = 0;
+
+            _slicingType = SlicingType::GridSequence;
         }
 
     private:
@@ -141,6 +142,7 @@ namespace AWayBack
         SpriteAtlas& _spriteAtlas;
         ImVec2i _cellSize;
         int32_t _gridWidth;
+        SlicingType& _slicingType;
 
         int32_t _previousSliceStart;
         int32_t _previousSliceEnd;
@@ -151,13 +153,19 @@ namespace AWayBack
 
     struct SliceGridSelectionCommand : UndoRedoCommand
     {
-        SliceGridSelectionCommand(std::vector<int32_t>& selectedCells, SpriteAtlas& spriteAtlas, ImVec2i cellSize, int32_t gridWidth)
+        SliceGridSelectionCommand(
+            std::vector<int32_t>& selectedCells,
+            SpriteAtlas& spriteAtlas,
+            ImVec2i cellSize,
+            int32_t gridWidth,
+            SlicingType& slicingType
+        )
             : _selectedCells(selectedCells),
               _spriteAtlas(spriteAtlas),
               _cellSize(cellSize),
-              _gridWidth(gridWidth)
+              _gridWidth(gridWidth),
+              _slicingType(slicingType)
         {
-            
         }
 
         void Execute() override
@@ -170,7 +178,8 @@ namespace AWayBack
                 SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
             }
 
-            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(), _selectedCells.end());
+            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(),
+                                            _selectedCells.end());
             _selectedCells.clear();
         }
 
@@ -181,8 +190,11 @@ namespace AWayBack
             _spriteAtlas.Sprites.erase(first, last);
 
             _selectedCells.clear();
-            _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(), _previouslySelectedCells.end());
+            _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(),
+                                  _previouslySelectedCells.end());
             _previouslySelectedCells.clear();
+
+            _slicingType = SlicingType::GridSelection;
         }
 
     private:
@@ -190,6 +202,7 @@ namespace AWayBack
         SpriteAtlas& _spriteAtlas;
         ImVec2i _cellSize;
         int32_t _gridWidth;
+        SlicingType& _slicingType;
 
         std::vector<int32_t> _previouslySelectedCells;
         int32_t _newSpritesBeginIndex;
@@ -198,10 +211,9 @@ namespace AWayBack
 
     struct SliceFreehandCommand : UndoRedoCommand
     {
-        SliceFreehandCommand(SelectedRegion& selectedRegion, SpriteAtlas& spriteAtlas)
-            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas)
+        SliceFreehandCommand(SelectedRegion& selectedRegion, SpriteAtlas& spriteAtlas, SlicingType& slicingType)
+            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas), _slicingType(slicingType)
         {
-            
         }
 
         void Execute() override
@@ -211,7 +223,7 @@ namespace AWayBack
             auto name = _spriteAtlas.Name + std::to_string(_spriteAtlas.Sprites.size());
             Sprite sprite = {name, min, max, Vector2()};
             _spriteAtlas.Sprites.push_back(sprite);
-            
+
             _previouslySelectedRegion = _selectedRegion;
             _selectedRegion = SelectedRegion();
         }
@@ -221,16 +233,19 @@ namespace AWayBack
             _spriteAtlas.Sprites.pop_back();
             _selectedRegion = _previouslySelectedRegion;
             _previouslySelectedRegion = SelectedRegion();
+
+            _slicingType = SlicingType::Freehand;
         }
 
     private:
         SelectedRegion& _selectedRegion;
         SpriteAtlas& _spriteAtlas;
+        SlicingType& _slicingType;
 
         SelectedRegion _previouslySelectedRegion;
     };
 
-    void ClearSelections(SpriteEditorController& controller) 
+    void ClearSelections(SpriteEditorController& controller)
     {
         controller.SelectedCells.clear();
         controller.SelectedRegion = SelectedRegion();
@@ -241,7 +256,6 @@ namespace AWayBack
     SpriteEditorController::SpriteEditorController(UndoRedoHistory& undoRedoHistory)
         : _undoRedoHistory(undoRedoHistory)
     {
-        
     }
 
     SpriteEditorController::~SpriteEditorController()
@@ -313,19 +327,19 @@ namespace AWayBack
 
     void SpriteEditorController::Slice()
     {
-        switch(SlicingType)
+        switch (SlicingType)
         {
-            case SlicingType::GridSequence:
+        case SlicingType::GridSequence:
             {
                 SliceGridSequence();
                 break;
             }
-            case SlicingType::GridSelection:
+        case SlicingType::GridSelection:
             {
                 SliceGridSelection();
                 break;
             }
-            case SlicingType::Freehand:
+        case SlicingType::Freehand:
             {
                 SliceFreehand();
                 break;
@@ -335,17 +349,19 @@ namespace AWayBack
 
     void SpriteEditorController::SliceGridSequence()
     {
-        _undoRedoHistory.AddCommand(new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth));
+        _undoRedoHistory.AddCommand(
+            new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
     }
 
     void SpriteEditorController::SliceGridSelection()
     {
-        _undoRedoHistory.AddCommand(new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth));
+        _undoRedoHistory.AddCommand(
+            new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
     }
 
     void SpriteEditorController::SliceFreehand()
     {
-        _undoRedoHistory.AddCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas));
+        _undoRedoHistory.AddCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType));
     }
 
     void SpriteEditorController::Save()
@@ -386,10 +402,10 @@ namespace AWayBack
 
     int32_t GetCellFromPosition(ImVec2 position, ImVec2i cellSize, int32_t gridWidth)
     {
-        int32_t cellX = (int32_t) position.x / cellSize.X;
-        int32_t cellY = (int32_t) position.y / cellSize.Y;
+        int32_t cellX = (int32_t)position.x / cellSize.X;
+        int32_t cellY = (int32_t)position.y / cellSize.Y;
 
-        return cellY * gridWidth + cellX;   
+        return cellY * gridWidth + cellX;
     }
 
     ImVec2 GetPositonFromCell(int32_t cell, ImVec2i cellSize, int32_t gridWidth)
