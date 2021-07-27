@@ -2,7 +2,7 @@
 
 namespace AWayBack
 {
-    void RenderListOfSprites(SpriteEditorController& controller)
+    void RenderListOfSprites(SpriteEditorController& controller, UndoRedoHistory& undoRedoHistory)
     {
         const int32_t itemSize = 70;
 
@@ -19,6 +19,7 @@ namespace AWayBack
             if (ImGui::Button("X", ImVec2(20, itemSize)))
             {
                 controller.RemoveSprite(i);
+
                 i--;
 
                 ImGui::PopID();
@@ -138,7 +139,7 @@ namespace AWayBack
             ImGui::OpenPopup("Clear sprites");
         }
 
-        RenderListOfSprites(_controller);
+        RenderListOfSprites(_controller, _undoRedoHistory);
 
         if (ConfirmClearPopup())
         {

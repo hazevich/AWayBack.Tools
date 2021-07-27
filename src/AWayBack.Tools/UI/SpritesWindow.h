@@ -1,12 +1,13 @@
 ﻿#pragma once
 #include "SpriteEditorController.h"
+#include "UndoRedo.h"
 
 namespace AWayBack
 {
     struct SpritesWindow
     {
-        SpritesWindow(SpriteEditorController& controller)
-            : _controller(controller)
+        SpritesWindow(SpriteEditorController& controller, UndoRedoHistory& undoRedoHistory)
+            : _controller(controller), _undoRedoHistory(undoRedoHistory)
         {
             
         }
@@ -15,5 +16,6 @@ namespace AWayBack
 
     private:
         SpriteEditorController& _controller;
+        UndoRedoHistory& _undoRedoHistory;
     };
 }

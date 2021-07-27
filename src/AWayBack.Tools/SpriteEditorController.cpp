@@ -1,12 +1,49 @@
 ﻿#include "SpriteEditorController.h"
 #include "SpriteAtlasSerializer.h"
 
+#include "UndoRedo.h"
+
 #include <filesystem>
 
 namespace fs = std::filesystem;
 
 namespace AWayBack
 {
+    struct RemoveSpriteCommand : UndoRedoCommand
+    {
+        RemoveSpriteCommand(int32_t spriteIndex, SpriteAtlas& spriteAtlas, std::optional<int32_t>& selectedSpriteId)
+            : _spriteIndex(spriteIndex),
+              _spriteAtlas(spriteAtlas),
+              _selectedSpriteId(selectedSpriteId),
+              _removedSprite(std::nullopt)
+        {
+            
+        }
+
+        void Undo() override
+        {
+            if (!_removedSprite) return;
+
+            _spriteAtlas.Sprites.insert(_spriteAtlas.Sprites.begin() + _spriteIndex, _removedSprite.value());
+        }
+
+        void Execute() override
+        {
+            _removedSprite = _spriteAtlas.Sprites[_spriteIndex];
+            
+            if (_spriteAtlas.Sprites.size() <= _spriteIndex) return;
+            if (_spriteIndex == _selectedSpriteId) _selectedSpriteId = std::nullopt;
+
+            _spriteAtlas.Sprites.erase(_spriteAtlas.Sprites.begin() + _spriteIndex);
+        }
+
+    private:
+        int32_t _spriteIndex;
+        SpriteAtlas& _spriteAtlas;
+        std::optional<int32_t> _selectedSpriteId;
+        std::optional<Sprite> _removedSprite;
+    };
+
     void ClearSelections(SpriteEditorController& controller) 
     {
         controller.SelectedCells.clear();
@@ -15,6 +52,12 @@ namespace AWayBack
         controller.SliceStart = controller.SliceEnd = 0;
     }
 
+    SpriteEditorController::SpriteEditorController(UndoRedoHistory& undoRedoHistory)
+        : _undoRedoHistory(undoRedoHistory)
+    {
+        
+    }
+    
     SpriteEditorController::~SpriteEditorController()
     {
         delete _spriteAtlas;
@@ -160,11 +203,7 @@ namespace AWayBack
 
     void SpriteEditorController::RemoveSprite(int32_t spriteIndex)
     {
-        if (_spriteAtlas->Sprites.size() <= spriteIndex) return;
-
-        if (spriteIndex == SelectedSpriteId) SelectedSpriteId = std::nullopt;
-
-        _spriteAtlas->Sprites.erase(_spriteAtlas->Sprites.begin() + spriteIndex);
+        _undoRedoHistory.AddCommand(new RemoveSpriteCommand(spriteIndex, *_spriteAtlas, SelectedSpriteId));
     }
 
     void SpriteEditorController::ClearSprites()

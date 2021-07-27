@@ -2,6 +2,8 @@
 
 #include "Application.h"
 
+#include "UndoRedo.h"
+
 #include "UI/NewSpriteAtlasModal.h"
 #include "UI/CanvasWindow.h"
 #include "UI/SelectedSpriteWindow.h"
@@ -15,11 +17,13 @@ namespace AWayBack
     public:
         ToolsApplication();
 
+        UndoRedoHistory UndoRedoHistory;
+
     protected:
         void Render() override;
 
     private:
-        SpriteEditorController _spriteEditorController{};
+        SpriteEditorController _spriteEditorController;
 
         CanvasWindow _canvas;
         ToolbarWindow _controls;

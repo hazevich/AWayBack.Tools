@@ -8,9 +8,10 @@
 namespace AWayBack
 {
     ToolsApplication::ToolsApplication()
-        : _canvas(_spriteEditorController),
+        : _spriteEditorController(UndoRedoHistory),
+          _canvas(_spriteEditorController),
           _controls(_spriteEditorController),
-          _sprites(_spriteEditorController),
+          _sprites(_spriteEditorController, UndoRedoHistory),
           _selectedSprite(_spriteEditorController),
           _newSpriteAtlasModal(_spriteEditorController)
     {
@@ -78,9 +79,16 @@ namespace AWayBack
                 _newSpriteAtlasModal.Open();
             }
 
+            if (ImGui::MenuItem("Undo"))
+                UndoRedoHistory.Undo();
+
+            if (ImGui::MenuItem("Redo"))
+                UndoRedoHistory.Redo();
+
             ImGui::EndMenu();
         }
 
         ImGui::EndMainMenuBar();
     }
 }
+

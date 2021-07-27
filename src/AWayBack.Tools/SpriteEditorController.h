@@ -3,6 +3,7 @@
 #include "ImGuiExt.h"
 
 #include "optional"
+#include "UndoRedo.h"
 
 #include "AWayBack/Graphics/Texture.h"
 
@@ -23,6 +24,7 @@ namespace AWayBack
     class SpriteEditorController
     {
     public:
+        SpriteEditorController(UndoRedoHistory& undoRedoHistory);
         ~SpriteEditorController();
 
         int32_t SliceStart, SliceEnd;
@@ -52,6 +54,8 @@ namespace AWayBack
         void ClearSprites();
 
     private:
+        UndoRedoHistory& _undoRedoHistory;
+
         SpriteAtlas* _spriteAtlas = new SpriteAtlas();
 
         Texture2D* _texture = nullptr;
