@@ -44,6 +44,40 @@ namespace AWayBack
         std::optional<Sprite> _removedSprite;
     };
 
+    struct ClearSpritesCommand : UndoRedoCommand
+    {
+        ClearSpritesCommand(SpriteAtlas& spriteAtlas, std::optional<int32_t>& selectedSpriteId)
+            : _spriteAtlas(spriteAtlas), _selectedSpriteId(selectedSpriteId)
+        {
+
+        }
+
+        void Execute() override
+        {
+            _clearedSprites.insert(_clearedSprites.begin(), _spriteAtlas.Sprites.begin(), _spriteAtlas.Sprites.end());
+            _spriteAtlas.Sprites.clear();
+            
+            _previousSpriteId = _selectedSpriteId;
+            _selectedSpriteId = std::nullopt;
+        }
+
+        void Undo() override
+        {
+            _spriteAtlas.Sprites.insert(_spriteAtlas.Sprites.begin(), _clearedSprites.begin(), _clearedSprites.end());
+            _clearedSprites.clear();
+
+            _selectedSpriteId = _previousSpriteId;
+            _previousSpriteId = std::nullopt;
+        }
+
+    private:
+        SpriteAtlas& _spriteAtlas;
+        std::optional<int32_t>& _selectedSpriteId;
+
+        std::optional<int32_t> _previousSpriteId = std::nullopt;
+        std::vector<Sprite> _clearedSprites{};
+    };
+
     void ClearSelections(SpriteEditorController& controller) 
     {
         controller.SelectedCells.clear();
@@ -212,8 +246,7 @@ namespace AWayBack
 
     void SpriteEditorController::ClearSprites()
     {
-        _spriteAtlas->Sprites.clear();
-        SelectedSpriteId = std::nullopt;
+        _undoRedoHistory.AddCommand(new ClearSpritesCommand(*_spriteAtlas, SelectedSpriteId));
     }
 
     void SpriteEditorController::CalculateGridSize()
