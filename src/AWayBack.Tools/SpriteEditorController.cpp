@@ -78,6 +78,77 @@ namespace AWayBack
         std::vector<Sprite> _clearedSprites{};
     };
 
+    void SliceSprite(SpriteAtlas& spriteAtlas, int32_t cell, ImVec2i cellSize, int32_t gridWidth)
+    {
+        ImVec2 position = GetPositonFromCell(cell, cellSize, gridWidth);
+
+        auto min = Vector2(position.x, position.y);
+        auto max = Vector2(position.x + cellSize.X, position.y + cellSize.Y);
+        auto name = spriteAtlas.Name + std::to_string(spriteAtlas.Sprites.size());
+        Sprite sprite = {name, min, max, Vector2()};
+        spriteAtlas.Sprites.push_back(sprite);
+    }
+
+    struct SliceGridSequenceCommand : UndoRedoCommand
+    {
+        SliceGridSequenceCommand(
+            int32_t& sliceStart, 
+            int32_t& sliceEnd, 
+            SpriteAtlas& spriteAtlas, 
+            ImVec2i cellSize, 
+            int32_t gridWidth
+        )
+            : _sliceStart(sliceStart),
+              _sliceEnd(sliceEnd),
+              _spriteAtlas(spriteAtlas),
+              _cellSize(cellSize),
+              _gridWidth(gridWidth)              
+        {
+            
+        }
+
+        void Execute() override
+        {
+            _newSpritesBeginIndex = _spriteAtlas.Sprites.size();
+            _spritesCount = _sliceEnd - _sliceStart;
+
+            for (int32_t i = _sliceStart; i < _sliceEnd; i++)
+            {
+                SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
+            }
+
+            _previousSliceStart = _sliceStart;
+            _previousSliceEnd = _sliceEnd;
+
+            _sliceStart = _sliceEnd = 0;
+        }
+
+        void Undo() override
+        {
+            auto first = _spriteAtlas.Sprites.begin() + _newSpritesBeginIndex;
+            auto last = first + _spritesCount;
+            _spriteAtlas.Sprites.erase(first, last);
+
+            _sliceStart = _previousSliceStart;
+            _sliceEnd = _previousSliceEnd;
+            _previousSliceEnd = 0;
+            _previousSliceStart = 0;
+        }
+
+    private:
+        int32_t& _sliceStart;
+        int32_t& _sliceEnd;
+        SpriteAtlas& _spriteAtlas;
+        ImVec2i _cellSize;
+        int32_t _gridWidth;
+
+        int32_t _previousSliceStart;
+        int32_t _previousSliceEnd;
+
+        int32_t _newSpritesBeginIndex;
+        int32_t _spritesCount;
+    };
+
     void ClearSelections(SpriteEditorController& controller) 
     {
         controller.SelectedCells.clear();
@@ -91,7 +162,7 @@ namespace AWayBack
     {
         
     }
-    
+
     SpriteEditorController::~SpriteEditorController()
     {
         delete _spriteAtlas;
@@ -181,25 +252,9 @@ namespace AWayBack
         }
     }
 
-    void SliceSprite(SpriteAtlas& spriteAtlas, int32_t cell, ImVec2i cellSize, int32_t gridWidth)
-    {
-        ImVec2 position = GetPositonFromCell(cell, cellSize, gridWidth);
-
-        auto min = Vector2(position.x, position.y);
-        auto max = Vector2(position.x + cellSize.X, position.y + cellSize.Y);
-        auto name = spriteAtlas.Name + std::to_string(spriteAtlas.Sprites.size());
-        Sprite sprite = {name, min, max, Vector2()};
-        spriteAtlas.Sprites.push_back(sprite);
-    }
-
     void SpriteEditorController::SliceGridSequence()
     {
-        for (int32_t i = SliceStart; i < SliceEnd; i++)
-        {
-            SliceSprite(*_spriteAtlas, i, _cellSize, GridWidth);
-        }
-
-        SliceStart = SliceEnd = 0;
+        _undoRedoHistory.AddCommand(new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth));
     }
 
     void SpriteEditorController::SliceGridSelection()
