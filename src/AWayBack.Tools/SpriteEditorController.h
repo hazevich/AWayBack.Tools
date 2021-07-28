@@ -53,6 +53,7 @@ namespace AWayBack
         void RemoveSprite(int32_t spriteIndex);
         void ClearSprites();
         void RenameSelectedSprite(const std::string& name);
+        void SetOriginForSelectedSprite(const Vector2 origin);
         void SetOriginForAllSprites(Vector2 origin);
 
     private:

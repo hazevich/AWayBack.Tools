@@ -291,6 +291,29 @@ namespace AWayBack
         std::vector<Vector2> _previousOrigins;
     };
 
+    struct SetOriginCommand : UndoRedoCommand
+    {
+        SetOriginCommand(Vector2 origin, Sprite& sprite)
+            : _newOrigin(origin), _previousOrigin(sprite.Origin), _sprite(sprite)
+        {   
+        }
+
+        void Execute() override
+        {
+            _sprite.Origin = _newOrigin;
+        }
+
+        void Undo() override
+        {
+            _sprite.Origin = _previousOrigin;
+        }
+
+    private:
+        const Vector2 _newOrigin;
+        const Vector2 _previousOrigin;
+        Sprite& _sprite;
+    };
+
     void ClearSelections(SpriteEditorController& controller)
     {
         controller.SelectedCells.clear();
@@ -470,6 +493,15 @@ namespace AWayBack
 
         if (sprite.Name != name)
             _undoRedoHistory.AddCommand(new RenameSpriteCommand(name, sprite));
+    }
+
+    void SpriteEditorController::SetOriginForSelectedSprite(const Vector2 origin)
+    {
+        if (!SelectedSpriteId) return;
+
+        Sprite& sprite = _spriteAtlas->Sprites[SelectedSpriteId.value()];
+
+        _undoRedoHistory.AddCommand(new SetOriginCommand(origin, sprite));
     }
 
     void SpriteEditorController::SetOriginForAllSprites(Vector2 origin)

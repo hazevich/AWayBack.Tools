@@ -170,7 +170,7 @@ namespace AWayBack
         return sprite.Origin;
     }
 
-    void RenderOriginControl(Sprite& sprite, OriginPlacement& originPlacement)
+    void RenderOriginControl(Sprite& sprite, OriginPlacement& originPlacement, Vector2& originBuffer, bool& isEditingOrigin, SpriteEditorController& controller)
     {
         auto originPlacementInt = (int32_t*) &originPlacement;
 
@@ -194,28 +194,45 @@ namespace AWayBack
         {
             sprite.Origin = CalculateOrigin(sprite, originPlacement);
         }
+
+        if (!isEditingOrigin)
+            originBuffer = sprite.Origin;
+
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
-        
+
+        ImGui::BeginGroup();
         ImGui::PushID("Origin");
 
-        bool xResult = ImGui::DragFloat("##X", &sprite.Origin.X, 1);
+        bool xResult = ImGui::DragFloat("##X", &originBuffer.X, 1);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
-        bool yResult = ImGui::DragFloat("##Y", &sprite.Origin.Y, 1);
+        bool yResult = ImGui::DragFloat("##Y", &originBuffer.Y, 1);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
-
-        ImGui::PopID();
 
         ImGui::Text("Origin");
+
+        ImGui::PopID();
+        ImGui::EndGroup();
+
+        if (ImGui::IsItemActivated())
+        {
+            isEditingOrigin = true;
+        }
+
+        if (ImGui::IsItemDeactivatedAfterEdit())
+        {
+            controller.SetOriginForSelectedSprite(originBuffer);
+            isEditingOrigin = false;
+        }
 
         if (xResult || yResult)
             originPlacement = OriginPlacement::Custom;
     }
 
-    void OriginControls(Sprite& sprite, OriginPlacement& originPlacement, SpriteEditorController& controller)
+    void OriginControls(Sprite& sprite, OriginPlacement& originPlacement, SpriteEditorController& controller, Vector2& originBuffer, bool& isEditingOrigin)
     {
         if (!ImGui::CollapsingHeader("Origin", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
@@ -224,7 +241,7 @@ namespace AWayBack
             controller.SetOriginForAllSprites(sprite.Origin);
         }
 
-        RenderOriginControl(sprite, originPlacement);
+        RenderOriginControl(sprite, originPlacement, originBuffer, isEditingOrigin, controller);
     }
 
     void GridControls(bool& isGridVisible, ImVec2i& cellSize, bool& isUniformCellSizeControl)
@@ -263,7 +280,7 @@ namespace AWayBack
         Texture2D* texture = _controller.GetTexture();
 
         SpriteRegionControls(sprite, texture);
-        OriginControls(sprite, _originPlacement, _controller);
+        OriginControls(sprite, _originPlacement, _controller, _originBuffer, _isEditingOrigin);
         GridControls(_isGridVisible,_cellSize, _isUniformCellSizeControl);
     }
 

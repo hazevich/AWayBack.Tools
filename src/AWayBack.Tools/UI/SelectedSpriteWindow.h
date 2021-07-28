@@ -39,6 +39,9 @@ namespace AWayBack
         char _nameBuffer[SpriteNameMaxSize] = { 0 };
         bool _isEditingName = false;
 
+        Vector2 _originBuffer;
+        bool _isEditingOrigin = false;
+
         std::optional<int32_t> _selectedSpriteId;
 
         void RenderControls();
