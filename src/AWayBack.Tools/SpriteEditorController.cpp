@@ -46,7 +46,7 @@ namespace AWayBack
     struct ClearSpritesCommand : UndoRedoCommand
     {
         ClearSpritesCommand(SpriteAtlas& spriteAtlas, std::optional<int32_t>& selectedSpriteId)
-            : _spriteAtlas(spriteAtlas), _selectedSpriteId(selectedSpriteId)
+            : _spriteAtlas(spriteAtlas), _selectedSpriteId(selectedSpriteId), _previousSpriteId(_selectedSpriteId)
         {
         }
 
@@ -55,7 +55,6 @@ namespace AWayBack
             _clearedSprites.insert(_clearedSprites.begin(), _spriteAtlas.Sprites.begin(), _spriteAtlas.Sprites.end());
             _spriteAtlas.Sprites.clear();
 
-            _previousSpriteId = _selectedSpriteId;
             _selectedSpriteId = std::nullopt;
         }
 
@@ -65,7 +64,6 @@ namespace AWayBack
             _clearedSprites.clear();
 
             _selectedSpriteId = _previousSpriteId;
-            _previousSpriteId = std::nullopt;
         }
 
     private:
@@ -102,7 +100,9 @@ namespace AWayBack
               _spriteAtlas(spriteAtlas),
               _cellSize(cellSize),
               _gridWidth(gridWidth),
-              _slicingType(slicingType)
+              _slicingType(slicingType),
+             _previousSliceStart(_sliceStart),
+             _previousSliceEnd(_sliceEnd)
         {
         }
 
@@ -115,10 +115,7 @@ namespace AWayBack
             {
                 SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
             }
-
-            _previousSliceStart = _sliceStart;
-            _previousSliceEnd = _sliceEnd;
-
+            
             _sliceStart = _sliceEnd = 0;
         }
 
@@ -130,8 +127,6 @@ namespace AWayBack
 
             _sliceStart = _previousSliceStart;
             _sliceEnd = _previousSliceEnd;
-            _previousSliceEnd = 0;
-            _previousSliceStart = 0;
 
             _slicingType = SlicingType::GridSequence;
         }
@@ -166,6 +161,7 @@ namespace AWayBack
               _gridWidth(gridWidth),
               _slicingType(slicingType)
         {
+            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(), _selectedCells.end());
         }
 
         void Execute() override
@@ -177,9 +173,7 @@ namespace AWayBack
             {
                 SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
             }
-
-            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(),
-                                            _selectedCells.end());
+            
             _selectedCells.clear();
         }
 
@@ -189,10 +183,7 @@ namespace AWayBack
             auto last = first + _newSpritesCount;
             _spriteAtlas.Sprites.erase(first, last);
 
-            _selectedCells.clear();
-            _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(),
-                                  _previouslySelectedCells.end());
-            _previouslySelectedCells.clear();
+            _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(), _previouslySelectedCells.end());
 
             _slicingType = SlicingType::GridSelection;
         }
@@ -212,7 +203,7 @@ namespace AWayBack
     struct SliceFreehandCommand : UndoRedoCommand
     {
         SliceFreehandCommand(SelectedRegion& selectedRegion, SpriteAtlas& spriteAtlas, SlicingType& slicingType)
-            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas), _slicingType(slicingType)
+            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas), _slicingType(slicingType), _previouslySelectedRegion(selectedRegion)
         {
         }
 
@@ -224,7 +215,6 @@ namespace AWayBack
             Sprite sprite = {name, min, max, Vector2()};
             _spriteAtlas.Sprites.push_back(sprite);
 
-            _previouslySelectedRegion = _selectedRegion;
             _selectedRegion = SelectedRegion();
         }
 
@@ -232,7 +222,6 @@ namespace AWayBack
         {
             _spriteAtlas.Sprites.pop_back();
             _selectedRegion = _previouslySelectedRegion;
-            _previouslySelectedRegion = SelectedRegion();
 
             _slicingType = SlicingType::Freehand;
         }
