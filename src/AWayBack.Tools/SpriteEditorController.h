@@ -52,6 +52,7 @@ namespace AWayBack
         void SetCellSize(const ImVec2i& cellSize);
         void RemoveSprite(int32_t spriteIndex);
         void ClearSprites();
+        void RenameSelectedSprite(const std::string& name);
 
     private:
         UndoRedoHistory& _undoRedoHistory;

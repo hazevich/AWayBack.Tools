@@ -34,5 +34,13 @@ namespace AWayBack
         ImVec2i _cellSize = ImVec2i(32, 32);
 
         OriginPlacement _originPlacement = Custom;
+
+        static const int32_t SpriteNameMaxSize = 1024;
+        char _nameBuffer[SpriteNameMaxSize] = { 0 };
+        bool _isEditingName = false;
+
+        std::optional<int32_t> _selectedSpriteId;
+
+        void RenderControls();
     };
 }

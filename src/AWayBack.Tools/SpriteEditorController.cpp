@@ -245,6 +245,33 @@ namespace AWayBack
         SelectedRegion _previouslySelectedRegion;
     };
 
+    struct RenameSpriteCommand : UndoRedoCommand
+    {
+        RenameSpriteCommand(const std::string& spriteName, Sprite& sprite)
+            : _spriteName(spriteName),
+              _previousSpriteName(sprite.Name),        
+              _sprite(sprite)
+        {
+            
+        }
+
+        void Execute() override
+        {
+            _sprite.Name = _spriteName;
+        }
+
+        void Undo() override
+        {
+            _sprite.Name = _previousSpriteName;
+        }
+        
+    private:
+        const std::string _spriteName;
+        const std::string _previousSpriteName;
+
+        Sprite& _sprite;
+    };
+
     void ClearSelections(SpriteEditorController& controller)
     {
         controller.SelectedCells.clear();
@@ -415,4 +442,15 @@ namespace AWayBack
 
         return ImVec2(x, y);
     }
+
+    void SpriteEditorController::RenameSelectedSprite(const std::string& name)
+    {
+        if (!SelectedSpriteId) return;
+
+        Sprite& sprite = _spriteAtlas->Sprites[SelectedSpriteId.value()];
+
+        if (sprite.Name != name)
+            _undoRedoHistory.AddCommand(new RenameSpriteCommand(name, sprite));
+    }
+
 }

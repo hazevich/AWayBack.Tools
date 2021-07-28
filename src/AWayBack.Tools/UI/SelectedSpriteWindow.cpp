@@ -3,6 +3,8 @@
 #include "imgui_internal.h"
 #include "ImGuiExt.h"
 
+#include "UndoRedo.h"
+
 #include <cmath>
 
 namespace AWayBack
@@ -236,31 +238,36 @@ namespace AWayBack
         ImGui::CellSizeControl(cellSize, isUniformCellSizeControl);
     }
 
-    void RenderControls(SpriteEditorController& controller, bool& isGridVisible, ImVec2i& cellSize, bool& isUniformCellSizeControl, OriginPlacement& originPlacement)
+    void SelectedSpriteWindow::RenderControls()
     {
-        const int32_t spriteNameMaxSize = 1024;
-
-        SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+        SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
 
         auto emptySprite = Sprite();
 
-        Sprite& sprite = controller.SelectedSpriteId
-                        ? spriteAtlas.Sprites[controller.SelectedSpriteId.value()]
+        Sprite& sprite = _controller.SelectedSpriteId
+                        ? spriteAtlas.Sprites[_controller.SelectedSpriteId.value()]
                         : emptySprite;
 
-        char nameBuffer[spriteNameMaxSize] = { 0 };
-        strncpy_s(nameBuffer, sprite.Name.c_str(), sizeof nameBuffer);
+        if (!_isEditingName)
+            strncpy_s(_nameBuffer, sprite.Name.c_str(), sizeof _nameBuffer);
 
-        if (ImGui::InputText("Name", nameBuffer, sizeof nameBuffer))
+        ImGui::InputText("Name", _nameBuffer, sizeof _nameBuffer);
+
+        if (ImGui::IsItemActivated())
+            _isEditingName = true;
+
+        if (ImGui::IsItemDeactivatedAfterEdit())
         {
-            sprite.Name = std::string(nameBuffer);
+            _controller.RenameSelectedSprite(_nameBuffer);
+
+            _isEditingName = false;
         }
 
-        Texture2D* texture = controller.GetTexture();
+        Texture2D* texture = _controller.GetTexture();
 
         SpriteRegionControls(sprite, texture);
-        OriginControls(sprite, spriteAtlas, originPlacement);
-        GridControls(isGridVisible, cellSize, isUniformCellSizeControl);
+        OriginControls(sprite, spriteAtlas, _originPlacement);
+        GridControls(_isGridVisible,_cellSize, _isUniformCellSizeControl);
     }
 
     void SelectedSpriteWindow::Render()
@@ -271,7 +278,7 @@ namespace AWayBack
             return;
         }
 
-        RenderControls(_controller, _isGridVisible, _cellSize, _isUniformCellSizeControl, _originPlacement);
+        RenderControls();
         RenderSelectionImage(_controller, _cellSize, _isGridVisible);
 
         ImGui::End();
