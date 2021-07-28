@@ -14,7 +14,7 @@ namespace AWayBack
         commands.clear();
     }
 
-    void UndoRedoHistory::AddCommand(UndoRedoCommand* command)
+    void UndoRedoHistory::ExecuteCommand(UndoRedoCommand* command)
     {
         Clear(_redoCommands);
 

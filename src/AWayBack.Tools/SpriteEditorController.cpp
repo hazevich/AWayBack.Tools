@@ -418,19 +418,19 @@ namespace AWayBack
 
     void SpriteEditorController::SliceGridSequence()
     {
-        _undoRedoHistory.AddCommand(
+        _undoRedoHistory.ExecuteCommand(
             new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
     }
 
     void SpriteEditorController::SliceGridSelection()
     {
-        _undoRedoHistory.AddCommand(
+        _undoRedoHistory.ExecuteCommand(
             new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
     }
 
     void SpriteEditorController::SliceFreehand()
     {
-        _undoRedoHistory.AddCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType));
+        _undoRedoHistory.ExecuteCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType));
     }
 
     void SpriteEditorController::Save()
@@ -453,12 +453,12 @@ namespace AWayBack
 
     void SpriteEditorController::RemoveSprite(int32_t spriteIndex)
     {
-        _undoRedoHistory.AddCommand(new RemoveSpriteCommand(spriteIndex, *_spriteAtlas, SelectedSpriteId));
+        _undoRedoHistory.ExecuteCommand(new RemoveSpriteCommand(spriteIndex, *_spriteAtlas, SelectedSpriteId));
     }
 
     void SpriteEditorController::ClearSprites()
     {
-        _undoRedoHistory.AddCommand(new ClearSpritesCommand(*_spriteAtlas, SelectedSpriteId));
+        _undoRedoHistory.ExecuteCommand(new ClearSpritesCommand(*_spriteAtlas, SelectedSpriteId));
     }
 
     void SpriteEditorController::CalculateGridSize()
@@ -492,19 +492,19 @@ namespace AWayBack
         Sprite& sprite = _spriteAtlas->Sprites[SelectedSpriteId.value()];
 
         if (sprite.Name != name)
-            _undoRedoHistory.AddCommand(new RenameSpriteCommand(name, sprite));
+            _undoRedoHistory.ExecuteCommand(new RenameSpriteCommand(name, sprite));
     }
 
     void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
-        _undoRedoHistory.AddCommand(new SetOriginCommand(origin, sprite));
+        _undoRedoHistory.ExecuteCommand(new SetOriginCommand(origin, sprite));
     }
 
     void SpriteEditorController::SetOriginForAllSprites(Vector2 origin)
     {
-        _undoRedoHistory.AddCommand(new SetOriginForAllSpritesCommand(origin, _spriteAtlas->Sprites));
+        _undoRedoHistory.ExecuteCommand(new SetOriginForAllSpritesCommand(origin, _spriteAtlas->Sprites));
     }
 
     Vector2 CalculateOrigin(Sprite& sprite, OriginPlacement originPlacement)
@@ -542,7 +542,7 @@ namespace AWayBack
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
         Vector2 origin = CalculateOrigin(sprite, originPlacement);
-        _undoRedoHistory.AddCommand(new SetOriginCommand(origin, sprite));
+        _undoRedoHistory.ExecuteCommand(new SetOriginCommand(origin, sprite));
 
         OriginPlacement = originPlacement;
     }

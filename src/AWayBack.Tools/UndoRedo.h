@@ -15,7 +15,7 @@ namespace AWayBack
     class UndoRedoHistory
     {
     public:
-        void AddCommand(UndoRedoCommand* command);
+        void ExecuteCommand(UndoRedoCommand* command);
         void Undo();
         void Redo();
         void Reset();
