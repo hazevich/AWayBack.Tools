@@ -9,6 +9,20 @@
 
 namespace AWayBack
 {
+    enum OriginPlacement
+    {
+        Center = 0,
+        TopLeft = 1,
+        TopCenter = 2,
+        TopRight = 3,
+        CenterRight = 4,
+        BottomRight = 5,
+        BottomCenter = 6,
+        BottomLeft = 7,
+        LeftCenter = 8,
+        Custom = 9
+    };
+
     enum struct SlicingType
     {
         GridSequence = 0,
@@ -33,14 +47,13 @@ namespace AWayBack
         std::optional<int32_t> SelectedSpriteId = std::nullopt;
 
         SlicingType SlicingType;
+        OriginPlacement OriginPlacement = Custom;
 
         std::vector<int32_t> SelectedCells = std::vector<int32_t>();
 
         SelectedRegion SelectedRegion;
 
         ImVec2i GetCellSize() { return _cellSize; }
-
-        SpriteAtlas& GetSpriteAtlas() { return *_spriteAtlas; }
 
         Texture2D* GetTexture() { return _texture; }
         void LoadSpriteAtlas(const std::string& spriteAtlasPath);
@@ -52,10 +65,16 @@ namespace AWayBack
         void SetCellSize(const ImVec2i& cellSize);
         void RemoveSprite(int32_t spriteIndex);
         void ClearSprites();
-        void RenameSelectedSprite(const std::string& name);
-        void SetOriginForSelectedSprite(const Vector2 origin);
-        void SetOriginForAllSprites(Vector2 origin);
 
+        [[nodiscard]] const SpriteAtlas& GetSpriteAtlas() const;
+        [[nodiscard]] const Sprite& GetSprite(int32_t spriteId) const;
+
+        void RenameSelectedSprite(const std::string& name);
+        void SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max);
+        void SetSpriteMax(int32_t spriteId, Vector2 max);
+        void SetSpriteOrigin(int32_t spriteId, Vector2 origin);
+        void SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement);
+        void SetOriginForAllSprites(Vector2 origin);
     private:
         UndoRedoHistory& _undoRedoHistory;
 

@@ -104,20 +104,15 @@ namespace AWayBack
     {
         if (controller.SelectedSpriteId)
         {
-            int32_t value = controller.SelectedSpriteId.value();
-            SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
-            if (spriteAtlas.Sprites.size() > value)
-            {
-                Sprite& sprite = spriteAtlas.Sprites[value];
+            const Sprite& sprite = controller.GetSprite(controller.SelectedSpriteId.value());
 
-                ImDrawList* drawList = ImGui::GetWindowDrawList();
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-                drawList->AddRectFilled(
-                    ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y),
-                    ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y),
-                    ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
-                );
-            }
+            drawList->AddRectFilled(
+                ImVec2(cursorScreenPos.x + sprite.Min.X, cursorScreenPos.y + sprite.Min.Y),
+                ImVec2(cursorScreenPos.x + sprite.Max.X, cursorScreenPos.y + sprite.Max.Y),
+                ImGui::GetColorU32({0.0f, 0.0f, 1.0f, 0.3f})
+            );
         }
     }
 

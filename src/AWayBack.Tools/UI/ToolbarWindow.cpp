@@ -8,7 +8,7 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Sprite atlas", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
-        SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+        const SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
 
         ImGui::LabelText("Sprite Atlas Name", spriteAtlas.Name.c_str());
         ImGui::NewLine();

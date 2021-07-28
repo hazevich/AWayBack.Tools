@@ -24,6 +24,11 @@ namespace AWayBack
         {
             return Vector2(X - other.X, Y - other.Y);
         }
+
+        Vector2 operator-(Vector2 other) const
+        {
+            return Vector2(X - other.X, Y - other.Y);
+        }
     };
 
     struct Sprite

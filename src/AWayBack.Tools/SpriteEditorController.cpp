@@ -495,11 +495,9 @@ namespace AWayBack
             _undoRedoHistory.AddCommand(new RenameSpriteCommand(name, sprite));
     }
 
-    void SpriteEditorController::SetOriginForSelectedSprite(const Vector2 origin)
+    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin)
     {
-        if (!SelectedSpriteId) return;
-
-        Sprite& sprite = _spriteAtlas->Sprites[SelectedSpriteId.value()];
+        Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
         _undoRedoHistory.AddCommand(new SetOriginCommand(origin, sprite));
     }
@@ -507,5 +505,67 @@ namespace AWayBack
     void SpriteEditorController::SetOriginForAllSprites(Vector2 origin)
     {
         _undoRedoHistory.AddCommand(new SetOriginForAllSpritesCommand(origin, _spriteAtlas->Sprites));
+    }
+
+    Vector2 CalculateOrigin(Sprite& sprite, OriginPlacement originPlacement)
+    {
+        Vector2 spriteSize = sprite.Max - sprite.Min;
+
+        switch (originPlacement)
+        {
+        case Center:
+            return Vector2(spriteSize.X / 2, spriteSize.Y / 2);
+        case TopLeft:
+            return Vector2(0, 0);
+        case TopCenter:
+            return Vector2(spriteSize.X / 2, 0);
+        case TopRight:
+            return Vector2(spriteSize.X, 0);
+        case CenterRight:
+            return Vector2(spriteSize.X, spriteSize.Y / 2);
+        case BottomRight:
+            return spriteSize;
+        case BottomCenter:
+            return Vector2(spriteSize.X / 2, spriteSize.Y);
+        case BottomLeft:
+            return Vector2(0, spriteSize.Y);
+        case LeftCenter:
+            return Vector2(0, spriteSize.Y / 2);
+        case Custom:
+            return sprite.Origin;
+        }
+
+        return sprite.Origin;
+    }
+
+    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement)
+    {
+        Sprite& sprite = _spriteAtlas->Sprites[spriteId];
+        Vector2 origin = CalculateOrigin(sprite, originPlacement);
+        _undoRedoHistory.AddCommand(new SetOriginCommand(origin, sprite));
+
+        OriginPlacement = originPlacement;
+    }
+
+    const SpriteAtlas& SpriteEditorController::GetSpriteAtlas() const
+    {
+        return *_spriteAtlas;
+    }
+
+    const Sprite& SpriteEditorController::GetSprite(int32_t spriteId) const
+    {
+        return _spriteAtlas->Sprites[spriteId];
+    }
+
+    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max)
+    {
+        Sprite& sprite = _spriteAtlas->Sprites[spriteId];
+        sprite.Min = min;
+        sprite.Max = max;
+    }
+
+    void SpriteEditorController::SetSpriteMax(int32_t spriteId, Vector2 max)
+    {
+        _spriteAtlas->Sprites[spriteId].Max = max;
     }
 }

@@ -49,7 +49,7 @@ namespace AWayBack
         ImGui::Grid(gridPosition, cellSize, gridSize);
     }
 
-    void RenderSelectionImage(SpriteEditorController& controller, ImVec2i cellSize, bool isGridVisible)
+    void RenderSelectionImage(SpriteEditorController& controller, ImVec2i cellSize, bool isGridVisible, Vector2 spriteOrigin)
     {
         ImVec2 framePosition = ImGui::GetCursorScreenPos();
 
@@ -59,8 +59,8 @@ namespace AWayBack
 
         if (controller.SelectedSpriteId)
         {
-            SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
-            Sprite& sprite = spriteAtlas.Sprites[controller.SelectedSpriteId.value()];
+            int32_t selectedSpriteId = controller.SelectedSpriteId.value();
+            const Sprite& sprite = controller.GetSprite(selectedSpriteId);
             Vector2 spriteSize = sprite.Max - sprite.Min;
             auto spritePosition = ImVec2((contentRegionAvail.x - spriteSize.X) * 0.5f,
                                          (contentRegionAvail.y - spriteSize.Y) * 0.5f);
@@ -70,20 +70,23 @@ namespace AWayBack
 
             Texture2D* texture = controller.GetTexture();
 
-            auto spriteuv0 = ImVec2(sprite.Min.X / texture->GetWidth(), sprite.Min.Y / texture->GetHeight());
-            auto spriteuv1 = ImVec2(sprite.Max.X / texture->GetWidth(), sprite.Max.Y / texture->GetHeight());
+            Vector2 min = sprite.Min;
+            Vector2 max = sprite.Max;
+
+            auto spriteuv0 = ImVec2(min.X / texture->GetWidth(), min.Y / texture->GetHeight());
+            auto spriteuv1 = ImVec2(max.X / texture->GetWidth(), max.Y / texture->GetHeight());
 
             ImVec2 imageScreenPos = ImGui::GetCursorScreenPos();
             ImVec2 imageCursorPos = ImGui::GetCursorPos();
 
             ImGui::Image(*texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
             
-            auto originScreenPos = ImVec2(imageScreenPos.x + sprite.Origin.X, imageScreenPos.y + sprite.Origin.Y);
+            auto originScreenPos = ImVec2(imageScreenPos.x + spriteOrigin.X, imageScreenPos.y + spriteOrigin.Y);
 
             RenderOriginDot(originScreenPos);
 
             if (isGridVisible)
-                RenderGrid(framePosition, imageCursorPos, sprite.Origin, cellSize, contentRegionAvail);
+                RenderGrid(framePosition, imageCursorPos, spriteOrigin, cellSize, contentRegionAvail);
         }
 
         ImGui::EndChild();
@@ -112,74 +115,44 @@ namespace AWayBack
         return xResult || yResult;
     }
 
-    void SpriteRegionControls(Sprite& sprite, Texture2D* texture)
+    void SpriteRegionProperties(int32_t spriteId, Texture2D* texture, SpriteEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Sprite region", ImGuiTreeNodeFlags_DefaultOpen)) return;
-
+        const Sprite& sprite = controller.GetSprite(spriteId);
         Vector2 spriteSize = sprite.Max - sprite.Min;
+        Vector2 min = sprite.Min;
         
         if (Vector2Control(
             "Position", 
-            sprite.Min, 
+            min, 
             Vector2(0, 0), 
             texture ? Vector2(texture->GetWidth() - spriteSize.X, texture->GetHeight() - spriteSize.Y) : Vector2(0, 0)
         ))
         {
-            sprite.Max = sprite.Min + spriteSize;
+            controller.SetSpriteMinMax(spriteId, min, min + spriteSize);
         }
 
         if (Vector2Control(
             "Size", 
             spriteSize, 
             Vector2(1, 1), 
-            texture ? Vector2(texture->GetWidth() - sprite.Min.X, texture->GetHeight() - sprite.Min.Y) : Vector2(0, 0)
+            texture ? Vector2(texture->GetWidth() - min.X, texture->GetHeight() - min.Y) : Vector2(0, 0)
         ))
         {
-            sprite.Max = sprite.Min + spriteSize;
+            controller.SetSpriteMax(spriteId, min + spriteSize);
         }
     }
 
-    Vector2 CalculateOrigin(Sprite& sprite, OriginPlacement originPlacement)
+    void RenderOriginControl(int32_t spriteId, Vector2& originBuffer, bool& isEditingOrigin, SpriteEditorController& controller)
     {
-        Vector2 spriteSize = sprite.Max - sprite.Min;
-
-        switch (originPlacement)
-        {
-        case Center:
-            return Vector2(spriteSize.X / 2, spriteSize.Y / 2);
-        case TopLeft:
-            return Vector2(0, 0);
-        case TopCenter:
-            return Vector2(spriteSize.X / 2, 0);
-        case TopRight:
-            return Vector2(spriteSize.X, 0);
-        case CenterRight:
-            return Vector2(spriteSize.X, spriteSize.Y / 2);
-        case BottomRight:
-            return spriteSize;
-        case BottomCenter:
-            return Vector2(spriteSize.X / 2, spriteSize.Y);
-        case BottomLeft:
-            return Vector2(0, spriteSize.Y);
-        case LeftCenter:
-            return Vector2(0, spriteSize.Y / 2);
-        case Custom:
-            return sprite.Origin;
-        }
-
-        return sprite.Origin;
-    }
-
-    void RenderOriginControl(Sprite& sprite, OriginPlacement& originPlacement, Vector2& originBuffer, bool& isEditingOrigin, SpriteEditorController& controller)
-    {
-        auto originPlacementInt = (int32_t*) &originPlacement;
+        auto originPlacementInt = (int32_t) controller.OriginPlacement;
 
         ImGuiStyle& style = ImGui::GetStyle();
         ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 
         if (ImGui::Combo(
             "##Origin", 
-            originPlacementInt, 
+            &originPlacementInt, 
             "Center\0"
             "Top Left\0"
             "Top Center\0"
@@ -190,13 +163,14 @@ namespace AWayBack
             "Bottom Left\0"
             "Left Center \0"
             "Custom\0"
-        ))
+        )
+            && controller.SelectedSpriteId)
         {
-            sprite.Origin = CalculateOrigin(sprite, originPlacement);
+            controller.SetSpriteOrigin(spriteId, (OriginPlacement) originPlacementInt);
         }
 
         if (!isEditingOrigin)
-            originBuffer = sprite.Origin;
+            originBuffer = controller.GetSprite(spriteId).Origin;
 
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
@@ -224,24 +198,26 @@ namespace AWayBack
 
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
-            controller.SetOriginForSelectedSprite(originBuffer);
+            controller.SetSpriteOrigin(spriteId, originBuffer);
             isEditingOrigin = false;
         }
 
         if (xResult || yResult)
-            originPlacement = OriginPlacement::Custom;
+            controller.OriginPlacement = OriginPlacement::Custom;
     }
 
-    void OriginControls(Sprite& sprite, OriginPlacement& originPlacement, SpriteEditorController& controller, Vector2& originBuffer, bool& isEditingOrigin)
+    void OriginControls(int32_t spriteId, SpriteEditorController& controller, Vector2& originBuffer, bool& isEditingOrigin)
     {
         if (!ImGui::CollapsingHeader("Origin", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
         if (ImGui::Button("Set for all sprites"))
         {
+            const Sprite& sprite = controller.GetSprite(spriteId);
+
             controller.SetOriginForAllSprites(sprite.Origin);
         }
 
-        RenderOriginControl(sprite, originPlacement, originBuffer, isEditingOrigin, controller);
+        RenderOriginControl(spriteId, originBuffer, isEditingOrigin, controller);
     }
 
     void GridControls(bool& isGridVisible, ImVec2i& cellSize, bool& isUniformCellSizeControl)
@@ -252,18 +228,17 @@ namespace AWayBack
         ImGui::CellSizeControl(cellSize, isUniformCellSizeControl);
     }
 
-    void SelectedSpriteWindow::RenderControls()
+    void SelectedSpriteWindow::RenderProperties()
     {
-        SpriteAtlas& spriteAtlas = _controller.GetSpriteAtlas();
+        if (!_controller.SelectedSpriteId) return;
 
-        auto emptySprite = Sprite();
-
-        Sprite& sprite = _controller.SelectedSpriteId
-                        ? spriteAtlas.Sprites[_controller.SelectedSpriteId.value()]
-                        : emptySprite;
+        int32_t selectedSpriteId = _controller.SelectedSpriteId.value();
+        
+        const Sprite& sprite = _controller.GetSprite(selectedSpriteId);
+        const std::string& spriteName = sprite.Name;
 
         if (!_isEditingName)
-            strncpy_s(_nameBuffer, sprite.Name.c_str(), sizeof _nameBuffer);
+            strncpy_s(_nameBuffer, spriteName.c_str(), sizeof _nameBuffer);
 
         ImGui::InputText("Name", _nameBuffer, sizeof _nameBuffer);
 
@@ -279,9 +254,9 @@ namespace AWayBack
 
         Texture2D* texture = _controller.GetTexture();
 
-        SpriteRegionControls(sprite, texture);
-        OriginControls(sprite, _originPlacement, _controller, _originBuffer, _isEditingOrigin);
-        GridControls(_isGridVisible,_cellSize, _isUniformCellSizeControl);
+        SpriteRegionProperties(selectedSpriteId, texture, _controller);
+        OriginControls(selectedSpriteId, _controller, _originBuffer, _isEditingOrigin);
+        GridControls(_isGridVisible, _cellSize, _isUniformCellSizeControl);
     }
 
     void SelectedSpriteWindow::Render()
@@ -292,8 +267,8 @@ namespace AWayBack
             return;
         }
 
-        RenderControls();
-        RenderSelectionImage(_controller, _cellSize, _isGridVisible);
+        RenderProperties();
+        RenderSelectionImage(_controller, _cellSize, _isGridVisible, _originBuffer);
 
         ImGui::End();
     }
