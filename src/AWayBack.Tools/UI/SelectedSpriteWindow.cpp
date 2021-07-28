@@ -215,16 +215,13 @@ namespace AWayBack
             originPlacement = OriginPlacement::Custom;
     }
 
-    void OriginControls(Sprite& sprite, SpriteAtlas& spriteAtlas, OriginPlacement& originPlacement)
+    void OriginControls(Sprite& sprite, OriginPlacement& originPlacement, SpriteEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Origin", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
         if (ImGui::Button("Set for all sprites"))
         {
-            for (Sprite& anotherSprite : spriteAtlas.Sprites)
-            {
-                anotherSprite.Origin = sprite.Origin;
-            }
+            controller.SetOriginForAllSprites(sprite.Origin);
         }
 
         RenderOriginControl(sprite, originPlacement);
@@ -266,7 +263,7 @@ namespace AWayBack
         Texture2D* texture = _controller.GetTexture();
 
         SpriteRegionControls(sprite, texture);
-        OriginControls(sprite, spriteAtlas, _originPlacement);
+        OriginControls(sprite, _originPlacement, _controller);
         GridControls(_isGridVisible,_cellSize, _isUniformCellSizeControl);
     }
 
