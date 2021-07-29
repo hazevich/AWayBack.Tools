@@ -51,25 +51,17 @@ namespace AWayBack
         if (!ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
         auto slicingTypeInt = (int32_t) controller.SlicingType;
+
         if (ImGui::Combo("Slicing type", &slicingTypeInt, "Grid sequence\0Grid selection\0Freehand"))
-        {
             controller.SlicingType = (SlicingType) slicingTypeInt;
-        }
 
         ImVec2i cellSize = controller.GetCellSize();
 
         if (ImGui::CellSizeControl(cellSize, isUniformCellSizeControl))
-        {
             controller.SetCellSize(cellSize);
-        }
 
         if (controller.SlicingType == SlicingType::GridSequence)
             RenderGridSequenceSlicingControls(controller);
-
-        if (ImGui::Button("Slice"))
-        {
-            controller.Slice();
-        }
     }
 
     void RenderGeneralControls(UndoRedoHistory& undoRedoHistory, SpriteEditorController& controller)
@@ -102,6 +94,11 @@ namespace AWayBack
 
         if (ImGui::Button("Save", buttonSize))
             controller.Save();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Slice", buttonSize))
+            controller.Slice();
     }
 
     void ToolbarWindow::Render()
