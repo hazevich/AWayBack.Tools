@@ -10,6 +10,12 @@ namespace AWayBack
 
         virtual void Undo() = 0;
         virtual void Execute() = 0;
+        virtual const char* GetType() = 0;
+
+        virtual bool Merge(UndoRedoCommand& undoRedoCommand)
+        {
+            return false;
+        }
     };
 
     class UndoRedoHistory

@@ -61,7 +61,10 @@ namespace AWayBack
         {
             int32_t selectedSpriteId = controller.SelectedSpriteId.value();
             const Sprite& sprite = controller.GetSprite(selectedSpriteId);
-            Vector2 spriteSize = sprite.Max - sprite.Min;
+            const Vector2& min = sprite.Min;
+            const Vector2& max = sprite.Max;
+
+            Vector2 spriteSize = max - min;
             auto spritePosition = ImVec2((contentRegionAvail.x - spriteSize.X) * 0.5f,
                                          (contentRegionAvail.y - spriteSize.Y) * 0.5f);
             ImGui::SetCursorPos(spritePosition);
@@ -69,9 +72,6 @@ namespace AWayBack
             ImGui::CheckerBoard(cellSize, ImVec2i(spriteSize.X, spriteSize.Y));
 
             Texture2D* texture = controller.GetTexture();
-
-            Vector2 min = sprite.Min;
-            Vector2 max = sprite.Max;
 
             auto spriteuv0 = ImVec2(min.X / texture->GetWidth(), min.Y / texture->GetHeight());
             auto spriteuv1 = ImVec2(max.X / texture->GetWidth(), max.Y / texture->GetHeight());
@@ -98,6 +98,7 @@ namespace AWayBack
 
         ImGuiStyle& style = ImGui::GetStyle();
 
+        ImGui::BeginGroup();
         ImGui::PushID(label);
 
         bool xResult = ImGui::DragFloat("##X", &vec2.X, 1, min.X, max.X);
@@ -112,6 +113,8 @@ namespace AWayBack
 
         ImGui::Text(label);
 
+        ImGui::EndGroup();
+
         return xResult || yResult;
     }
 
@@ -119,8 +122,9 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Sprite region", ImGuiTreeNodeFlags_DefaultOpen)) return;
         const Sprite& sprite = controller.GetSprite(spriteId);
-        Vector2 spriteSize = sprite.Max - sprite.Min;
         Vector2 min = sprite.Min;
+        Vector2 max = sprite.Max;
+        Vector2 spriteSize = max - min;
         
         if (Vector2Control(
             "Position", 
@@ -129,7 +133,12 @@ namespace AWayBack
             texture ? Vector2(texture->GetWidth() - spriteSize.X, texture->GetHeight() - spriteSize.Y) : Vector2(0, 0)
         ))
         {
-            controller.SetSpriteMinMax(spriteId, min, min + spriteSize);
+            controller.SetSpriteMinMax(spriteId, min, min + spriteSize, false);
+        }
+        
+        if (ImGui::IsItemDeactivatedAfterEdit())
+        {
+            controller.SetSpriteMinMax(spriteId, min, min + spriteSize, true);
         }
 
         if (Vector2Control(

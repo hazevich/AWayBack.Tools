@@ -36,6 +36,11 @@ namespace AWayBack
             _spriteAtlas.Sprites.erase(_spriteAtlas.Sprites.begin() + _spriteIndex);
         }
 
+        const const char* GetType() override
+        {
+            return "Remove sprite command";
+        }
+
     private:
         int32_t _spriteIndex;
         SpriteAtlas& _spriteAtlas;
@@ -64,6 +69,11 @@ namespace AWayBack
             _clearedSprites.clear();
 
             _selectedSpriteId = _previousSpriteId;
+        }
+
+        const const char* GetType() override
+        {
+            return "Clear sprites command";
         }
 
     private:
@@ -131,6 +141,11 @@ namespace AWayBack
             _slicingType = SlicingType::GridSequence;
         }
 
+        const char* GetType() override
+        {
+            return "Slice grid sequence";
+        }
+
     private:
         int32_t& _sliceStart;
         int32_t& _sliceEnd;
@@ -188,6 +203,11 @@ namespace AWayBack
             _slicingType = SlicingType::GridSelection;
         }
 
+        const char* GetType() override
+        {
+            return "Slice grid selection";
+        }
+
     private:
         std::vector<int32_t>& _selectedCells;
         SpriteAtlas& _spriteAtlas;
@@ -226,6 +246,11 @@ namespace AWayBack
             _slicingType = SlicingType::Freehand;
         }
 
+        const char* GetType() override
+        {
+            return "Slice freehand";
+        }
+
     private:
         SelectedRegion& _selectedRegion;
         SpriteAtlas& _spriteAtlas;
@@ -252,6 +277,11 @@ namespace AWayBack
         void Undo() override
         {
             _sprite.Name = _previousSpriteName;
+        }
+
+        const char* GetType() override
+        {
+            return "Rename sprite";
         }
         
     private:
@@ -285,6 +315,11 @@ namespace AWayBack
             }
         }
 
+        const char* GetType() override
+        {
+            return "Set origin for all sprites";
+        }
+
     private:
         Vector2 _newOrigin;
         std::vector<Sprite>& _sprites;
@@ -308,10 +343,72 @@ namespace AWayBack
             _sprite.Origin = _previousOrigin;
         }
 
+        const char* GetType() override
+        {
+            return "Set origin";
+        }
+
     private:
         const Vector2 _newOrigin;
         const Vector2 _previousOrigin;
         Sprite& _sprite;
+    };
+
+    struct SetSpriteMinMaxCommand : UndoRedoCommand
+    {
+        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite, bool isFinal)
+            : _min(min),
+              _max(max),
+              _previousMin(sprite.Min),
+              _previousMax(sprite.Max),
+              _sprite(sprite),
+              _isFinal(isFinal)
+        {
+        }
+
+        void Execute() override
+        {
+            _sprite.Min = _min;
+            _sprite.Max = _max;
+        }
+
+        void Undo() override
+        {
+            _sprite.Min = _previousMin;
+            _sprite.Max = _previousMax;
+        }
+        
+        bool Merge(UndoRedoCommand& other) override
+        {
+            if (_isFinal) return false;
+            if (GetType() != other.GetType()) return false;
+            
+            SetSpriteMinMaxCommand& otherMinMaxCommand = static_cast<SetSpriteMinMaxCommand&>(other);
+            
+            if (&otherMinMaxCommand._sprite != &_sprite) return false;
+
+            _min = otherMinMaxCommand._min;
+            _max = otherMinMaxCommand._max;
+
+            _isFinal = otherMinMaxCommand._isFinal;
+
+            return true;
+        }
+
+        const char* GetType() override
+        {
+            return "Set sprite min max";
+        }
+    private:
+        Vector2 _min;
+        Vector2 _max;
+
+        const Vector2 _previousMin;
+        const Vector2 _previousMax;
+
+        Sprite& _sprite;
+
+        bool _isFinal;
     };
 
     void ClearSelections(SpriteEditorController& controller)
@@ -557,11 +654,10 @@ namespace AWayBack
         return _spriteAtlas->Sprites[spriteId];
     }
 
-    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max)
+    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinal)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
-        sprite.Min = min;
-        sprite.Max = max;
+        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite, isFinal));
     }
 
     void SpriteEditorController::SetSpriteMax(int32_t spriteId, Vector2 max)

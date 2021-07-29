@@ -18,8 +18,21 @@ namespace AWayBack
     {
         Clear(_redoCommands);
 
+        if (!_undoCommands.empty())
+        {
+            UndoRedoCommand* latestCommand = _undoCommands.back();
+            
+            if (latestCommand->Merge(*command))
+            {
+                delete command;
+                latestCommand->Execute();
+                return;
+            }
+        }
+
         _undoCommands.push_back(command);
         command->Execute();
+
     }
 
     void UndoRedoHistory::Undo()
