@@ -652,11 +652,9 @@ namespace AWayBack
         return ImVec2(x, y);
     }
 
-    void SpriteEditorController::RenameSelectedSprite(const std::string& name)
+    void SpriteEditorController::RenameSprite(int32_t spriteId, const std::string& name)
     {
-        if (!SelectedSpriteId) return;
-
-        Sprite& sprite = _spriteAtlas->Sprites[SelectedSpriteId.value()];
+        Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
         if (sprite.Name != name)
             _undoRedoHistory.ExecuteCommand(new RenameSpriteCommand(name, sprite));

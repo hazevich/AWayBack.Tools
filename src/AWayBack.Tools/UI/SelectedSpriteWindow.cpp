@@ -241,13 +241,9 @@ namespace AWayBack
         ImGui::CellSizeControl(cellSize, isUniformCellSizeControl);
     }
 
-    void SelectedSpriteWindow::RenderProperties()
+    void NameControl(int32_t spriteId, SpriteEditorController& controller)
     {
-        if (!_controller.SelectedSpriteId) return;
-
-        int32_t selectedSpriteId = _controller.SelectedSpriteId.value();
-        
-        const Sprite& sprite = _controller.GetSprite(selectedSpriteId);
+        const Sprite& sprite = controller.GetSprite(spriteId);
         const std::string& spriteName = sprite.Name;
 
         const int32_t SpriteNameMaxSize = 1024;
@@ -256,11 +252,18 @@ namespace AWayBack
 
         if (ImGui::InputText("Name", nameBuffer, sizeof nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            _controller.RenameSelectedSprite(nameBuffer);
+            controller.RenameSprite(spriteId, nameBuffer);
         }
+    }
 
+    void SelectedSpriteWindow::RenderProperties()
+    {
+        if (!_controller.SelectedSpriteId) return;
+
+        int32_t selectedSpriteId = _controller.SelectedSpriteId.value();
         Texture2D* texture = _controller.GetTexture();
 
+        NameControl(selectedSpriteId, _controller);
         SpriteRegionProperties(selectedSpriteId, texture, _controller);
         OriginControls(selectedSpriteId, _controller);
         GridControls(_isGridVisible, _cellSize, _isUniformCellSizeControl);
