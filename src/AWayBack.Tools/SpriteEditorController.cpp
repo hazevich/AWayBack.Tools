@@ -36,7 +36,7 @@ namespace AWayBack
             _spriteAtlas.Sprites.erase(_spriteAtlas.Sprites.begin() + _spriteIndex);
         }
 
-        const const char* GetType() override
+        const char* GetType() override
         {
             return "Remove sprite command";
         }
@@ -71,7 +71,7 @@ namespace AWayBack
             _selectedSpriteId = _previousSpriteId;
         }
 
-        const const char* GetType() override
+        const char* GetType() override
         {
             return "Clear sprites command";
         }
@@ -103,7 +103,8 @@ namespace AWayBack
             SpriteAtlas& spriteAtlas,
             ImVec2i cellSize,
             int32_t gridWidth,
-            SlicingType& slicingType
+            SlicingType& slicingType,
+            std::optional<int32_t>& selectedSpriteId
         )
             : _sliceStart(sliceStart),
               _sliceEnd(sliceEnd),
@@ -111,8 +112,9 @@ namespace AWayBack
               _cellSize(cellSize),
               _gridWidth(gridWidth),
               _slicingType(slicingType),
-             _previousSliceStart(_sliceStart),
-             _previousSliceEnd(_sliceEnd)
+              _selectedSpriteId(selectedSpriteId),
+              _previousSliceStart(_sliceStart),
+              _previousSliceEnd(_sliceEnd)
         {
         }
 
@@ -139,6 +141,7 @@ namespace AWayBack
             _sliceEnd = _previousSliceEnd;
 
             _slicingType = SlicingType::GridSequence;
+            _selectedSpriteId = std::nullopt;
         }
 
         const char* GetType() override
@@ -153,6 +156,7 @@ namespace AWayBack
         ImVec2i _cellSize;
         int32_t _gridWidth;
         SlicingType& _slicingType;
+        std::optional<int32_t>& _selectedSpriteId;
 
         int32_t _previousSliceStart;
         int32_t _previousSliceEnd;
@@ -168,13 +172,15 @@ namespace AWayBack
             SpriteAtlas& spriteAtlas,
             ImVec2i cellSize,
             int32_t gridWidth,
-            SlicingType& slicingType
+            SlicingType& slicingType,
+            std::optional<int32_t>& selectedSpriteId
         )
             : _selectedCells(selectedCells),
               _spriteAtlas(spriteAtlas),
               _cellSize(cellSize),
               _gridWidth(gridWidth),
-              _slicingType(slicingType)
+              _slicingType(slicingType),
+              _selectedSpriteId(selectedSpriteId)
         {
             _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(), _selectedCells.end());
         }
@@ -201,6 +207,7 @@ namespace AWayBack
             _selectedCells.insert(_selectedCells.begin(), _previouslySelectedCells.begin(), _previouslySelectedCells.end());
 
             _slicingType = SlicingType::GridSelection;
+            _selectedSpriteId = std::nullopt;
         }
 
         const char* GetType() override
@@ -214,6 +221,7 @@ namespace AWayBack
         ImVec2i _cellSize;
         int32_t _gridWidth;
         SlicingType& _slicingType;
+        std::optional<int32_t>& _selectedSpriteId;
 
         std::vector<int32_t> _previouslySelectedCells;
         int32_t _newSpritesBeginIndex;
@@ -222,8 +230,16 @@ namespace AWayBack
 
     struct SliceFreehandCommand : UndoRedoCommand
     {
-        SliceFreehandCommand(SelectedRegion& selectedRegion, SpriteAtlas& spriteAtlas, SlicingType& slicingType)
-            : _selectedRegion(selectedRegion), _spriteAtlas(spriteAtlas), _slicingType(slicingType), _previouslySelectedRegion(selectedRegion)
+        SliceFreehandCommand(
+            SelectedRegion& selectedRegion, 
+            SpriteAtlas& spriteAtlas, 
+            SlicingType& slicingType,
+            std::optional<int32_t>& selectedSpriteId)
+            : _selectedRegion(selectedRegion),
+              _spriteAtlas(spriteAtlas),
+              _slicingType(slicingType),
+              _previouslySelectedRegion(selectedRegion),
+              _selectedSpriteId(selectedSpriteId)
         {
         }
 
@@ -244,6 +260,7 @@ namespace AWayBack
             _selectedRegion = _previouslySelectedRegion;
 
             _slicingType = SlicingType::Freehand;
+            _selectedSpriteId = std::nullopt;
         }
 
         const char* GetType() override
@@ -255,6 +272,7 @@ namespace AWayBack
         SelectedRegion& _selectedRegion;
         SpriteAtlas& _spriteAtlas;
         SlicingType& _slicingType;
+        std::optional<int32_t>& _selectedSpriteId;
 
         SelectedRegion _previouslySelectedRegion;
     };
@@ -516,18 +534,18 @@ namespace AWayBack
     void SpriteEditorController::SliceGridSequence()
     {
         _undoRedoHistory.ExecuteCommand(
-            new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
+            new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth, SlicingType, SelectedSpriteId));
     }
 
     void SpriteEditorController::SliceGridSelection()
     {
         _undoRedoHistory.ExecuteCommand(
-            new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth, SlicingType));
+            new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth, SlicingType, SelectedSpriteId));
     }
 
     void SpriteEditorController::SliceFreehand()
     {
-        _undoRedoHistory.ExecuteCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType));
+        _undoRedoHistory.ExecuteCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType, SelectedSpriteId));
     }
 
     void SpriteEditorController::Save()
