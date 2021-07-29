@@ -49,7 +49,7 @@ namespace AWayBack
         ImGui::Grid(gridPosition, cellSize, gridSize);
     }
 
-    void RenderSelectionImage(SpriteEditorController& controller, ImVec2i cellSize, bool isGridVisible, Vector2 spriteOrigin)
+    void RenderSelectionImage(SpriteEditorController& controller, ImVec2i cellSize, bool isGridVisible)
     {
         ImVec2 framePosition = ImGui::GetCursorScreenPos();
 
@@ -80,13 +80,14 @@ namespace AWayBack
             ImVec2 imageCursorPos = ImGui::GetCursorPos();
 
             ImGui::Image(*texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
-            
-            auto originScreenPos = ImVec2(imageScreenPos.x + spriteOrigin.X, imageScreenPos.y + spriteOrigin.Y);
+
+            const Vector2& origin = sprite.Origin;
+            auto originScreenPos = ImVec2(imageScreenPos.x + origin.X, imageScreenPos.y + origin.Y);
 
             RenderOriginDot(originScreenPos);
 
             if (isGridVisible)
-                RenderGrid(framePosition, imageCursorPos, spriteOrigin, cellSize, contentRegionAvail);
+                RenderGrid(framePosition, imageCursorPos, origin, cellSize, contentRegionAvail);
         }
 
         ImGui::EndChild();
@@ -152,7 +153,7 @@ namespace AWayBack
         }
     }
 
-    void RenderOriginControl(int32_t spriteId, Vector2& originBuffer, bool& isEditingOrigin, SpriteEditorController& controller)
+    void RenderOriginControl(int32_t spriteId, SpriteEditorController& controller)
     {
         auto originPlacementInt = (int32_t) controller.OriginPlacement;
 
@@ -178,8 +179,7 @@ namespace AWayBack
             controller.SetSpriteOrigin(spriteId, (OriginPlacement) originPlacementInt);
         }
 
-        if (!isEditingOrigin)
-            originBuffer = controller.GetSprite(spriteId).Origin;
+        Vector2 origin = controller.GetSprite(spriteId).Origin;
 
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
@@ -187,11 +187,11 @@ namespace AWayBack
         ImGui::BeginGroup();
         ImGui::PushID("Origin");
 
-        bool xResult = ImGui::DragFloat("##X", &originBuffer.X, 1);
+        bool xResult = ImGui::DragFloat("##X", &origin.X, 1);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
-        bool yResult = ImGui::DragFloat("##Y", &originBuffer.Y, 1);
+        bool yResult = ImGui::DragFloat("##Y", &origin.Y, 1);
         ImGui::PopItemWidth();
         ImGui::SameLine(0, style.ItemInnerSpacing.x);
 
@@ -200,22 +200,21 @@ namespace AWayBack
         ImGui::PopID();
         ImGui::EndGroup();
 
-        if (ImGui::IsItemActivated())
+        if (xResult || yResult)
         {
-            isEditingOrigin = true;
+            controller.SetSpriteOrigin(spriteId, origin, false);
+            controller.OriginPlacement = OriginPlacement::Custom;
         }
 
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
-            controller.SetSpriteOrigin(spriteId, originBuffer);
-            isEditingOrigin = false;
+            controller.SetSpriteOrigin(spriteId, origin, true);
         }
 
-        if (xResult || yResult)
-            controller.OriginPlacement = OriginPlacement::Custom;
+        
     }
 
-    void OriginControls(int32_t spriteId, SpriteEditorController& controller, Vector2& originBuffer, bool& isEditingOrigin)
+    void OriginControls(int32_t spriteId, SpriteEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Origin", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
@@ -226,7 +225,7 @@ namespace AWayBack
             controller.SetOriginForAllSprites(sprite.Origin);
         }
 
-        RenderOriginControl(spriteId, originBuffer, isEditingOrigin, controller);
+        RenderOriginControl(spriteId, controller);
     }
 
     void GridControls(bool& isGridVisible, ImVec2i& cellSize, bool& isUniformCellSizeControl)
@@ -258,7 +257,7 @@ namespace AWayBack
         Texture2D* texture = _controller.GetTexture();
 
         SpriteRegionProperties(selectedSpriteId, texture, _controller);
-        OriginControls(selectedSpriteId, _controller, _originBuffer, _isEditingOrigin);
+        OriginControls(selectedSpriteId, _controller);
         GridControls(_isGridVisible, _cellSize, _isUniformCellSizeControl);
     }
 
@@ -271,7 +270,7 @@ namespace AWayBack
         }
 
         RenderProperties();
-        RenderSelectionImage(_controller, _cellSize, _isGridVisible, _originBuffer);
+        RenderSelectionImage(_controller, _cellSize, _isGridVisible);
 
         ImGui::End();
     }

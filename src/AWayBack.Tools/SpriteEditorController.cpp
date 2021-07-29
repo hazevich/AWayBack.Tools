@@ -354,9 +354,9 @@ namespace AWayBack
         std::vector<Vector2> _previousOrigins;
     };
 
-    struct SetOriginCommand : UndoRedoCommand
+    struct SetSpriteOriginCommand : UndoRedoCommand
     {
-        SetOriginCommand(Vector2 origin, Sprite& sprite)
+        SetSpriteOriginCommand(Vector2 origin, Sprite& sprite)
             : _newOrigin(origin), _previousOrigin(sprite.Origin), _sprite(sprite)
         {   
         }
@@ -376,8 +376,19 @@ namespace AWayBack
             return "Set origin";
         }
 
+        bool Merge(UndoRedoCommand& other) override
+        {
+            auto& otherSpriteOriginCommand = dynamic_cast<SetSpriteOriginCommand&>(other);
+
+            if (&_sprite != &otherSpriteOriginCommand._sprite) return false;
+
+            _newOrigin = otherSpriteOriginCommand._newOrigin;
+
+            return true;
+        }
+
     private:
-        const Vector2 _newOrigin;
+        Vector2 _newOrigin;
         const Vector2 _previousOrigin;
         Sprite& _sprite;
     };
@@ -612,11 +623,11 @@ namespace AWayBack
             _undoRedoHistory.ExecuteCommand(new RenameSpriteCommand(name, sprite));
     }
 
-    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin)
+    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
-        _undoRedoHistory.ExecuteCommand(new SetOriginCommand(origin, sprite));
+        _undoRedoHistory.ExecuteCommand(new SetSpriteOriginCommand(origin, sprite), isFinalEdit);
     }
 
     void SpriteEditorController::SetOriginForAllSprites(Vector2 origin)
@@ -659,7 +670,7 @@ namespace AWayBack
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
         Vector2 origin = CalculateOrigin(sprite, originPlacement);
-        _undoRedoHistory.ExecuteCommand(new SetOriginCommand(origin, sprite));
+        _undoRedoHistory.ExecuteCommand(new SetSpriteOriginCommand(origin, sprite));
 
         OriginPlacement = originPlacement;
     }

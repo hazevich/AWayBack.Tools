@@ -18,9 +18,6 @@ namespace AWayBack
         bool _isUniformCellSizeControl = true;
 
         ImVec2i _cellSize = ImVec2i(32, 32);
-        
-        Vector2 _originBuffer;
-        bool _isEditingOrigin = false;
 
         std::optional<int32_t> _selectedSpriteId;
 
