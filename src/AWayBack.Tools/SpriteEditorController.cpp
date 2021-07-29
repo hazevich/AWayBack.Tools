@@ -442,6 +442,45 @@ namespace AWayBack
         Sprite& _sprite;
     };
 
+    struct SetSpriteSizeCommand : UndoRedoCommand
+    {
+        SetSpriteSizeCommand(Vector2 spriteSize, Sprite& sprite)
+            : _spriteSize(spriteSize), _previousMax(sprite.Max), _sprite(sprite)
+        {   
+        }
+
+        void Execute() override
+        {
+            _sprite.Max = _sprite.Min + _spriteSize;
+        }
+
+        void Undo() override
+        {
+            _sprite.Max = _previousMax;
+        }
+
+        const char* GetType() override
+        {
+            return "Set sprite size";
+        }
+
+        bool Merge(UndoRedoCommand& other) override
+        {
+            auto& otherSetSpriteSizeCommand = dynamic_cast<SetSpriteSizeCommand&>(other);
+
+            if (&_sprite != &otherSetSpriteSizeCommand._sprite) return false;
+
+            _spriteSize = otherSetSpriteSizeCommand._spriteSize;
+
+            return true;
+        }
+
+    private:
+        Vector2 _spriteSize;
+        const Vector2 _previousMax;
+        Sprite& _sprite;
+    };
+
     void ClearSelections(SpriteEditorController& controller)
     {
         controller.SelectedCells.clear();
@@ -691,8 +730,10 @@ namespace AWayBack
         _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite), isFinalEdit);
     }
 
-    void SpriteEditorController::SetSpriteMax(int32_t spriteId, Vector2 max)
+    void SpriteEditorController::SetSpriteSize(int32_t spriteId, Vector2 spriteSize, bool isFinalEdit)
     {
-        _spriteAtlas->Sprites[spriteId].Max = max;
+        Sprite& sprite = _spriteAtlas->Sprites[spriteId];
+
+        _undoRedoHistory.ExecuteCommand(new SetSpriteSizeCommand(spriteSize, sprite), isFinalEdit);
     }
 }

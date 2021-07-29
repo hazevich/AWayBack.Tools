@@ -71,7 +71,7 @@ namespace AWayBack
 
         void RenameSelectedSprite(const std::string& name);
         void SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinalEdit);
-        void SetSpriteMax(int32_t spriteId, Vector2 max);
+        void SetSpriteSize(int32_t spriteId, Vector2 spriteSize, bool isFinalEdit);
         void SetSpriteOrigin(int32_t spriteId, Vector2 origin, bool isFinalEdit);
         void SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement);
         void SetOriginForAllSprites(Vector2 origin);
