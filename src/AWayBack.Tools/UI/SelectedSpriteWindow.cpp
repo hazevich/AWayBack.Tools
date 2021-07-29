@@ -134,12 +134,12 @@ namespace AWayBack
             texture ? Vector2(texture->GetWidth() - spriteSize.X, texture->GetHeight() - spriteSize.Y) : Vector2(0, 0)
         ))
         {
-            controller.SetSpriteMinMax(spriteId, min, min + spriteSize, false);
+            controller.SetSpritePosition(spriteId, min, false);
         }
         
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
-            controller.SetSpriteMinMax(spriteId, min, min + spriteSize, true);
+            controller.SetSpritePosition(spriteId, min, true);
         }
 
         if (Vector2Control(

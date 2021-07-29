@@ -393,11 +393,11 @@ namespace AWayBack
         Sprite& _sprite;
     };
 
-    struct SetSpriteMinMaxCommand : UndoRedoCommand
+    struct SetSpritePositionCommand : UndoRedoCommand
     {
-        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite)
+        SetSpritePositionCommand(const Vector2& min, Sprite& sprite)
             : _min(min),
-              _max(max),
+              _max(_min + (sprite.Max - sprite.Min)),
               _previousMin(sprite.Min),
               _previousMax(sprite.Max),
               _sprite(sprite)
@@ -418,7 +418,7 @@ namespace AWayBack
         
         bool Merge(UndoRedoCommand& other) override
         {
-            auto& otherMinMaxCommand = dynamic_cast<SetSpriteMinMaxCommand&>(other);
+            auto& otherMinMaxCommand = dynamic_cast<SetSpritePositionCommand&>(other);
             
             if (&otherMinMaxCommand._sprite != &_sprite) return false;
 
@@ -430,7 +430,7 @@ namespace AWayBack
 
         const char* GetType() override
         {
-            return "Set sprite min max";
+            return "Set sprite position";
         }
     private:
         Vector2 _min;
@@ -724,10 +724,10 @@ namespace AWayBack
         return _spriteAtlas->Sprites[spriteId];
     }
 
-    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinalEdit)
+    void SpriteEditorController::SetSpritePosition(int32_t spriteId, Vector2 position, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
-        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite), isFinalEdit);
+        _undoRedoHistory.ExecuteCommand(new SetSpritePositionCommand(position, sprite), isFinalEdit);
     }
 
     void SpriteEditorController::SetSpriteSize(int32_t spriteId, Vector2 spriteSize, bool isFinalEdit)
