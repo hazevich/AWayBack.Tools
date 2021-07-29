@@ -26,7 +26,7 @@ namespace AWayBack
         SpriteEditorController _spriteEditorController;
 
         CanvasWindow _canvas;
-        ToolbarWindow _controls;
+        ToolbarWindow _toolbar;
         SpritesWindow _sprites;
         SelectedSpriteWindow _selectedSprite;
         NewSpriteAtlasModal _newSpriteAtlasModal;

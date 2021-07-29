@@ -10,7 +10,7 @@ namespace AWayBack
     ToolsApplication::ToolsApplication()
         : _spriteEditorController(UndoRedoHistory),
           _canvas(_spriteEditorController),
-          _controls(_spriteEditorController),
+          _toolbar(_spriteEditorController, UndoRedoHistory),
           _sprites(_spriteEditorController),
           _selectedSprite(_spriteEditorController),
           _newSpriteAtlasModal(_spriteEditorController)
@@ -26,7 +26,7 @@ namespace AWayBack
         _newSpriteAtlasModal.Render();
 
         _canvas.Render();
-        _controls.Render();
+        _toolbar.Render();
         _sprites.Render();
         _selectedSprite.Render();
     }

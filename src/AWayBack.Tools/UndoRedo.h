@@ -28,6 +28,9 @@ namespace AWayBack
         void Redo();
         void Reset();
 
+        bool CanUndo();
+        bool CanRedo();
+
     private:
         std::vector<UndoRedoCommand*> _undoCommands;
         std::vector<UndoRedoCommand*> _redoCommands;

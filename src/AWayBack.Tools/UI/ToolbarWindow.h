@@ -5,8 +5,8 @@ namespace AWayBack
 {
     struct ToolbarWindow
     {
-        ToolbarWindow(SpriteEditorController& controller)
-            : _controller(controller)
+        ToolbarWindow(SpriteEditorController& controller, UndoRedoHistory& undoRedoHistory)
+            : _controller(controller), _undoRedoHistory(undoRedoHistory)
         {
         }
 
@@ -14,6 +14,7 @@ namespace AWayBack
 
     private:
         SpriteEditorController& _controller;
+        UndoRedoHistory& _undoRedoHistory;
         bool _isUniformCellSizeControl = true;
     };
 }

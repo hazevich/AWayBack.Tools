@@ -64,4 +64,15 @@ namespace AWayBack
         Clear(_undoCommands);
         Clear(_redoCommands);
     }
+
+    bool UndoRedoHistory::CanUndo()
+    {
+        return !_undoCommands.empty();
+    }
+
+    bool UndoRedoHistory::CanRedo()
+    {
+        return !_redoCommands.empty();
+    }
+
 }

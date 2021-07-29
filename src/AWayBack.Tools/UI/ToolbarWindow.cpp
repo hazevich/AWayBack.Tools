@@ -13,11 +13,6 @@ namespace AWayBack
         ImGui::LabelText("Sprite Atlas Name", spriteAtlas.Name.c_str());
         ImGui::NewLine();
         ImGui::LabelText("Texture name", spriteAtlas.TextureName.c_str());
-
-        if (ImGui::Button("Save"))
-        {
-            controller.Save();
-        }
     }
 
     void RenderGridSequenceSlicingControls(SpriteEditorController& controller)
@@ -77,6 +72,38 @@ namespace AWayBack
         }
     }
 
+    void RenderGeneralControls(UndoRedoHistory& undoRedoHistory, SpriteEditorController& controller)
+    {
+        const ImVec2 buttonSize = ImVec2(50, 50);
+
+        bool isDisabled;
+
+        if ((isDisabled = !undoRedoHistory.CanUndo()))
+            ImGui::PushDisabled();
+
+        if (ImGui::Button("Undo", buttonSize))
+            undoRedoHistory.Undo();
+
+        if (isDisabled)
+            ImGui::PopDisabled();
+
+        ImGui::SameLine();
+
+        if ((isDisabled = !undoRedoHistory.CanRedo()))
+            ImGui::PushDisabled();
+
+        if (ImGui::Button("Redo", buttonSize))
+            undoRedoHistory.Redo();
+
+        if (isDisabled)
+            ImGui::PopDisabled();
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Save", buttonSize))
+            controller.Save();
+    }
+
     void ToolbarWindow::Render()
     {
         if (!ImGui::Begin("Toolbar"))
@@ -85,6 +112,7 @@ namespace AWayBack
             return;
         }
 
+        RenderGeneralControls(_undoRedoHistory, _controller);
         RenderSpriteAtlasHeader(_controller);
         RenderSlicingControls(_controller, _isUniformCellSizeControl);
 
