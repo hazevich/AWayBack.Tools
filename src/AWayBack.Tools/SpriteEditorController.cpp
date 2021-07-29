@@ -283,8 +283,7 @@ namespace AWayBack
             : _spriteName(spriteName),
               _previousSpriteName(sprite.Name),        
               _sprite(sprite)
-        {
-            
+        {   
         }
 
         void Execute() override
@@ -301,9 +300,20 @@ namespace AWayBack
         {
             return "Rename sprite";
         }
+
+        bool Merge(UndoRedoCommand& other) override
+        {
+            auto& otherRenameSprite = dynamic_cast<RenameSpriteCommand&>(other);
+
+            if (&_sprite != &otherRenameSprite._sprite) return false;
+
+            _spriteName = otherRenameSprite._spriteName;
+
+            return true;
+        }
         
     private:
-        const std::string _spriteName;
+        std::string _spriteName;
         const std::string _previousSpriteName;
 
         Sprite& _sprite;
@@ -374,13 +384,12 @@ namespace AWayBack
 
     struct SetSpriteMinMaxCommand : UndoRedoCommand
     {
-        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite, bool isFinalEdit)
+        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite)
             : _min(min),
               _max(max),
               _previousMin(sprite.Min),
               _previousMax(sprite.Max),
-              _sprite(sprite),
-              _isFinalEdit(isFinalEdit)
+              _sprite(sprite)
         {
         }
 
@@ -398,17 +407,12 @@ namespace AWayBack
         
         bool Merge(UndoRedoCommand& other) override
         {
-            if (_isFinalEdit) return false;
-            if (GetType() != other.GetType()) return false;
-            
-            SetSpriteMinMaxCommand& otherMinMaxCommand = static_cast<SetSpriteMinMaxCommand&>(other);
+            auto& otherMinMaxCommand = dynamic_cast<SetSpriteMinMaxCommand&>(other);
             
             if (&otherMinMaxCommand._sprite != &_sprite) return false;
 
             _min = otherMinMaxCommand._min;
             _max = otherMinMaxCommand._max;
-
-            _isFinalEdit = otherMinMaxCommand._isFinalEdit;
 
             return true;
         }
@@ -425,8 +429,6 @@ namespace AWayBack
         const Vector2 _previousMax;
 
         Sprite& _sprite;
-
-        bool _isFinalEdit;
     };
 
     void ClearSelections(SpriteEditorController& controller)
@@ -675,7 +677,7 @@ namespace AWayBack
     void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
-        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite, isFinalEdit));
+        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite), isFinalEdit);
     }
 
     void SpriteEditorController::SetSpriteMax(int32_t spriteId, Vector2 max)

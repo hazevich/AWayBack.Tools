@@ -246,19 +246,13 @@ namespace AWayBack
         const Sprite& sprite = _controller.GetSprite(selectedSpriteId);
         const std::string& spriteName = sprite.Name;
 
-        if (!_isEditingName)
-            strncpy_s(_nameBuffer, spriteName.c_str(), sizeof _nameBuffer);
+        const int32_t SpriteNameMaxSize = 1024;
+        char nameBuffer[SpriteNameMaxSize] = { 0 };
+        strncpy_s(nameBuffer, spriteName.c_str(), sizeof nameBuffer);
 
-        ImGui::InputText("Name", _nameBuffer, sizeof _nameBuffer);
-
-        if (ImGui::IsItemActivated())
-            _isEditingName = true;
-
-        if (ImGui::IsItemDeactivatedAfterEdit())
+        if (ImGui::InputText("Name", nameBuffer, sizeof nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            _controller.RenameSelectedSprite(_nameBuffer);
-
-            _isEditingName = false;
+            _controller.RenameSelectedSprite(nameBuffer);
         }
 
         Texture2D* texture = _controller.GetTexture();

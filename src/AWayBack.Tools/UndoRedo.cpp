@@ -14,16 +14,19 @@ namespace AWayBack
         commands.clear();
     }
 
-    void UndoRedoHistory::ExecuteCommand(UndoRedoCommand* command)
+    void UndoRedoHistory::ExecuteCommand(UndoRedoCommand* command, bool lockMerging)
     {
         Clear(_redoCommands);
+
+        command->IsMergingLocked = lockMerging;
 
         if (!_undoCommands.empty())
         {
             UndoRedoCommand* latestCommand = _undoCommands.back();
             
-            if (latestCommand->Merge(*command))
+            if (latestCommand->GetType() == command->GetType() && !latestCommand->IsMergingLocked && latestCommand->Merge(*command))
             {
+                latestCommand->IsMergingLocked = command->IsMergingLocked;
                 delete command;
                 latestCommand->Execute();
                 return;
@@ -32,7 +35,6 @@ namespace AWayBack
 
         _undoCommands.push_back(command);
         command->Execute();
-
     }
 
     void UndoRedoHistory::Undo()

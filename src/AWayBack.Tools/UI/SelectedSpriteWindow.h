@@ -18,11 +18,7 @@ namespace AWayBack
         bool _isUniformCellSizeControl = true;
 
         ImVec2i _cellSize = ImVec2i(32, 32);
-
-        static const int32_t SpriteNameMaxSize = 1024;
-        char _nameBuffer[SpriteNameMaxSize] = { 0 };
-        bool _isEditingName = false;
-
+        
         Vector2 _originBuffer;
         bool _isEditingOrigin = false;
 
