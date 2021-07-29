@@ -374,13 +374,13 @@ namespace AWayBack
 
     struct SetSpriteMinMaxCommand : UndoRedoCommand
     {
-        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite, bool isFinal)
+        SetSpriteMinMaxCommand(const Vector2& min, const Vector2& max, Sprite& sprite, bool isFinalEdit)
             : _min(min),
               _max(max),
               _previousMin(sprite.Min),
               _previousMax(sprite.Max),
               _sprite(sprite),
-              _isFinal(isFinal)
+              _isFinalEdit(isFinalEdit)
         {
         }
 
@@ -398,7 +398,7 @@ namespace AWayBack
         
         bool Merge(UndoRedoCommand& other) override
         {
-            if (_isFinal) return false;
+            if (_isFinalEdit) return false;
             if (GetType() != other.GetType()) return false;
             
             SetSpriteMinMaxCommand& otherMinMaxCommand = static_cast<SetSpriteMinMaxCommand&>(other);
@@ -408,7 +408,7 @@ namespace AWayBack
             _min = otherMinMaxCommand._min;
             _max = otherMinMaxCommand._max;
 
-            _isFinal = otherMinMaxCommand._isFinal;
+            _isFinalEdit = otherMinMaxCommand._isFinalEdit;
 
             return true;
         }
@@ -426,7 +426,7 @@ namespace AWayBack
 
         Sprite& _sprite;
 
-        bool _isFinal;
+        bool _isFinalEdit;
     };
 
     void ClearSelections(SpriteEditorController& controller)
@@ -672,10 +672,10 @@ namespace AWayBack
         return _spriteAtlas->Sprites[spriteId];
     }
 
-    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinal)
+    void SpriteEditorController::SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
-        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite, isFinal));
+        _undoRedoHistory.ExecuteCommand(new SetSpriteMinMaxCommand(min, max, sprite, isFinalEdit));
     }
 
     void SpriteEditorController::SetSpriteMax(int32_t spriteId, Vector2 max)

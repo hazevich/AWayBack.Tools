@@ -70,7 +70,7 @@ namespace AWayBack
         [[nodiscard]] const Sprite& GetSprite(int32_t spriteId) const;
 
         void RenameSelectedSprite(const std::string& name);
-        void SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinal);
+        void SetSpriteMinMax(int32_t spriteId, Vector2 min, Vector2 max, bool isFinalEdit);
         void SetSpriteMax(int32_t spriteId, Vector2 max);
         void SetSpriteOrigin(int32_t spriteId, Vector2 origin);
         void SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement);
