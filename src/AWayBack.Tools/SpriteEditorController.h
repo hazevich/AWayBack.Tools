@@ -41,17 +41,17 @@ namespace AWayBack
         SpriteEditorController(UndoRedoHistory& undoRedoHistory);
         ~SpriteEditorController();
 
-        int32_t SliceStart, SliceEnd;
-        int32_t GridWidth, GridHeight;
+        int32_t SliceStart = 0, SliceEnd = 0;
+        int32_t GridWidth = 0, GridHeight = 0;
 
         std::optional<int32_t> SelectedSpriteId = std::nullopt;
 
-        SlicingType SlicingType;
+        SlicingType SlicingType = SlicingType::GridSelection;
         OriginPlacement OriginPlacement = Custom;
 
         std::vector<int32_t> SelectedCells = std::vector<int32_t>();
 
-        SelectedRegion SelectedRegion;
+        SelectedRegion SelectedRegion{};
 
         ImVec2i GetCellSize() { return _cellSize; }
 
