@@ -59,7 +59,9 @@ namespace AWayBack
         void LoadSpriteAtlas(const std::string& spriteAtlasPath);
         void CreateNewSpriteAtlas(SpriteAtlasData& spriteAtlasData);
 
+        bool CanSlice();
         void Slice();
+
         void Save();
 
         void SetCellSize(const ImVec2i& cellSize);

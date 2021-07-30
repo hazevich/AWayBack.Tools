@@ -561,6 +561,23 @@ namespace AWayBack
         _undoRedoHistory.Reset();
     }
 
+    bool SpriteEditorController::CanSlice()
+    {
+        switch (SlicingType)
+        {
+        case SlicingType::GridSequence:
+            return SliceStart != SliceEnd;
+        case SlicingType::GridSelection:
+            return !SelectedCells.empty();
+        case SlicingType::Freehand:
+            return SelectedRegion.Min.x < SelectedRegion.Max.x
+                   && SelectedRegion.Min.y < SelectedRegion.Max.y;
+        }
+
+        return false;
+    }
+
+
     void SpriteEditorController::Slice()
     {
         switch (SlicingType)

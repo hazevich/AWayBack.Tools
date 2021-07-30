@@ -97,8 +97,14 @@ namespace AWayBack
 
         ImGui::SameLine();
 
+        if ((isDisabled = !controller.CanSlice()))
+            ImGui::PushDisabled();
+
         if (ImGui::Button("Slice", buttonSize))
             controller.Slice();
+
+        if (isDisabled)
+            ImGui::PopDisabled();
     }
 
     void ToolbarWindow::Render()
