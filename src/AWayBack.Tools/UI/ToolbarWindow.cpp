@@ -68,12 +68,12 @@ namespace AWayBack
     {
         const ImVec2 buttonSize = ImVec2(50, 50);
 
-        if (ImGui::ButtonEx("Undo", buttonSize, undoRedoHistory.CanUndo()))
+        if (ImGui::CustomButton("Undo", buttonSize, undoRedoHistory.CanUndo()))
             undoRedoHistory.Undo();
 
         ImGui::SameLine();
         
-        if (ImGui::ButtonEx("Redo", buttonSize, undoRedoHistory.CanRedo()))
+        if (ImGui::CustomButton("Redo", buttonSize, undoRedoHistory.CanRedo()))
             undoRedoHistory.Redo();
 
         ImGui::SameLine();
@@ -83,7 +83,7 @@ namespace AWayBack
 
         ImGui::SameLine();
 
-        if (ImGui::ButtonEx("Slice", buttonSize, controller.CanSlice()))
+        if (ImGui::CustomButton("Slice", buttonSize, controller.CanSlice()))
             controller.Slice();
     }
 

@@ -113,7 +113,7 @@ namespace ImGui
         return false;
     }
 
-    bool ButtonEx(const char* label, const ImVec2& size, std::optional<bool> isEnabled)
+    bool CustomButton(const char* label, const ImVec2& size, std::optional<bool> isEnabled)
     {
         if (isEnabled && !isEnabled.value())
             ImGui::PushDisabled();

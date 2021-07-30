@@ -44,5 +44,5 @@ namespace ImGui
 
     bool CellSizeControl(ImVec2i& cellSize, bool& isUniformCellSizeControl);
 
-    bool ButtonEx(const char* label, const ImVec2& size = ImVec2(0, 0), std::optional<bool> isDisabled = std::nullopt);
+    bool CustomButton(const char* label, const ImVec2& size = ImVec2(0, 0), std::optional<bool> isEnabled = std::nullopt);
 }
