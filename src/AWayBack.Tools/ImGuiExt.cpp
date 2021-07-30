@@ -1,5 +1,7 @@
 ﻿#include "ImGuiExt.h"
 
+#include "imgui_internal.h"
+
 namespace ImGui
 {
     bool BeginCenteredModal(const char* name, bool* isOpen, ImGuiWindowFlags flags)
@@ -110,4 +112,18 @@ namespace ImGui
 
         return false;
     }
+
+    bool ButtonEx(const char* label, const ImVec2& size, std::optional<bool> isEnabled)
+    {
+        if (isEnabled && !isEnabled.value())
+            ImGui::PushDisabled();
+
+        bool result = ImGui::Button(label, size);
+        
+        if (isEnabled && !isEnabled.value())
+            ImGui::PopDisabled();
+
+        return result;
+    }
+
 }

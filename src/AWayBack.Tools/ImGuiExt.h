@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <optional>
+
 #include "imgui.h"
 #include "AWayBack/Graphics/Texture.h"
 
@@ -41,4 +43,6 @@ namespace ImGui
     void Border(const ImVec2& cursorScreenPos, const ImVec2& size, ImU32 color);
 
     bool CellSizeControl(ImVec2i& cellSize, bool& isUniformCellSizeControl);
+
+    bool ButtonEx(const char* label, const ImVec2& size = ImVec2(0, 0), std::optional<bool> isDisabled = std::nullopt);
 }

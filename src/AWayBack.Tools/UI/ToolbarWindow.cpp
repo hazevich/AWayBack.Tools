@@ -68,27 +68,13 @@ namespace AWayBack
     {
         const ImVec2 buttonSize = ImVec2(50, 50);
 
-        bool isDisabled;
-
-        if ((isDisabled = !undoRedoHistory.CanUndo()))
-            ImGui::PushDisabled();
-
-        if (ImGui::Button("Undo", buttonSize))
+        if (ImGui::ButtonEx("Undo", buttonSize, undoRedoHistory.CanUndo()))
             undoRedoHistory.Undo();
 
-        if (isDisabled)
-            ImGui::PopDisabled();
-
         ImGui::SameLine();
-
-        if ((isDisabled = !undoRedoHistory.CanRedo()))
-            ImGui::PushDisabled();
-
-        if (ImGui::Button("Redo", buttonSize))
+        
+        if (ImGui::ButtonEx("Redo", buttonSize, undoRedoHistory.CanRedo()))
             undoRedoHistory.Redo();
-
-        if (isDisabled)
-            ImGui::PopDisabled();
 
         ImGui::SameLine();
 
@@ -97,14 +83,8 @@ namespace AWayBack
 
         ImGui::SameLine();
 
-        if ((isDisabled = !controller.CanSlice()))
-            ImGui::PushDisabled();
-
-        if (ImGui::Button("Slice", buttonSize))
+        if (ImGui::ButtonEx("Slice", buttonSize, controller.CanSlice()))
             controller.Slice();
-
-        if (isDisabled)
-            ImGui::PopDisabled();
     }
 
     void ToolbarWindow::Render()
