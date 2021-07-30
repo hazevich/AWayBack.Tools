@@ -218,7 +218,9 @@ namespace AWayBack
                 OnMouseDragging(_controller, startPosition, mousePosition);
             }
 
-            ImGui::Grid(cursorScreenPos, cellSize, textureSize);
+
+            if (_controller.SlicingType == SlicingType::GridSelection || _controller.SlicingType == SlicingType::GridSequence)
+                ImGui::Grid(cursorScreenPos, cellSize, textureSize);
 
             RenderSelectedRegions(_controller, cursorScreenPos);
             RenderSelectedSpriteRegion(_controller, cursorScreenPos);

@@ -46,7 +46,7 @@ namespace AWayBack
 
         std::optional<int32_t> SelectedSpriteId = std::nullopt;
 
-        SlicingType SlicingType = SlicingType::GridSelection;
+        SlicingType SlicingType = SlicingType::GridSequence;
         OriginPlacement OriginPlacement = Custom;
 
         std::vector<int32_t> SelectedCells = std::vector<int32_t>();
