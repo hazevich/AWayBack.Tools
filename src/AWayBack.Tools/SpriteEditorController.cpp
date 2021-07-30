@@ -15,22 +15,17 @@ namespace AWayBack
             : _spriteIndex(spriteIndex),
               _spriteAtlas(spriteAtlas),
               _selectedSpriteId(selectedSpriteId),
-              _removedSprite(std::nullopt)
+              _removedSprite(spriteAtlas.Sprites[spriteIndex])
         {
         }
 
         void Undo() override
         {
-            if (!_removedSprite) return;
-
             _spriteAtlas.Sprites.insert(_spriteAtlas.Sprites.begin() + _spriteIndex, _removedSprite.value());
         }
 
         void Execute() override
         {
-            _removedSprite = _spriteAtlas.Sprites[_spriteIndex];
-
-            if (_spriteAtlas.Sprites.size() <= _spriteIndex) return;
             if (_spriteIndex == _selectedSpriteId) _selectedSpriteId = std::nullopt;
 
             _spriteAtlas.Sprites.erase(_spriteAtlas.Sprites.begin() + _spriteIndex);
@@ -42,10 +37,10 @@ namespace AWayBack
         }
 
     private:
-        int32_t _spriteIndex;
+        const int32_t _spriteIndex;
         SpriteAtlas& _spriteAtlas;
         std::optional<int32_t> _selectedSpriteId;
-        std::optional<Sprite> _removedSprite;
+        const std::optional<Sprite> _removedSprite;
     };
 
     struct ClearSpritesCommand : UndoRedoCommand
@@ -114,15 +109,14 @@ namespace AWayBack
               _slicingType(slicingType),
               _selectedSpriteId(selectedSpriteId),
               _previousSliceStart(_sliceStart),
-              _previousSliceEnd(_sliceEnd)
+              _previousSliceEnd(_sliceEnd),
+              _newSpritesBeginIndex(_spriteAtlas.Sprites.size()),
+              _newSpritesCount(sliceEnd - _sliceStart)
         {
         }
 
         void Execute() override
         {
-            _newSpritesBeginIndex = _spriteAtlas.Sprites.size();
-            _newSpritesCount = _sliceEnd - _sliceStart;
-
             for (int32_t i = _sliceStart; i < _sliceEnd; i++)
             {
                 SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
@@ -158,11 +152,11 @@ namespace AWayBack
         SlicingType& _slicingType;
         std::optional<int32_t>& _selectedSpriteId;
 
-        int32_t _previousSliceStart;
-        int32_t _previousSliceEnd;
+        const int32_t _previousSliceStart;
+        const int32_t _previousSliceEnd;
 
-        int32_t _newSpritesBeginIndex;
-        int32_t _newSpritesCount;
+        const int32_t _newSpritesBeginIndex;
+        const int32_t _newSpritesCount;
     };
 
     struct SliceGridSelectionCommand : UndoRedoCommand
@@ -180,16 +174,16 @@ namespace AWayBack
               _cellSize(cellSize),
               _gridWidth(gridWidth),
               _slicingType(slicingType),
-              _selectedSpriteId(selectedSpriteId)
+              _selectedSpriteId(selectedSpriteId),
+              _newSpritesBeginIndex(_spriteAtlas.Sprites.size()),
+              _newSpritesCount(_selectedCells.size()),
+              _previouslySelectedCells(_selectedCells)
+
         {
-            _previouslySelectedCells.insert(_previouslySelectedCells.begin(), _selectedCells.begin(), _selectedCells.end());
         }
 
         void Execute() override
         {
-            _newSpritesBeginIndex = _spriteAtlas.Sprites.size();
-            _newSpritesCount = _selectedCells.size();
-
             for (int32_t i : _selectedCells)
             {
                 SliceSprite(_spriteAtlas, i, _cellSize, _gridWidth);
@@ -223,9 +217,9 @@ namespace AWayBack
         SlicingType& _slicingType;
         std::optional<int32_t>& _selectedSpriteId;
 
-        std::vector<int32_t> _previouslySelectedCells;
-        int32_t _newSpritesBeginIndex;
-        int32_t _newSpritesCount;
+        const std::vector<int32_t> _previouslySelectedCells;
+        const int32_t _newSpritesBeginIndex;
+        const int32_t _newSpritesCount;
     };
 
     struct SliceFreehandCommand : UndoRedoCommand
@@ -238,8 +232,8 @@ namespace AWayBack
             : _selectedRegion(selectedRegion),
               _spriteAtlas(spriteAtlas),
               _slicingType(slicingType),
-              _previouslySelectedRegion(selectedRegion),
-              _selectedSpriteId(selectedSpriteId)
+              _selectedSpriteId(selectedSpriteId),
+              _previouslySelectedRegion(selectedRegion)
         {
         }
 
