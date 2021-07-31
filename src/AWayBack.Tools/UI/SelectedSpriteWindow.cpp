@@ -9,7 +9,7 @@
 
 namespace AWayBack
 {
-    SelectedSpriteWindow::SelectedSpriteWindow(SpriteEditorController& controller)
+    SelectedSpriteWindow::SelectedSpriteWindow(SpriteAtlasEditorController& controller)
         : _controller(controller)
     {
         
@@ -49,7 +49,7 @@ namespace AWayBack
         ImGui::Grid(gridPosition, cellSize, gridSize);
     }
 
-    void RenderSelectionImage(SpriteEditorController& controller, ImVec2i cellSize, bool isGridVisible)
+    void RenderSelectionImage(SpriteAtlasEditorController& controller, ImVec2i cellSize, bool isGridVisible)
     {
         ImVec2 framePosition = ImGui::GetCursorScreenPos();
 
@@ -119,7 +119,7 @@ namespace AWayBack
         return xResult || yResult;
     }
 
-    void SpriteRegionProperties(int32_t spriteId, Texture2D* texture, SpriteEditorController& controller)
+    void SpriteRegionProperties(int32_t spriteId, Texture2D* texture, SpriteAtlasEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Sprite region", ImGuiTreeNodeFlags_DefaultOpen)) return;
         const Sprite& sprite = controller.GetSprite(spriteId);
@@ -158,7 +158,7 @@ namespace AWayBack
         }
     }
 
-    void RenderOriginControl(int32_t spriteId, SpriteEditorController& controller)
+    void RenderOriginControl(int32_t spriteId, SpriteAtlasEditorController& controller)
     {
         auto originPlacementInt = (int32_t) controller.OriginPlacement;
 
@@ -219,7 +219,7 @@ namespace AWayBack
         
     }
 
-    void OriginControls(int32_t spriteId, SpriteEditorController& controller)
+    void OriginControls(int32_t spriteId, SpriteAtlasEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Origin", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
@@ -241,7 +241,7 @@ namespace AWayBack
         ImGui::CellSizeControl(cellSize, isUniformCellSizeControl);
     }
 
-    void NameControl(int32_t spriteId, SpriteEditorController& controller)
+    void NameControl(int32_t spriteId, SpriteAtlasEditorController& controller)
     {
         const Sprite& sprite = controller.GetSprite(spriteId);
         const std::string& spriteName = sprite.Name;

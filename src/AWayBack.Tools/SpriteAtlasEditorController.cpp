@@ -1,4 +1,4 @@
-﻿#include "SpriteEditorController.h"
+﻿#include "SpriteAtlasEditorController.h"
 #include "SpriteAtlasSerializer.h"
 
 #include "UndoRedo.h"
@@ -475,7 +475,7 @@ namespace AWayBack
         Sprite& _sprite;
     };
 
-    void ClearSelections(SpriteEditorController& controller)
+    void ClearSelections(SpriteAtlasEditorController& controller)
     {
         controller.SelectedCells.clear();
         controller.SelectedRegion = SelectedRegion();
@@ -483,18 +483,18 @@ namespace AWayBack
         controller.SliceStart = controller.SliceEnd = 0;
     }
 
-    SpriteEditorController::SpriteEditorController(UndoRedoHistory& undoRedoHistory)
+    SpriteAtlasEditorController::SpriteAtlasEditorController(UndoRedoHistory& undoRedoHistory)
         : _undoRedoHistory(undoRedoHistory)
     {
     }
 
-    SpriteEditorController::~SpriteEditorController()
+    SpriteAtlasEditorController::~SpriteAtlasEditorController()
     {
         delete _spriteAtlas;
         delete _texture;
     }
 
-    void SpriteEditorController::LoadSpriteAtlas(const std::string& spriteAtlasPath)
+    void SpriteAtlasEditorController::LoadSpriteAtlas(const std::string& spriteAtlasPath)
     {
         std::ifstream fileStream;
         fileStream.open(spriteAtlasPath);
@@ -519,7 +519,7 @@ namespace AWayBack
         }
     }
 
-    void SpriteEditorController::CreateNewSpriteAtlas(SpriteAtlasData& spriteAtlasData)
+    void SpriteAtlasEditorController::CreateNewSpriteAtlas(SpriteAtlasData& spriteAtlasData)
     {
         auto textureName = fs::path(spriteAtlasData.TexturePath).filename();
         fs::path destinationTexturePath = spriteAtlasData.Folder / textureName;
@@ -555,7 +555,7 @@ namespace AWayBack
         _undoRedoHistory.Reset();
     }
 
-    bool SpriteEditorController::CanSlice()
+    bool SpriteAtlasEditorController::CanSlice()
     {
         switch (SlicingType)
         {
@@ -572,7 +572,7 @@ namespace AWayBack
     }
 
 
-    void SpriteEditorController::Slice()
+    void SpriteAtlasEditorController::Slice()
     {
         switch (SlicingType)
         {
@@ -594,24 +594,24 @@ namespace AWayBack
         }
     }
 
-    void SpriteEditorController::SliceGridSequence()
+    void SpriteAtlasEditorController::SliceGridSequence()
     {
         _undoRedoHistory.ExecuteCommand(
             new SliceGridSequenceCommand(SliceStart, SliceEnd, *_spriteAtlas, _cellSize, GridWidth, SlicingType, SelectedSpriteId));
     }
 
-    void SpriteEditorController::SliceGridSelection()
+    void SpriteAtlasEditorController::SliceGridSelection()
     {
         _undoRedoHistory.ExecuteCommand(
             new SliceGridSelectionCommand(SelectedCells, *_spriteAtlas, _cellSize, GridWidth, SlicingType, SelectedSpriteId));
     }
 
-    void SpriteEditorController::SliceFreehand()
+    void SpriteAtlasEditorController::SliceFreehand()
     {
         _undoRedoHistory.ExecuteCommand(new SliceFreehandCommand(SelectedRegion, *_spriteAtlas, SlicingType, SelectedSpriteId));
     }
 
-    void SpriteEditorController::Save()
+    void SpriteAtlasEditorController::Save()
     {
         auto spriteAtlasPath = fs::path(_spriteAtlas->Folder) / fs::path(_spriteAtlas->Name);
 
@@ -621,7 +621,7 @@ namespace AWayBack
         file.close();
     }
 
-    void SpriteEditorController::SetCellSize(const ImVec2i& cellSize)
+    void SpriteAtlasEditorController::SetCellSize(const ImVec2i& cellSize)
     {
         _cellSize = cellSize;
         CalculateGridSize();
@@ -629,17 +629,17 @@ namespace AWayBack
         SelectedCells.clear();
     }
 
-    void SpriteEditorController::RemoveSprite(int32_t spriteIndex)
+    void SpriteAtlasEditorController::RemoveSprite(int32_t spriteIndex)
     {
         _undoRedoHistory.ExecuteCommand(new RemoveSpriteCommand(spriteIndex, *_spriteAtlas, SelectedSpriteId));
     }
 
-    void SpriteEditorController::ClearSprites()
+    void SpriteAtlasEditorController::ClearSprites()
     {
         _undoRedoHistory.ExecuteCommand(new ClearSpritesCommand(*_spriteAtlas, SelectedSpriteId));
     }
 
-    void SpriteEditorController::CalculateGridSize()
+    void SpriteAtlasEditorController::CalculateGridSize()
     {
         if (!_texture) return;
 
@@ -663,7 +663,7 @@ namespace AWayBack
         return ImVec2(x, y);
     }
 
-    void SpriteEditorController::RenameSprite(int32_t spriteId, const std::string& name)
+    void SpriteAtlasEditorController::RenameSprite(int32_t spriteId, const std::string& name)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
@@ -671,14 +671,14 @@ namespace AWayBack
             _undoRedoHistory.ExecuteCommand(new RenameSpriteCommand(name, sprite));
     }
 
-    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin, bool isFinalEdit)
+    void SpriteAtlasEditorController::SetSpriteOrigin(int32_t spriteId, Vector2 origin, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 
         _undoRedoHistory.ExecuteCommand(new SetSpriteOriginCommand(origin, sprite), isFinalEdit);
     }
 
-    void SpriteEditorController::SetOriginForAllSprites(Vector2 origin)
+    void SpriteAtlasEditorController::SetOriginForAllSprites(Vector2 origin)
     {
         _undoRedoHistory.ExecuteCommand(new SetOriginForAllSpritesCommand(origin, _spriteAtlas->Sprites));
     }
@@ -714,7 +714,7 @@ namespace AWayBack
         return sprite.Origin;
     }
 
-    void SpriteEditorController::SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement)
+    void SpriteAtlasEditorController::SetSpriteOrigin(int32_t spriteId, AWayBack::OriginPlacement originPlacement)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
         Vector2 origin = CalculateOrigin(sprite, originPlacement);
@@ -723,23 +723,23 @@ namespace AWayBack
         OriginPlacement = originPlacement;
     }
 
-    const SpriteAtlas& SpriteEditorController::GetSpriteAtlas() const
+    const SpriteAtlas& SpriteAtlasEditorController::GetSpriteAtlas() const
     {
         return *_spriteAtlas;
     }
 
-    const Sprite& SpriteEditorController::GetSprite(int32_t spriteId) const
+    const Sprite& SpriteAtlasEditorController::GetSprite(int32_t spriteId) const
     {
         return _spriteAtlas->Sprites[spriteId];
     }
 
-    void SpriteEditorController::SetSpritePosition(int32_t spriteId, Vector2 position, bool isFinalEdit)
+    void SpriteAtlasEditorController::SetSpritePosition(int32_t spriteId, Vector2 position, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
         _undoRedoHistory.ExecuteCommand(new SetSpritePositionCommand(position, sprite), isFinalEdit);
     }
 
-    void SpriteEditorController::SetSpriteSize(int32_t spriteId, Vector2 spriteSize, bool isFinalEdit)
+    void SpriteAtlasEditorController::SetSpriteSize(int32_t spriteId, Vector2 spriteSize, bool isFinalEdit)
     {
         Sprite& sprite = _spriteAtlas->Sprites[spriteId];
 

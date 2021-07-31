@@ -2,7 +2,7 @@
 
 namespace AWayBack
 {
-    void RenderListOfSprites(SpriteEditorController& controller)
+    void RenderListOfSprites(SpriteAtlasEditorController& controller)
     {
         const int32_t itemSize = 70;
 

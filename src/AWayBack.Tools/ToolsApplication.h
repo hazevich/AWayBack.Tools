@@ -23,7 +23,7 @@ namespace AWayBack
         void Render() override;
 
     private:
-        SpriteEditorController _spriteEditorController;
+        SpriteAtlasEditorController _spriteAtlasEditorController;
 
         CanvasWindow _canvas;
         ToolbarWindow _toolbar;

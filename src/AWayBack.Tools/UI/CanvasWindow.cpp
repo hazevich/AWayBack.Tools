@@ -25,7 +25,7 @@ namespace AWayBack
     void RenderSelectedCell(
         ImDrawList* drawList, 
         int32_t cellIndex, 
-        SpriteEditorController& controller,
+        SpriteAtlasEditorController& controller,
         ImVec2 cursorPosition,
         int32_t sequenceNumber
     )
@@ -43,7 +43,7 @@ namespace AWayBack
         DrawSelectedCellSequenceNumber(drawList, position, cellSize, sequenceNumber);
     }
 
-    void RenderGridSequence(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    void RenderGridSequence(SpriteAtlasEditorController& controller, ImVec2 cursorScreenPos)
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -53,7 +53,7 @@ namespace AWayBack
         }
     }
 
-    void RenderGridSelection(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    void RenderGridSelection(SpriteAtlasEditorController& controller, ImVec2 cursorScreenPos)
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -65,7 +65,7 @@ namespace AWayBack
         }
     }
 
-    void RenderFreehand(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    void RenderFreehand(SpriteAtlasEditorController& controller, ImVec2 cursorScreenPos)
     {
         ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -78,7 +78,7 @@ namespace AWayBack
         );
     }
 
-    void RenderSelectedRegions(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    void RenderSelectedRegions(SpriteAtlasEditorController& controller, ImVec2 cursorScreenPos)
     {
         switch (controller.SlicingType)
         {
@@ -100,7 +100,7 @@ namespace AWayBack
         }
     }
 
-    void RenderSelectedSpriteRegion(SpriteEditorController& controller, ImVec2 cursorScreenPos)
+    void RenderSelectedSpriteRegion(SpriteAtlasEditorController& controller, ImVec2 cursorScreenPos)
     {
         if (controller.SelectedSpriteId)
         {
@@ -135,7 +135,7 @@ namespace AWayBack
         ImGui::SetCursorPos(newCursorPos);
     }
 
-    void OnMouseLeftButtonClicked(SpriteEditorController& controller, ImVec2 mousePosition)
+    void OnMouseLeftButtonClicked(SpriteAtlasEditorController& controller, ImVec2 mousePosition)
     {
         if (controller.SlicingType != SlicingType::GridSelection) return;
 
@@ -149,7 +149,7 @@ namespace AWayBack
         }
     }
 
-    void OnMouseRightButtonClicked(SpriteEditorController& controller, ImVec2 mousePosition)
+    void OnMouseRightButtonClicked(SpriteAtlasEditorController& controller, ImVec2 mousePosition)
     {
         if (controller.SlicingType != SlicingType::GridSelection) return;
 
@@ -164,7 +164,7 @@ namespace AWayBack
         }
     }
 
-    void OnMouseDragging(SpriteEditorController& controller, ImVec2 startPosition, ImVec2 endPosition)
+    void OnMouseDragging(SpriteAtlasEditorController& controller, ImVec2 startPosition, ImVec2 endPosition)
     {
         if (controller.SlicingType != SlicingType::Freehand) return;
 

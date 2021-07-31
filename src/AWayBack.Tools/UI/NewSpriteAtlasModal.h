@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-#include "SpriteEditorController.h"
+#include "SpriteAtlasEditorController.h"
 
 namespace AWayBack
 {
     class NewSpriteAtlasModal
     {
     public:
-        NewSpriteAtlasModal(SpriteEditorController& controller)
+        NewSpriteAtlasModal(SpriteAtlasEditorController& controller)
             : _controller(controller)
         {
             
@@ -17,7 +17,7 @@ namespace AWayBack
         void Render();
 
     private:
-        SpriteEditorController& _controller;
+        SpriteAtlasEditorController& _controller;
 
         SpriteAtlasData _spriteAtlasData;
 

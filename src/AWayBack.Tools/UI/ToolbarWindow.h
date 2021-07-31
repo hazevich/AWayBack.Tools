@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "SpriteEditorController.h"
+#include "SpriteAtlasEditorController.h"
 
 namespace AWayBack
 {
     struct ToolbarWindow
     {
-        ToolbarWindow(SpriteEditorController& controller, UndoRedoHistory& undoRedoHistory)
+        ToolbarWindow(SpriteAtlasEditorController& controller, UndoRedoHistory& undoRedoHistory)
             : _controller(controller), _undoRedoHistory(undoRedoHistory)
         {
         }
@@ -13,7 +13,7 @@ namespace AWayBack
         void Render();
 
     private:
-        SpriteEditorController& _controller;
+        SpriteAtlasEditorController& _controller;
         UndoRedoHistory& _undoRedoHistory;
         bool _isUniformCellSizeControl = true;
     };

@@ -35,11 +35,11 @@ namespace AWayBack
         ImVec2 Min, Max;
     };
 
-    class SpriteEditorController
+    class SpriteAtlasEditorController
     {
     public:
-        SpriteEditorController(UndoRedoHistory& undoRedoHistory);
-        ~SpriteEditorController();
+        SpriteAtlasEditorController(UndoRedoHistory& undoRedoHistory);
+        ~SpriteAtlasEditorController();
 
         int32_t SliceStart = 0, SliceEnd = 0;
         int32_t GridWidth = 0, GridHeight = 0;

@@ -1,18 +1,18 @@
 ﻿#pragma once
 
-#include "SpriteEditorController.h"
+#include "SpriteAtlasEditorController.h"
 
 namespace AWayBack
 {
     class SelectedSpriteWindow
     {
     public:
-        SelectedSpriteWindow(SpriteEditorController& controller);
+        SelectedSpriteWindow(SpriteAtlasEditorController& controller);
 
         void Render();
 
     private:
-        SpriteEditorController& _controller;
+        SpriteAtlasEditorController& _controller;
 
         bool _isGridVisible;
         bool _isUniformCellSizeControl = true;

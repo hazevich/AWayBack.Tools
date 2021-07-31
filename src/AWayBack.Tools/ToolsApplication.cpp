@@ -8,12 +8,12 @@
 namespace AWayBack
 {
     ToolsApplication::ToolsApplication()
-        : _spriteEditorController(UndoRedoHistory),
-          _canvas(_spriteEditorController),
-          _toolbar(_spriteEditorController, UndoRedoHistory),
-          _sprites(_spriteEditorController),
-          _selectedSprite(_spriteEditorController),
-          _newSpriteAtlasModal(_spriteEditorController)
+        : _spriteAtlasEditorController(UndoRedoHistory),
+          _canvas(_spriteAtlasEditorController),
+          _toolbar(_spriteAtlasEditorController, UndoRedoHistory),
+          _sprites(_spriteAtlasEditorController),
+          _selectedSprite(_spriteAtlasEditorController),
+          _newSpriteAtlasModal(_spriteAtlasEditorController)
     {
         
     }
@@ -70,7 +70,7 @@ namespace AWayBack
 
                 if (atlasPath)
                 {
-                    _spriteEditorController.LoadSpriteAtlas(atlasPath.value());
+                    _spriteAtlasEditorController.LoadSpriteAtlas(atlasPath.value());
                 }
             }
             

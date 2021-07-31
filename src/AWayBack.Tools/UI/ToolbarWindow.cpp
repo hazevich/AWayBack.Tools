@@ -4,7 +4,7 @@
 
 namespace AWayBack
 {
-    void RenderSpriteAtlasHeader(SpriteEditorController& controller)
+    void RenderSpriteAtlasHeader(SpriteAtlasEditorController& controller)
     {
         if (!ImGui::CollapsingHeader("Sprite atlas", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
@@ -15,7 +15,7 @@ namespace AWayBack
         ImGui::LabelText("Texture name", spriteAtlas.TextureName.c_str());
     }
 
-    void RenderGridSequenceSlicingControls(SpriteEditorController& controller)
+    void RenderGridSequenceSlicingControls(SpriteAtlasEditorController& controller)
     {
         ImGui::PushMultiItemsWidths(2, ImGui::CalcItemWidth());
 
@@ -46,7 +46,7 @@ namespace AWayBack
         ImGui::Text("Slice range");
     }
 
-    void RenderSlicingControls(SpriteEditorController& controller, bool& isUniformCellSizeControl)
+    void RenderSlicingControls(SpriteAtlasEditorController& controller, bool& isUniformCellSizeControl)
     {
         if (!ImGui::CollapsingHeader("Slicing", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
@@ -64,7 +64,7 @@ namespace AWayBack
             RenderGridSequenceSlicingControls(controller);
     }
 
-    void RenderGeneralControls(UndoRedoHistory& undoRedoHistory, SpriteEditorController& controller)
+    void RenderGeneralControls(UndoRedoHistory& undoRedoHistory, SpriteAtlasEditorController& controller)
     {
         const ImVec2 buttonSize = ImVec2(50, 50);
 
