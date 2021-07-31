@@ -2,9 +2,6 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuiExt.h"
-
-#include "UndoRedo.h"
-
 #include <cmath>
 
 namespace AWayBack
@@ -214,9 +211,7 @@ namespace AWayBack
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
             controller.SetSpriteOrigin(spriteId, origin, true);
-        }
-
-        
+        }        
     }
 
     void OriginControls(int32_t spriteId, SpriteAtlasEditorController& controller)

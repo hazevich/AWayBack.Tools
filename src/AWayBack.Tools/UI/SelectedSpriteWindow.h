@@ -14,7 +14,7 @@ namespace AWayBack
     private:
         SpriteAtlasEditorController& _controller;
 
-        bool _isGridVisible;
+        bool _isGridVisible = true;
         bool _isUniformCellSizeControl = true;
 
         ImVec2i _cellSize = ImVec2i(32, 32);
