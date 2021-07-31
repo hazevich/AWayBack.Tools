@@ -53,6 +53,8 @@ namespace AWayBack
 
         SelectedRegion SelectedRegion{};
 
+        bool IsCanvasGridVisible = true;
+
         ImVec2i GetCellSize() { return _cellSize; }
 
         Texture2D* GetTexture() { return _texture; }

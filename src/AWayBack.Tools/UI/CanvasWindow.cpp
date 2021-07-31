@@ -219,7 +219,7 @@ namespace AWayBack
             }
 
 
-            if (_controller.SlicingType == SlicingType::GridSelection || _controller.SlicingType == SlicingType::GridSequence)
+            if (_controller.IsCanvasGridVisible)
                 ImGui::Grid(cursorScreenPos, cellSize, textureSize);
 
             RenderSelectedRegions(_controller, cursorScreenPos);

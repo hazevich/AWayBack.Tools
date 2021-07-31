@@ -55,6 +55,8 @@ namespace AWayBack
         if (ImGui::Combo("Slicing type", &slicingTypeInt, "Grid sequence\0Grid selection\0Freehand"))
             controller.SlicingType = (SlicingType) slicingTypeInt;
 
+        ImGui::Checkbox("Show canvas grid", &controller.IsCanvasGridVisible);
+
         ImVec2i cellSize = controller.GetCellSize();
 
         if (ImGui::CellSizeControl(cellSize, isUniformCellSizeControl))
