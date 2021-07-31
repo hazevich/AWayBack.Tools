@@ -32,9 +32,11 @@ I chose the second approach as it felt simpler. Thus a sprite editor came to be.
 
 `git clone https://github.com/hazevich/AWayBack.Tools`
 
-- Generate project files with premake5 for your beloved IDE or code editor. Here we'll use Visual Studio 2019
+- Generate project files with [premake5](https://premake.github.io/) for your beloved IDE or code editor. Here we'll use Visual Studio 2019
 
-`premak5 vs2019`
+`premake5 vs2019`
+
+You have to download premake if you don't want to. There is `premake5.exe` included the repo.
 
 - Run `AWayBack.Tools.sln`
 - Build
