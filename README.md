@@ -6,12 +6,7 @@ A set of tools used internally to create [A Way Back Game](https://store.steampo
 
 One of the most common things used in the 2D gamedev are packing multiple sprites into on single [sprite atlas](https://en.wikipedia.org/wiki/Texture_atlas).
 
-There are different approaches to accomplish this:
-
-1. Have different sprites as separate files then pack them into one file during a build via a script or some other pipeline.
-2. Have a prebaked texture with multiple sprites and slice them into sprite atlas. Basically having a configuration file having an array of entries pointing to a region of a big texture (a sprite region).
-
-I chose the second approach as it felt simpler. Thus a sprite editor came to be.
+There are different approaches to accomplish the result having a manually baked texture and slice them into sprite atlas with a tool.
 
 ### Requirements:
 - Win x64 OS. Linux/Mac might be coming soon(TM)
