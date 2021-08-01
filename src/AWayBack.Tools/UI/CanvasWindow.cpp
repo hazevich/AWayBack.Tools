@@ -179,6 +179,8 @@ namespace AWayBack
     
     void CanvasWindow::Render()
     {
+        const ImVec2i checkerBoardSize = ImVec2i(32, 32);
+
         if (!ImGui::Begin("Canvas", 0, ImGuiWindowFlags_HorizontalScrollbar))
         {
             ImGui::End();
@@ -195,7 +197,7 @@ namespace AWayBack
             ImVec2i cellSize = _controller.GetCellSize();
             ImVec2i textureSize = ImVec2i(texture->GetWidth(), texture->GetHeight());
 
-            ImGui::CheckerBoard(cellSize, textureSize);
+            ImGui::CheckerBoard(checkerBoardSize, textureSize);
 
             ImGui::Image(*texture);
 
@@ -217,8 +219,7 @@ namespace AWayBack
                 ImVec2 startPosition = io.MouseClickedPos[ImGuiMouseButton_Left] - cursorScreenPos;
                 OnMouseDragging(_controller, startPosition, mousePosition);
             }
-
-
+            
             if (_controller.IsCanvasGridVisible)
                 ImGui::Grid(cursorScreenPos, cellSize, textureSize);
 
