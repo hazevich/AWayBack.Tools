@@ -39,7 +39,7 @@ namespace AWayBack
     private:
         const int32_t _spriteIndex;
         SpriteAtlas& _spriteAtlas;
-        std::optional<int32_t> _selectedSpriteId;
+        std::optional<int32_t>& _selectedSpriteId;
         const std::optional<Sprite> _removedSprite;
     };
 
