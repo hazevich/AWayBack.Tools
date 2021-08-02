@@ -31,7 +31,7 @@ There are different approaches to accomplish the result. Having a manually baked
 
 `premake5 vs2019`
 
-You have to download premake if you don't want to. There is `premake5.exe` included the repo.
+You don't have to download premake if you don't want to. There is `premake5.exe` included the repo.
 
 - Run `AWayBack.Tools.sln`
 - Build
