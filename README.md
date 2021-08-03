@@ -12,6 +12,13 @@ There are different approaches to accomplish the result. Having a manually baked
 - Win x64 OS. Linux/Mac might be coming soon(TM)
 - OpenGL 3.3 or higher support
 
+### Tech/Libs used
+- [Dear ImGui](https://github.com/ocornut/imgui)
+- [glfw](https://github.com/glfw/glfw)
+- [glad](https://glad.dav1d.de/)
+- [RapidJSON](https://github.com/Tencent/rapidjson)
+- [stb](https://github.com/nothings/stb)
+
 ### Features:
 
 - Slicing a sequence of sprites on a grid
@@ -25,7 +32,10 @@ There are different approaches to accomplish the result. Having a manually baked
 ### Downloading source and building
 - Clone the repo
 
-`git clone https://github.com/hazevich/AWayBack.Tools`
+```
+git clone https://github.com/hazevich/AWayBack.Tools
+git submodule update --init --recursive
+```
 
 - Generate project files with [premake5](https://premake.github.io/) for your beloved IDE or code editor. Here we'll use Visual Studio 2019
 
