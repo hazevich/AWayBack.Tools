@@ -19,7 +19,7 @@ There are different approaches to accomplish the result. Having a manually baked
 - [RapidJSON](https://github.com/Tencent/rapidjson)
 - [stb](https://github.com/nothings/stb)
 
-### Features:
+### [Features:](https://github.com/hazevich/AWayBack.Tools/wiki)
 
 - Slicing a sequence of sprites on a grid
 - Slicing individual cells on a grid
