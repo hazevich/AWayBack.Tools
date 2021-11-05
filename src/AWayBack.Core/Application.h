@@ -11,6 +11,7 @@ namespace AWayBack
         virtual ~Application() = default;
 
         void Run();
+        void Close();
 
         GraphicsDevice& GetGraphicsDevice() { return *_graphicsDevice; }
         Window& GetWindow() { return *_window; }

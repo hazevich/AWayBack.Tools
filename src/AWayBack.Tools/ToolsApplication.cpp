@@ -79,12 +79,9 @@ namespace AWayBack
                 _newSpriteAtlasModal.Open();
             }
 
-            if (ImGui::MenuItem("Undo"))
-                UndoRedoHistory.Undo();
-
-            if (ImGui::MenuItem("Redo"))
-                UndoRedoHistory.Redo();
-
+            if (ImGui::MenuItem("Exit"))
+                Close();
+            
             ImGui::EndMenu();
         }
 

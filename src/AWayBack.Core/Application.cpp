@@ -52,6 +52,11 @@ namespace AWayBack
         _isRunning = false;
     }
 
+    void Application::Close()
+    {
+        OnClose();
+    }
+
     void Application::OnWindowResized(const WindowResizedData& data)
     {
         _graphicsDevice->SetViewport(data.Width, data.Height);
