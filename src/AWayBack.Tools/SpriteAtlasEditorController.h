@@ -57,7 +57,6 @@ namespace AWayBack
 
         ImVec2i GetCellSize() { return _cellSize; }
 
-        Texture2D* GetTexture() { return _texture; }
         void LoadSpriteAtlas(const std::string& spriteAtlasPath);
         void CreateNewSpriteAtlas(SpriteAtlasData& spriteAtlasData);
 
@@ -70,7 +69,7 @@ namespace AWayBack
         void RemoveSprite(int32_t spriteIndex);
         void ClearSprites();
 
-        [[nodiscard]] const SpriteAtlas& GetSpriteAtlas() const;
+        [[nodiscard]] const SpriteAtlas* GetSpriteAtlas() const;
         [[nodiscard]] const Sprite& GetSprite(int32_t spriteId) const;
 
         void RenameSprite(int32_t spriteId, const std::string& name);
@@ -82,9 +81,7 @@ namespace AWayBack
     private:
         UndoRedoHistory& _undoRedoHistory;
 
-        SpriteAtlas* _spriteAtlas = new SpriteAtlas();
-
-        Texture2D* _texture = nullptr;
+        SpriteAtlas* _spriteAtlas = nullptr;
 
         ImVec2i _cellSize = ImVec2i(32, 32);
 

@@ -3,17 +3,18 @@
 #include "imgui.h"
 
 #include "AWayBack/Utils/FileDialog.h"
-#include "SpriteAtlasSerializer.h"
 
 namespace AWayBack
 {
     ToolsApplication::ToolsApplication()
         : _spriteAtlasEditorController(UndoRedoHistory),
+          _animatorController(),
           _canvas(_spriteAtlasEditorController),
           _toolbar(_spriteAtlasEditorController, UndoRedoHistory),
           _sprites(_spriteAtlasEditorController),
           _selectedSprite(_spriteAtlasEditorController),
-          _newSpriteAtlasModal(_spriteAtlasEditorController)
+          _newSpriteAtlasModal(_spriteAtlasEditorController),
+          _newAnimationAtlasModal(_animatorController)
     {
         
     }
@@ -24,6 +25,7 @@ namespace AWayBack
         RenderMainMenuBar();
         
         _newSpriteAtlasModal.Render();
+        _newAnimationAtlasModal.Render();
 
         _canvas.Render();
         _toolbar.Render();
@@ -64,7 +66,7 @@ namespace AWayBack
 
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("Open..."))
+            if (ImGui::MenuItem("Open sprite atlas..."))
             {
                 std::optional<std::string> atlasPath = FileDialog::OpenFile("A Way Back Sprite Atlas (*.atlas)\0*.atlas\0");
 
@@ -74,9 +76,14 @@ namespace AWayBack
                 }
             }
             
-            if (ImGui::MenuItem("New..."))
+            if (ImGui::MenuItem("New sprite atlas..."))
             {
                 _newSpriteAtlasModal.Open();
+            }
+
+            if (ImGui::MenuItem("New animation atlas..."))
+            {
+                _newAnimationAtlasModal.Open();
             }
 
             if (ImGui::MenuItem("Exit"))
@@ -84,6 +91,10 @@ namespace AWayBack
             
             ImGui::EndMenu();
         }
+
+        auto animationAtlas = _animatorController.GetAnimationAtlas();
+        if (animationAtlas)
+            ImGui::Text(animationAtlas->Name.c_str());
 
         ImGui::EndMainMenuBar();
     }

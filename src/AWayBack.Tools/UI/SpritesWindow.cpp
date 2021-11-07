@@ -6,12 +6,15 @@ namespace AWayBack
     {
         const int32_t itemSize = 70;
 
-        const SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
-        Texture2D* texture = controller.GetTexture();
+        const SpriteAtlas* spriteAtlas = controller.GetSpriteAtlas();
+
+        if (!spriteAtlas) return;
+
+        Texture2D* texture = spriteAtlas->Texture;
 
         ImGui::BeginChild("ListOfSprites", ImVec2(0, 0), true);
 
-        for (int32_t i = 0; i < spriteAtlas.Sprites.size(); i++)
+        for (int32_t i = 0; i < spriteAtlas->Sprites.size(); i++)
         {
             ImGui::PushID(i);
 
@@ -40,7 +43,7 @@ namespace AWayBack
             ImGui::BeginChild("Tile", ImVec2(ImGui::GetContentRegionAvailWidth(), itemSize), false,
                               ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-            const Sprite& sprite = spriteAtlas.Sprites[i];
+            const Sprite& sprite = spriteAtlas->Sprites[i];
 
             ImGui::BeginChild("Thumbnail", ImVec2(itemSize, itemSize));
 

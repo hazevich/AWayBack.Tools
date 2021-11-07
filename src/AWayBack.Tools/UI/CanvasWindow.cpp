@@ -187,10 +187,12 @@ namespace AWayBack
             return;
         }
 
-        Texture2D* texture = _controller.GetTexture();
+        const SpriteAtlas* spriteAtlas = _controller.GetSpriteAtlas();
 
-        if (texture)
+        if (spriteAtlas)
         {
+            Texture2D* texture = spriteAtlas->Texture;
+
             SetCursorPos(*texture);
             ImVec2 cursorScreenPos = ImGui::GetCursorScreenPos();
 

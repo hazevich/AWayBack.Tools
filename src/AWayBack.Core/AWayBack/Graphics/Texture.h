@@ -11,6 +11,7 @@ namespace AWayBack
         virtual ~Texture2D() = default;
 
         virtual std::string GetName() = 0;
+        virtual std::string GetFullPath() = 0;
         virtual uint32_t GetTextureId() = 0;
         virtual uint32_t GetWidth() = 0;
         virtual uint32_t GetHeight() = 0;

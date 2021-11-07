@@ -1,5 +1,4 @@
 ﻿#include "SpriteAtlasEditorController.h"
-#include "SpriteAtlasSerializer.h"
 
 #include "UndoRedo.h"
 
@@ -491,26 +490,16 @@ namespace AWayBack
     SpriteAtlasEditorController::~SpriteAtlasEditorController()
     {
         delete _spriteAtlas;
-        delete _texture;
     }
 
     void SpriteAtlasEditorController::LoadSpriteAtlas(const std::string& spriteAtlasPath)
     {
-        std::ifstream fileStream;
-        fileStream.open(spriteAtlasPath);
-        SpriteAtlas* spriteAtlas = SpriteAtlasSerializer::DeserializeFromFile(fileStream);
+        SpriteAtlas* spriteAtlas = LoadSpriteAtlasFromFile(spriteAtlasPath);
+
         if (spriteAtlas)
         {
             delete _spriteAtlas;
             _spriteAtlas = spriteAtlas;
-            fs::path path = spriteAtlasPath;
-            auto spriteAtlasName = path.filename().string();
-            auto folderPath = path.parent_path().string();
-            _spriteAtlas->Folder = folderPath;
-            _spriteAtlas->Name = spriteAtlasName;
-
-            delete _texture;
-            _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
 
             CalculateGridSize();
             ClearSelections(*this);
@@ -540,14 +529,8 @@ namespace AWayBack
         }
 
         delete _spriteAtlas;
-        _spriteAtlas = new SpriteAtlas();
-
-        _spriteAtlas->TextureName = getTextureName(spriteAtlasData);
-        _spriteAtlas->Name = spriteAtlasData.Name + ".atlas";
-
-        delete _texture;
-        _texture = Texture2D::FromFile(_spriteAtlas->TextureName);
-
+        _spriteAtlas = new SpriteAtlas(spriteAtlasData.Folder, spriteAtlasData.Name + ".atlas", std::vector<Sprite>(), Texture2D::FromFile(getTextureName(spriteAtlasData)));
+        
         CalculateGridSize();
         ClearSelections(*this);
 
@@ -612,12 +595,7 @@ namespace AWayBack
 
     void SpriteAtlasEditorController::Save()
     {
-        auto spriteAtlasPath = getFullPath(*_spriteAtlas);
-
-        std::ofstream file;
-        file.open(spriteAtlasPath);
-        SpriteAtlasSerializer::SerializeToFile(file, *_spriteAtlas);
-        file.close();
+        SaveSpriteAtlas(*_spriteAtlas);
     }
 
     void SpriteAtlasEditorController::SetCellSize(const ImVec2i& cellSize)
@@ -640,10 +618,12 @@ namespace AWayBack
 
     void SpriteAtlasEditorController::CalculateGridSize()
     {
-        if (!_texture) return;
+        if (!_spriteAtlas) return;
 
-        GridWidth = _texture->GetWidth() / _cellSize.X;
-        GridHeight = _texture->GetHeight() / _cellSize.Y;
+        auto texture = _spriteAtlas->Texture;
+
+        GridWidth = texture->GetWidth() / _cellSize.X;
+        GridHeight = texture->GetHeight() / _cellSize.Y;
     }
 
     int32_t GetCellFromPosition(ImVec2 position, ImVec2i cellSize, int32_t gridWidth)
@@ -722,9 +702,9 @@ namespace AWayBack
         OriginPlacement = originPlacement;
     }
 
-    const SpriteAtlas& SpriteAtlasEditorController::GetSpriteAtlas() const
+    const SpriteAtlas* SpriteAtlasEditorController::GetSpriteAtlas() const
     {
-        return *_spriteAtlas;
+        return _spriteAtlas;
     }
 
     const Sprite& SpriteAtlasEditorController::GetSprite(int32_t spriteId) const

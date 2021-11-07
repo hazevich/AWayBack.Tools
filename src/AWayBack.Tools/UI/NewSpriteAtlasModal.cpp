@@ -1,10 +1,6 @@
 ﻿#include "NewSpriteAtlasModal.h"
 #include "imgui.h"
-#include "misc/cpp/imgui_stdlib.h"
-#include "ImGuiExt.h"
-#include "AWayBack/Utils/FileDialog.h"
-
-#include <filesystem>
+#include "AtlasControls.h"
 
 namespace AWayBack
 {
@@ -13,55 +9,18 @@ namespace AWayBack
         _isOpenRequested = true;
     }
 
-    bool NewSpriteAtlas(const char* name, AWayBack::SpriteAtlasData& spriteAtlas, bool& isOpen)
+    bool NewSpriteAtlas(const char* name, SpriteAtlasData& spriteAtlas, bool& isOpen)
     {
-        if (!ImGui::BeginCenteredModal(name, &isOpen))
-        {            
-            return false;
-        }
-        
-        ImGui::InputText("Name", &spriteAtlas.Name);
-        ImGui::InputText("Folder", &spriteAtlas.Folder);
-
-        if (ImGui::Button("..."))
+        auto content = [&spriteAtlas]() -> void
         {
-            std::optional<std::string> folderPath = FileDialog::OpenFolder();
+            UI::AtlasPathControls("SpriteAtlasPath", spriteAtlas.Name, spriteAtlas.Folder);
 
-            if (folderPath)
-            {
-                spriteAtlas.Folder = folderPath.value();
-            }
-        }
+            ImGui::NewLine();
 
-        ImGui::NewLine();
+            UI::BrowseControls("Texture", spriteAtlas.TexturePath, "Textures (*.png)\0*.png\0");
+        };
 
-        ImGui::InputText("Texture", &spriteAtlas.TexturePath);
-
-        ImGui::PushID("BrowseTexture");
-
-        if (ImGui::Button("..."))
-        {
-            std::optional<std::string> texturePath = FileDialog::OpenFile("Textures (*.png)\0*.png\0");
-
-            if (texturePath)
-            {
-                spriteAtlas.TexturePath = texturePath.value();
-            }
-        }
-
-        ImGui::PopID();
-
-        if (ImGui::Button("OK"))
-        {
-            ImGui::CloseCurrentPopup();
-            ImGui::EndPopup();
-
-            return true;
-        }
-
-        ImGui::EndPopup();
-
-        return false;
+        return UI::NewAtlas(name, isOpen, content);
     }
 
     void NewSpriteAtlasModal::Render()

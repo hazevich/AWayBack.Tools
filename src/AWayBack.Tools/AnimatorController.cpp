@@ -1,40 +1,35 @@
 ﻿#include "AnimatorController.h"
 
-#include <stdexcept>
-
 namespace AWayBack::UI::AnimationEditor
 {
-    void AnimatorController::CreateNewAnimationAtlas(const std::string& name, const std::string& folder, const SpriteAtlas& spriteAtlas)
+    void AnimatorController::CreateNewAnimationAtlas(const AnimationAtlasData& animationAtlasData)
     {
-        _animationAtlas = AnimationAtlas();
-        _animationAtlas.Name = name;
-        _animationAtlas.Folder = folder;
-        _animationAtlas.SpriteAtlas = spriteAtlas;
+        delete _animationAtlas;
+        _animationAtlas = new AnimationAtlas(animationAtlasData.Folder, animationAtlasData.Name, std::vector<Animation>(), LoadSpriteAtlasFromFile(animationAtlasData.SpriteAtlas));
     }
 
     const std::vector<Animation>& AnimatorController::GetAnimations() const
     {
-        return _animationAtlas.Animations;
+        return _animationAtlas->Animations;
     }
 
     const Animation& AnimatorController::CreateAnimation()
     {
-        _animationAtlas.Animations.emplace_back();
+        _animationAtlas->Animations.emplace_back();
 
-        return _animationAtlas.Animations.back();
+        return _animationAtlas->Animations.back();
     }
 
     const Animation& AnimatorController::GetAnimation(uint8_t animationIndex) const
     {
-        if (animationIndex >= _animationAtlas.Animations.size())
+        if (animationIndex >= _animationAtlas->Animations.size())
             throw std::invalid_argument("animationIndex is out of range");
 
-        return _animationAtlas.Animations[animationIndex];
+        return _animationAtlas->Animations[animationIndex];
     }
 
-    const SpriteAtlas& AnimatorController::GetSpriteAtlas() const
+    const AnimationAtlas* AnimatorController::GetAnimationAtlas() const
     {
-        return _animationAtlas.SpriteAtlas;
+        return _animationAtlas;
     }
-
 }

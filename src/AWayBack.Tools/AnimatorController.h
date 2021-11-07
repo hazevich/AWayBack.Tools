@@ -14,13 +14,13 @@ namespace AWayBack::UI::AnimationEditor
         float FrameDuration;
         bool IsRepeatable;
 
-        void CreateNewAnimationAtlas(const std::string& name, const std::string& folder, const SpriteAtlas& spriteAtlas);
+        void CreateNewAnimationAtlas(const AnimationAtlasData& animationAtlasData);
         const Animation& CreateAnimation();
         [[nodiscard]] const std::vector<Animation>& GetAnimations() const;
         [[nodiscard]] const Animation& GetAnimation(uint8_t animationIndex) const;
-        [[nodiscard]] const SpriteAtlas& GetSpriteAtlas() const;
+        [[nodiscard]] const AnimationAtlas* GetAnimationAtlas() const;
 
     private:
-        AnimationAtlas _animationAtlas;
+        AnimationAtlas* _animationAtlas = nullptr;
     };
 }

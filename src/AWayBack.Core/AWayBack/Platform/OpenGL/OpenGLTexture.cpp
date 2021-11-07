@@ -10,6 +10,7 @@ namespace AWayBack
     {
         std::filesystem::path filePath(file);
         _name = filePath.filename().string();
+        _fullPath = file;
 
         int32_t width, height;
         uint8_t* data = stbi_load(file.c_str(), &width, &height, nullptr, 4);

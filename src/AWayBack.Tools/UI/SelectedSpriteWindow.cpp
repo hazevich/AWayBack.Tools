@@ -69,23 +69,28 @@ namespace AWayBack
 
             ImGui::CheckerBoard(cellSize, ImVec2i(spriteSize.X, spriteSize.Y));
 
-            Texture2D* texture = controller.GetTexture();
+            const SpriteAtlas* spriteAtlas = controller.GetSpriteAtlas();
 
-            auto spriteuv0 = ImVec2(min.X / texture->GetWidth(), min.Y / texture->GetHeight());
-            auto spriteuv1 = ImVec2(max.X / texture->GetWidth(), max.Y / texture->GetHeight());
+            if (spriteAtlas)
+            {
+                Texture2D* texture = spriteAtlas->Texture;
 
-            ImVec2 imageScreenPos = ImGui::GetCursorScreenPos();
-            ImVec2 imageCursorPos = ImGui::GetCursorPos();
+                auto spriteuv0 = ImVec2(min.X / texture->GetWidth(), min.Y / texture->GetHeight());
+                auto spriteuv1 = ImVec2(max.X / texture->GetWidth(), max.Y / texture->GetHeight());
 
-            ImGui::Image(*texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
+                ImVec2 imageScreenPos = ImGui::GetCursorScreenPos();
+                ImVec2 imageCursorPos = ImGui::GetCursorPos();
 
-            const Vector2& origin = sprite.Origin;
-            auto originScreenPos = ImVec2(imageScreenPos.x + origin.X, imageScreenPos.y + origin.Y);
+                ImGui::Image(*texture, ImVec2(spriteSize.X, spriteSize.Y), spriteuv0, spriteuv1);
 
-            RenderOriginDot(originScreenPos);
+                const Vector2& origin = sprite.Origin;
+                auto originScreenPos = ImVec2(imageScreenPos.x + origin.X, imageScreenPos.y + origin.Y);
 
-            if (isGridVisible)
-                RenderGrid(framePosition, imageCursorPos, origin, cellSize, contentRegionAvail);
+                RenderOriginDot(originScreenPos);
+
+                if (isGridVisible)
+                    RenderGrid(framePosition, imageCursorPos, origin, cellSize, contentRegionAvail);
+            }
         }
 
         ImGui::EndChild();
@@ -254,7 +259,8 @@ namespace AWayBack
         if (!_controller.SelectedSpriteId) return;
 
         int32_t selectedSpriteId = _controller.SelectedSpriteId.value();
-        Texture2D* texture = _controller.GetTexture();
+        const SpriteAtlas* spriteAtlas = _controller.GetSpriteAtlas();
+        Texture2D* texture = spriteAtlas->Texture;
 
         NameControl(selectedSpriteId, _controller);
         SpriteRegionProperties(selectedSpriteId, texture, _controller);

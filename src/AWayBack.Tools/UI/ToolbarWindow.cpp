@@ -8,11 +8,11 @@ namespace AWayBack
     {
         if (!ImGui::CollapsingHeader("Sprite atlas", ImGuiTreeNodeFlags_DefaultOpen)) return;
 
-        const SpriteAtlas& spriteAtlas = controller.GetSpriteAtlas();
+        const SpriteAtlas* spriteAtlas = controller.GetSpriteAtlas();
 
-        ImGui::LabelText("Sprite Atlas Name", spriteAtlas.Name.c_str());
+        ImGui::LabelText("Sprite Atlas Name", spriteAtlas ? spriteAtlas->Name.c_str() : "");
         ImGui::NewLine();
-        ImGui::LabelText("Texture name", spriteAtlas.TextureName.c_str());
+        ImGui::LabelText("Texture name", spriteAtlas ? spriteAtlas->Texture->GetName().c_str() : "");
     }
 
     void RenderGridSequenceSlicingControls(SpriteAtlasEditorController& controller)

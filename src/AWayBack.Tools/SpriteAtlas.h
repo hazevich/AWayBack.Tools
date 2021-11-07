@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include <vector>
 #include <string>
+#include <filesystem>
 
-#include "filesystem"
+#include "AWayBack/Graphics/Texture.h"
 
 namespace AWayBack
 {
@@ -45,10 +46,14 @@ namespace AWayBack
 
     struct SpriteAtlas
     {
+        SpriteAtlas(std::string folder, std::string name, std::vector<Sprite> sprites, Texture2D* texture);
+        SpriteAtlas(const SpriteAtlas& spriteAtlas) = delete;
+        ~SpriteAtlas();
+
         std::string Folder;
         std::string Name;
-        std::string TextureName;
         std::vector<Sprite> Sprites;
+        Texture2D* Texture;
     };
 
     struct SpriteAtlasData
@@ -74,4 +79,7 @@ namespace AWayBack
     {
         return std::filesystem::path(atlas.Folder) / atlas.Name;
     }
+
+    SpriteAtlas* LoadSpriteAtlasFromFile(const std::string& spriteAtlasPath);
+    void SaveSpriteAtlas(const SpriteAtlas& spriteAtlas);
 }
