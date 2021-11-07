@@ -171,7 +171,8 @@ group "dependencies"
             "dependencies/imgui/backends/imgui_impl_glfw.cpp",
             "dependencies/imgui/backends/imgui_impl_opengl3.h",
             "dependencies/imgui/backends/imgui_impl_opengl3.cpp",
-
+            "dependencies/imgui/misc/cpp/imgui_stdlib.h",
+            "dependencies/imgui/misc/cpp/imgui_stdlib.cpp"
         }
 
         links
