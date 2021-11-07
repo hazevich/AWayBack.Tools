@@ -1,6 +1,7 @@
 ﻿#include "SelectedSpriteWindow.h"
 #include "imgui.h"
 #include "imgui_internal.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include "ImGuiExt.h"
 #include <cmath>
 
@@ -239,15 +240,12 @@ namespace AWayBack
     void NameControl(int32_t spriteId, SpriteAtlasEditorController& controller)
     {
         const Sprite& sprite = controller.GetSprite(spriteId);
-        const std::string& spriteName = sprite.Name;
 
-        const int32_t SpriteNameMaxSize = 1024;
-        char nameBuffer[SpriteNameMaxSize] = { 0 };
-        strncpy_s(nameBuffer, spriteName.c_str(), sizeof nameBuffer);
+        std::string spriteName = sprite.Name;
 
-        if (ImGui::InputText("Name", nameBuffer, sizeof nameBuffer, ImGuiInputTextFlags_EnterReturnsTrue))
+        if (ImGui::InputText("Name", &spriteName, ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            controller.RenameSprite(spriteId, nameBuffer);
+            controller.RenameSprite(spriteId, spriteName);
         }
     }
 

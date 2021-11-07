@@ -150,6 +150,7 @@ group "dependencies"
     project "imgui"
         kind "StaticLib"
         language "C++"
+        cppdialect "C++17"
         targetdir (targetdirPath)
         objdir (objdirPath)
         location "dependencies/imgui"
@@ -189,6 +190,14 @@ group "dependencies"
         }
 
         defines	{ "IMGUI_IMPL_OPENGL_LOADER_GLAD" }
+
+        filter "configurations:Debug"
+            runtime "Debug"
+            symbols "on"
+
+        filter "configurations:Release"
+            runtime "Release"
+            optimize "on"
     
     project "stb"
         kind "StaticLib"
