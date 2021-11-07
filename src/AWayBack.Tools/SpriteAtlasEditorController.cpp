@@ -521,8 +521,7 @@ namespace AWayBack
 
     void SpriteAtlasEditorController::CreateNewSpriteAtlas(SpriteAtlasData& spriteAtlasData)
     {
-        auto textureName = fs::path(spriteAtlasData.TexturePath).filename();
-        fs::path destinationTexturePath = spriteAtlasData.Folder / textureName;
+        fs::path destinationTexturePath = getTexturePath(spriteAtlasData);
 
         if (destinationTexturePath != spriteAtlasData.TexturePath)
         {
@@ -543,7 +542,7 @@ namespace AWayBack
         delete _spriteAtlas;
         _spriteAtlas = new SpriteAtlas();
 
-        _spriteAtlas->TextureName = textureName.string();
+        _spriteAtlas->TextureName = getTextureName(spriteAtlasData);
         _spriteAtlas->Name = spriteAtlasData.Name + ".atlas";
 
         delete _texture;
@@ -613,7 +612,7 @@ namespace AWayBack
 
     void SpriteAtlasEditorController::Save()
     {
-        auto spriteAtlasPath = fs::path(_spriteAtlas->Folder) / fs::path(_spriteAtlas->Name);
+        auto spriteAtlasPath = getFullPath(*_spriteAtlas);
 
         std::ofstream file;
         file.open(spriteAtlasPath);

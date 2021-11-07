@@ -2,8 +2,12 @@
 #include <vector>
 #include <string>
 
+#include "filesystem"
+
 namespace AWayBack
 {
+    const inline char* SpriteAtlasExtension = ".atlas";
+
     struct Vector2
     {
         Vector2() = default;
@@ -53,4 +57,21 @@ namespace AWayBack
         std::string Folder;
         std::string TexturePath;
     };
+
+    inline std::string getTextureName(const SpriteAtlasData& spriteAtlasData)
+    {
+        return std::filesystem::path(spriteAtlasData.TexturePath).filename().string();
+    }
+
+    inline std::filesystem::path getTexturePath(const SpriteAtlasData& spriteAtlasData)
+    {
+        auto textureName = std::filesystem::path(spriteAtlasData.TexturePath).filename();
+        return spriteAtlasData.Folder / textureName;
+    }
+
+    template<typename TAtlas>
+    std::filesystem::path getFullPath(const TAtlas& atlas)
+    {
+        return std::filesystem::path(atlas.Folder) / atlas.Name;
+    }
 }
