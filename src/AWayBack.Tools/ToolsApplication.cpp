@@ -14,7 +14,8 @@ namespace AWayBack
           _sprites(_spriteAtlasEditorController),
           _selectedSprite(_spriteAtlasEditorController),
           _newSpriteAtlasModal(_spriteAtlasEditorController),
-          _newAnimationAtlasModal(_animatorController)
+          _newAnimationAtlasModal(_animatorController),
+          _animatorToolbar(_animatorController)
     {
         
     }
@@ -29,6 +30,7 @@ namespace AWayBack
 
         _canvas.Render();
         _toolbar.Render();
+        _animatorToolbar.Render();
         _sprites.Render();
         _selectedSprite.Render();
     }
@@ -91,10 +93,6 @@ namespace AWayBack
             
             ImGui::EndMenu();
         }
-
-        auto animationAtlas = _animatorController.GetAnimationAtlas();
-        if (animationAtlas)
-            ImGui::Text(animationAtlas->Name.c_str());
 
         ImGui::EndMainMenuBar();
     }

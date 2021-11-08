@@ -33,6 +33,7 @@ namespace AWayBack
         SelectedSpriteWindow _selectedSprite;
         NewSpriteAtlasModal _newSpriteAtlasModal;
         UI::AnimationEditor::NewAnimationAtlasModal _newAnimationAtlasModal;
+        UI::AnimationEditor::AnimatorToolbarWindow _animatorToolbar;
 
         void RenderDockSpace();
         void RenderMainMenuBar();

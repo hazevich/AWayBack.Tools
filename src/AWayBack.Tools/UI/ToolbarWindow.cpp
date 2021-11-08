@@ -103,5 +103,31 @@ namespace AWayBack
 
         ImGui::End();
     }
+    
+    namespace UI::AnimationEditor
+    {
+        AnimatorToolbarWindow::AnimatorToolbarWindow(AnimatorController& animatorController)
+            : _animatorController(animatorController)
+        {
+            
+        }
 
+        void AnimatorToolbarWindow::Render()
+        {
+            if (!ImGui::Begin("Animator toolbar"))
+            {
+                ImGui::End();
+                return;
+            }
+            const AnimationAtlas* animationAtlas = _animatorController.GetAnimationAtlas();
+
+            if (animationAtlas)
+            {
+                ImGui::LabelText("Animation atlas", animationAtlas->Name.c_str());
+                ImGui::LabelText("Sprite atlas", animationAtlas->SpriteAtlas->Name.c_str());
+            }
+
+            ImGui::End();
+        }
+    }
 }

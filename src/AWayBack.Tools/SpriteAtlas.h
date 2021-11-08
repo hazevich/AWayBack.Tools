@@ -50,6 +50,8 @@ namespace AWayBack
         SpriteAtlas(const SpriteAtlas& spriteAtlas) = delete;
         ~SpriteAtlas();
 
+        SpriteAtlas& operator=(const SpriteAtlas&) = delete;
+
         std::string Folder;
         std::string Name;
         std::vector<Sprite> Sprites;

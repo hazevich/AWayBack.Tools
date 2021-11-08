@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "SpriteAtlasEditorController.h"
+#include "AnimatorController.h"
 
 namespace AWayBack
 {
@@ -17,4 +18,17 @@ namespace AWayBack
         UndoRedoHistory& _undoRedoHistory;
         bool _isUniformCellSizeControl = true;
     };
+
+    namespace UI::AnimationEditor
+    {
+        struct AnimatorToolbarWindow
+        {
+            AnimatorToolbarWindow(AnimatorController& animatorController);
+
+            void Render();
+
+        private:
+            AnimatorController& _animatorController;
+        };
+    }
 }
