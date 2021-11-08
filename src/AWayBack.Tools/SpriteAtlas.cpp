@@ -1,5 +1,6 @@
 ﻿#include <fstream>
 #include <filesystem>
+#include <optional>
 
 #include "SpriteAtlas.h"
 #include "AWayBack/Graphics/Texture.h"
